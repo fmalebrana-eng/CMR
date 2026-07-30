@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gestor Comercial Kaddu</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--text:#17202a;--muted:#667085;--line:#d8dee9;--accent:#2367d1;--navy:#102a43;--good:#18794e;--bad:#b42318;--soft:#eef4ff}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{padding:20px 28px;background:var(--navy);color:#fff;display:flex;align-items:center;gap:15px}header img{width:52px;height:52px;object-fit:contain;background:#fff;border-radius:12px;padding:5px}header h1{margin:0 0 4px;font-size:26px}header p{margin:0;opacity:.82}
+main{padding:20px;max-width:1750px;margin:auto}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.tab{background:#e8edf5;color:#344054}.tab.active{background:var(--accent);color:#fff}.panel{display:none}.panel.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(6,minmax(150px,1fr));gap:12px;margin-bottom:16px}.grid.four{grid-template-columns:repeat(4,minmax(190px,1fr))}.grid.three{grid-template-columns:repeat(3,minmax(220px,1fr))}.grid.two{grid-template-columns:repeat(2,minmax(300px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 2px 10px rgba(16,42,67,.05)}.card h3{margin:0 0 12px;font-size:16px}.card label{display:block;font-size:12px;color:var(--muted);margin:8px 0 5px}.card input,.card select,.card textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:9px;font-size:14px;background:#fff}.card textarea{min-height:74px;resize:vertical}.kpi{font-size:21px;font-weight:750;margin-top:4px}.mini,.note{font-size:12px;color:var(--muted);line-height:1.5}.callout{background:var(--soft);border:1px solid #c8d9f6;border-radius:12px;padding:12px 14px;margin:12px 0}
+.table-wrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:1500px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;font-size:12.5px}th{position:sticky;top:0;background:#eef3fb;z-index:1;color:#344054}th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:2;max-width:300px;white-space:normal}th:first-child{background:#eef3fb;z-index:3}td input{width:84px;padding:6px;border:1px solid var(--line);border-radius:7px;text-align:right}.positive{color:var(--good);font-weight:700}.negative{color:var(--bad);font-weight:700}.actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}button{border:0;border-radius:9px;padding:10px 14px;background:var(--accent);color:#fff;font-weight:650;cursor:pointer}button.secondary{background:#475467}button.ghost{background:#e8edf5;color:#344054}button.danger{background:#b42318}.metric-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
+.quote-shell{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}.quote-items table{min-width:900px}.quote-items th:first-child,.quote-items td:first-child{position:static}.quote-items input{width:78px}.quote-total{margin-left:auto;width:min(440px,100%);margin-top:16px}.quote-total div{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)}.quote-total .grand{font-size:19px;font-weight:800;border-bottom:0}.quote-company{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--navy);padding-bottom:12px;margin-bottom:16px}.quote-company img{width:72px;height:72px;object-fit:contain}.print-value{display:none}.quote-items tbody tr.new-line{animation:flash .8s ease}@keyframes flash{0%{background:#dbeafe}100%{background:#fff}}
+
+.kdd-logo{display:flex;align-items:center;justify-content:center;gap:8px;flex:0 0 auto}.kdd-logo svg{display:block;width:48px;height:58px;max-width:100%}.kdd-logo span{font-weight:900;letter-spacing:.08em;font-size:20px;color:inherit}.quote-company .kdd-logo{color:var(--navy);min-width:150px}.quote-company .kdd-logo svg{width:65px;height:78px}.quote-company .kdd-logo span{font-size:30px}
+.cost-toolbar{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:14px}.cost-toolbar .control{min-width:220px}.cost-toolbar label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.cost-toolbar select,.cost-toolbar input{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fff}.view-summary{margin-left:auto;padding:10px 14px;background:var(--soft);border:1px solid #c8d9f6;border-radius:10px;font-size:13px}
+.quote-company{background:linear-gradient(135deg,#102a43,#174a72);color:#fff;border:0;border-radius:12px;padding:18px 20px;margin-bottom:18px}.quote-company .company-copy h1{font-size:30px;letter-spacing:.04em;margin:0 0 8px}.quote-company .company-copy p{margin:3px 0}.quote-company .kdd-logo{background:#fff;border-radius:12px;padding:8px 14px;color:#102a43}.quote-meta-grid{display:grid;grid-template-columns:1fr 1.45fr;gap:16px;margin-bottom:18px}.quote-box{border:1px solid var(--line);border-radius:12px;padding:15px;background:#fff}.quote-box h3{margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line);color:var(--navy)}.quote-field-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 14px}.quote-field-grid .wide{grid-column:1/-1}.quote-box label{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700;display:block;margin-bottom:4px}.quote-box input,.quote-box select{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:#fff}.quote-items table{min-width:940px}.quote-items thead th{background:var(--navy);color:#fff}.quote-items tbody tr:nth-child(even){background:#f8fafc}.quote-total{border:1px solid var(--line);border-radius:12px;padding:8px 16px;background:#fbfcfe}.quote-total .grand{margin:4px -16px -8px;padding:13px 16px;background:var(--navy);color:#fff;border-radius:0 0 11px 11px}.quote-footer{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}.quote-footer .card{background:#f8fafc}.quote-legal{margin-top:18px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);text-align:center}.saved-quotes{margin-top:18px}.saved-quote-row{display:grid;grid-template-columns:1.2fr 1.5fr .8fr .8fr auto;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);font-size:13px}.saved-quote-row:last-child{border-bottom:0}.saved-quote-row strong{color:var(--navy)}.money-input{text-align:right;font-variant-numeric:tabular-nums}.quote-brand{display:flex;align-items:center;gap:14px}.quote-brand .brand-text{font-size:13px;line-height:1.45}.quote-company .kdd-logo{box-shadow:0 8px 24px rgba(0,0,0,.12)}.quote-company .kdd-logo svg{width:72px;height:86px}.quote-company .kdd-logo span{font-size:32px}.quote-doc-title{font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.8;margin-bottom:4px}.quote-company .company-copy h1{font-size:34px}.quote-number-badge{display:inline-block;margin-top:10px;padding:7px 10px;border:1px solid rgba(255,255,255,.35);border-radius:8px;font-size:12px}
+.save-status{display:none;align-items:center;justify-content:space-between;gap:14px;margin:12px 0;padding:12px 14px;border-radius:11px;border:1px solid #a7d7c2;background:#ecfdf3;color:#14532d}.save-status.show{display:flex}.save-status strong{display:block}.save-status-actions{display:flex;gap:8px;flex-wrap:wrap}.save-status-actions button{padding:8px 11px}.saved-quote-row{grid-template-columns:.9fr 1.35fr .75fr 1fr .9fr 1.55fr;align-items:center}.saved-quote-row .zone{color:#475467}.saved-quote-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}.saved-quote-actions button{padding:7px 10px;font-size:12px}.saved-quote-head{font-weight:750;background:#eef3fb;color:#344054}.storage-note{display:flex;align-items:flex-start;gap:10px;margin:10px 0 14px;padding:11px 13px;border:1px solid #c8d9f6;border-radius:10px;background:#f7faff;font-size:12px;color:#475467;line-height:1.45}.storage-dot{width:9px;height:9px;border-radius:50%;background:#18794e;margin-top:4px;flex:0 0 auto}.history-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0}.history-toolbar .actions{margin:0}.history-empty{padding:18px;text-align:center;color:var(--muted)}.region-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.region-card{border:1px solid var(--line);border-radius:12px;padding:13px;background:#fff}.region-card h4{margin:0 0 5px;color:var(--navy)}.region-card .kpi{font-size:18px}.zone-note{font-size:11px;color:var(--muted);margin-top:4px}.optional-note{border-left:4px solid #94a3b8;padding-left:10px}
+
+@media(max-width:1150px){.grid,.grid.four,.grid.three,.grid.two,.metric-row,.region-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){main{padding:12px}.grid,.grid.four,.grid.three,.grid.two,.metric-row,.quote-meta-grid,.quote-footer,.quote-field-grid,.region-grid{grid-template-columns:1fr}.view-summary{margin-left:0;width:100%}.quote-company{align-items:flex-start}.quote-company .kdd-logo{min-width:auto}.quote-company .kdd-logo span{display:none}}
+@media print{
+ body{background:#fff}.no-print,header,.tabs,#config,#costeo,#vendedores,#analisis{display:none!important}main{max-width:none;padding:0}.panel{display:none!important}#cotizacion{display:block!important}.quote-shell{border:0;padding:0;box-shadow:none}.quote-company{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #102a43;padding-bottom:14px;margin-bottom:18px}.quote-company .kdd-logo{background:#fff!important;color:#102a43!important;border:1px solid #d8dee9}.quote-company .kdd-logo svg{width:56px;height:68px}.quote-company .kdd-logo span{font-size:26px}.quote-company h1{font-size:24px;margin:0 0 7px}.quote-company p{margin:2px 0;font-size:11px}.print-hide{display:none!important}.quote-items{overflow:visible;border:0}.quote-items table{min-width:0;font-size:10px}.quote-items th,.quote-items td{font-size:10px;padding:6px 5px}.quote-items th:first-child,.quote-items td:first-child{position:static;max-width:none}.quote-total{page-break-inside:avoid}.card{border:0;box-shadow:none;padding:0}.grid.two{display:grid;grid-template-columns:1fr 1fr;gap:25px}.quote-meta-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:18px}.quote-box{border:1px solid #cbd5e1;padding:12px}.quote-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}.quote-footer{display:grid;grid-template-columns:1fr 1fr;gap:18px}.quote-legal{font-size:9px}.card input,.card select,.card textarea{border:0;padding:0;background:transparent}.card label{font-weight:700;color:#344054}.print-value{display:block;font-size:12px}.no-print-value{display:none!important}@page{size:A4;margin:14mm}
+}
+
+.analytics-grid{display:grid;grid-template-columns:repeat(4,minmax(180px,1fr));gap:12px;margin-bottom:16px}.analytics-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-bottom:16px}.analytics-table{min-width:760px}.chart-box{min-height:260px}.bar-list{display:flex;flex-direction:column;gap:10px}.bar-item{display:grid;grid-template-columns:145px 1fr 95px;gap:10px;align-items:center;font-size:12px}.bar-bg{height:14px;background:#e8edf5;border-radius:999px;overflow:hidden}.bar-value{height:100%;background:var(--accent);border-radius:999px}.bar-item strong{text-align:right}.insight{padding:12px 14px;border-left:4px solid var(--accent);background:#f8fafc;border-radius:8px;margin:8px 0;font-size:13px;line-height:1.45}.scenario-box{border:1px dashed #98a2b3;background:#fcfcfd}.scenario-result{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.scenario-result>div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px}.scenario-result span{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}.scenario-result strong{font-size:16px}.optional-badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#fff4e5;color:#9a4d00;font-size:11px;font-weight:700;margin-left:6px}@media(max-width:1000px){.analytics-grid{grid-template-columns:repeat(2,1fr)}.analytics-layout{grid-template-columns:1fr}.scenario-result{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.analytics-grid,.scenario-result{grid-template-columns:1fr}.bar-item{grid-template-columns:100px 1fr 75px}}
+
+.print-only{display:none}
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  body{font-family:Arial,Helvetica,sans-serif;color:#17202a;background:#fff}
+  main{width:100%;max-width:none!important;padding:0!important}
+  #cotizacion{display:block!important}
+  .quote-shell{border:0!important;border-radius:0!important;padding:0!important;box-shadow:none!important;background:#fff!important}
+  .quote-company{display:grid!important;grid-template-columns:1fr auto;align-items:center!important;gap:24px;background:#fff!important;color:#102a43!important;border-radius:0!important;border-bottom:4px solid #102a43!important;padding:0 0 15px!important;margin:0 0 10px!important}
+  .quote-company .company-copy{display:grid;grid-template-columns:1fr auto;column-gap:18px;align-items:end}
+  .quote-company .quote-doc-title{grid-column:1;font-size:9px!important;letter-spacing:.22em;color:#667085!important;opacity:1!important;margin:0 0 3px!important}
+  .quote-company .company-copy h1{grid-column:1;font-size:30px!important;line-height:1!important;letter-spacing:.08em!important;margin:0 0 10px!important;color:#102a43!important}
+  .quote-company .brand-text{grid-column:1;font-size:10px!important;line-height:1.55!important;color:#344054!important}
+  .quote-company .quote-number-badge{grid-column:2;grid-row:1/4;align-self:center;margin:0!important;padding:12px 15px!important;border:1px solid #cbd5e1!important;border-radius:8px!important;background:#f8fafc!important;color:#102a43!important;font-size:10px!important;text-align:center;min-width:145px}
+  .quote-company .quote-number-badge span{display:block;font-size:16px;font-weight:800;margin-top:4px;letter-spacing:.03em}
+  .quote-company .kdd-logo{min-width:120px!important;padding:8px 12px!important;border:1px solid #d8dee9!important;border-radius:10px!important;box-shadow:none!important;background:#fff!important;color:#102a43!important}
+  .quote-company .kdd-logo svg{width:48px!important;height:58px!important}.quote-company .kdd-logo span{font-size:24px!important}
+  .print-only{display:block!important}
+  .print-intro{display:grid!important;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 12px;padding:8px 12px;background:#eef4ff;border-left:4px solid #2367d1;border-radius:0 6px 6px 0}
+  .print-intro div{display:flex;justify-content:space-between;gap:12px;align-items:center}.print-intro span{font-size:8px;letter-spacing:.12em;color:#667085;font-weight:700}.print-intro strong{font-size:10px;color:#102a43}
+  .quote-meta-grid{display:grid!important;grid-template-columns:.82fr 1.18fr!important;gap:12px!important;margin:0 0 14px!important}
+  .quote-box{border:1px solid #cbd5e1!important;border-radius:8px!important;padding:11px 12px!important;background:#fff!important;page-break-inside:avoid}
+  .quote-box h3{font-size:10px!important;text-transform:uppercase;letter-spacing:.09em;color:#102a43!important;margin:0 0 8px!important;padding:0 0 6px!important;border-bottom:2px solid #eef2f6!important}
+  .quote-field-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px 12px!important}
+  .quote-field-grid .wide{grid-column:1/-1!important}
+  .quote-box label{font-size:7.5px!important;letter-spacing:.08em!important;color:#667085!important;margin:0 0 2px!important}
+  .print-value{display:block!important;font-size:9.5px!important;line-height:1.35!important;color:#17202a!important;font-weight:600;min-height:13px}
+  .quote-items{overflow:visible!important;border:0!important;border-radius:0!important;margin-top:2px}
+  .quote-items table{width:100%!important;min-width:0!important;table-layout:fixed!important;border-collapse:separate!important;border-spacing:0!important;border:1px solid #cbd5e1!important;border-radius:8px!important;overflow:hidden!important}
+  .quote-items thead{display:table-header-group}.quote-items tr{page-break-inside:avoid}
+  .quote-items th{position:static!important;background:#102a43!important;color:#fff!important;font-size:8px!important;text-transform:uppercase;letter-spacing:.04em;padding:8px 7px!important;border:0!important}
+  .quote-items td{font-size:9px!important;padding:8px 7px!important;border-bottom:1px solid #e5e7eb!important;white-space:normal!important;vertical-align:middle!important;background:#fff!important}
+  .quote-items tbody tr:nth-child(even) td{background:#f8fafc!important}
+  .quote-items th:nth-child(1),.quote-items td:nth-child(1){width:44%!important;text-align:left!important;position:static!important}
+  .quote-items th:nth-child(2),.quote-items td:nth-child(2){width:10%!important;text-align:center!important}
+  .quote-items th:nth-child(3),.quote-items td:nth-child(3){width:17%!important;text-align:right!important}
+  .quote-items th:nth-child(4),.quote-items td:nth-child(4){width:12%!important;text-align:center!important}
+  .quote-items th:nth-child(5),.quote-items td:nth-child(5){width:17%!important;text-align:right!important}
+  .quote-items td select,.quote-items td input{display:none!important}
+  .quote-total{width:42%!important;min-width:270px!important;margin:12px 0 0 auto!important;border:1px solid #cbd5e1!important;border-radius:8px!important;padding:7px 12px!important;background:#fff!important;page-break-inside:avoid}
+  .quote-total div{padding:6px 0!important;font-size:9.5px!important;border-bottom:1px solid #e5e7eb!important}.quote-total div span:first-child{color:#475467}.quote-total strong{font-variant-numeric:tabular-nums}
+  .quote-total .grand{margin:5px -12px -7px!important;padding:10px 12px!important;border-radius:0 0 7px 7px!important;background:#102a43!important;color:#fff!important;font-size:14px!important;border:0!important}
+  .quote-footer{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important;margin-top:14px!important;page-break-inside:avoid}
+  .quote-footer .card{border:1px solid #cbd5e1!important;border-radius:8px!important;padding:10px 12px!important;background:#fff!important;box-shadow:none!important}
+  .quote-footer .card label{font-size:8px!important;text-transform:uppercase;letter-spacing:.08em;color:#102a43!important;border-bottom:1px solid #e5e7eb;padding-bottom:5px;margin:0 0 7px!important}
+  .quote-footer .print-value{font-weight:400!important;font-size:9px!important;line-height:1.5!important;color:#344054!important}
+  .quote-legal{margin-top:15px!important;padding-top:9px!important;border-top:2px solid #102a43!important;font-size:7.5px!important;line-height:1.5!important;color:#667085!important;text-align:center!important}
+  .quote-legal:after{content:' | Cotización no constituye factura ni reserva de stock.'}
+  @page{size:A4;margin:12mm 13mm 12mm}
+}
+
+
+/* Vista previa real antes de imprimir */
+.pdf-preview-toolbar{display:none;position:sticky;top:0;z-index:9999;background:#102a43;color:#fff;padding:10px 16px;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 3px 14px rgba(0,0,0,.22)}
+.pdf-preview-toolbar .preview-actions{display:flex;gap:8px;flex-wrap:wrap}.pdf-preview-toolbar button{padding:9px 13px}.pdf-preview-toolbar .preview-title{font-weight:800}.pdf-preview-toolbar small{display:block;opacity:.8;margin-top:2px}
+body.pdf-preview-mode{background:#cbd5e1!important}
+body.pdf-preview-mode .pdf-preview-toolbar{display:flex}
+body.pdf-preview-mode>header,body.pdf-preview-mode .tabs,body.pdf-preview-mode #config,body.pdf-preview-mode #costeo,body.pdf-preview-mode #vendedores,body.pdf-preview-mode #analisis,body.pdf-preview-mode #cotizacion .no-print{display:none!important}
+body.pdf-preview-mode main{max-width:none!important;padding:24px 0 50px!important}
+body.pdf-preview-mode .panel{display:none!important}
+body.pdf-preview-mode #cotizacion{display:block!important}
+body.pdf-preview-mode .quote-shell{width:210mm;min-height:297mm;margin:0 auto;background:#fff!important;border:0!important;border-radius:0!important;padding:12mm 13mm!important;box-shadow:0 10px 35px rgba(15,23,42,.28)!important}
+body.pdf-preview-mode .quote-company{display:grid!important;grid-template-columns:1fr auto;align-items:center!important;gap:24px;background:#fff!important;color:#102a43!important;border-radius:0!important;border-bottom:4px solid #102a43!important;padding:0 0 15px!important;margin:0 0 12px!important}
+body.pdf-preview-mode .quote-company .company-copy{display:grid;grid-template-columns:1fr auto;column-gap:18px;align-items:end}
+body.pdf-preview-mode .quote-company .quote-doc-title{grid-column:1;font-size:9px!important;letter-spacing:.22em;color:#667085!important;opacity:1!important;margin:0 0 3px!important}
+body.pdf-preview-mode .quote-company .company-copy h1{grid-column:1;font-size:30px!important;line-height:1!important;letter-spacing:.08em!important;margin:0 0 10px!important;color:#102a43!important}
+body.pdf-preview-mode .quote-company .brand-text{grid-column:1;font-size:10px!important;line-height:1.55!important;color:#344054!important}
+body.pdf-preview-mode .quote-company .quote-number-badge{grid-column:2;grid-row:1/4;align-self:center;margin:0!important;padding:12px 15px!important;border:1px solid #cbd5e1!important;border-radius:8px!important;background:#f8fafc!important;color:#102a43!important;font-size:10px!important;text-align:center;min-width:145px}
+body.pdf-preview-mode .quote-company .quote-number-badge span{display:block;font-size:16px;font-weight:800;margin-top:4px}
+body.pdf-preview-mode .quote-company .kdd-logo{min-width:120px!important;padding:8px 12px!important;border:1px solid #d8dee9!important;border-radius:10px!important;box-shadow:none!important;background:#fff!important;color:#102a43!important}
+body.pdf-preview-mode .quote-company .kdd-logo svg{width:48px!important;height:58px!important}body.pdf-preview-mode .quote-company .kdd-logo span{font-size:24px!important}
+body.pdf-preview-mode .print-only{display:block!important}
+body.pdf-preview-mode .quote-meta-grid{display:grid!important;grid-template-columns:.82fr 1.18fr!important;gap:12px!important;margin:0 0 14px!important}
+body.pdf-preview-mode .quote-box{border:1px solid #cbd5e1!important;border-radius:8px!important;padding:11px 12px!important;background:#fff!important;box-shadow:none!important}
+body.pdf-preview-mode .quote-box h3{font-size:10px!important;text-transform:uppercase;letter-spacing:.09em;color:#102a43!important;margin:0 0 8px!important;padding:0 0 6px!important;border-bottom:2px solid #eef2f6!important}
+body.pdf-preview-mode .quote-field-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px 12px!important}body.pdf-preview-mode .quote-field-grid .wide{grid-column:1/-1!important}
+body.pdf-preview-mode .quote-box label{font-size:7.5px!important;letter-spacing:.08em!important;color:#667085!important;margin:0 0 2px!important}
+body.pdf-preview-mode .quote-box input,body.pdf-preview-mode .quote-box select,body.pdf-preview-mode .quote-footer textarea{display:none!important}
+body.pdf-preview-mode .print-value{display:block!important;font-size:9.5px!important;line-height:1.35!important;color:#17202a!important;font-weight:600;min-height:13px}
+body.pdf-preview-mode .quote-items{overflow:visible!important;border:0!important;border-radius:0!important;margin-top:2px}
+body.pdf-preview-mode .quote-items table{width:100%!important;min-width:0!important;table-layout:fixed!important;border-collapse:separate!important;border-spacing:0!important;border:1px solid #cbd5e1!important;border-radius:8px!important;overflow:hidden!important}
+body.pdf-preview-mode .quote-items th{position:static!important;background:#102a43!important;color:#fff!important;font-size:8px!important;text-transform:uppercase;letter-spacing:.04em;padding:8px 7px!important;border:0!important}
+body.pdf-preview-mode .quote-items td{font-size:9px!important;padding:8px 7px!important;border-bottom:1px solid #e5e7eb!important;white-space:normal!important;vertical-align:middle!important;background:#fff!important}
+body.pdf-preview-mode .quote-items tbody tr:nth-child(even) td{background:#f8fafc!important}
+body.pdf-preview-mode .quote-items th:nth-child(1),body.pdf-preview-mode .quote-items td:nth-child(1){width:44%!important;text-align:left!important;position:static!important}
+body.pdf-preview-mode .quote-items th:nth-child(2),body.pdf-preview-mode .quote-items td:nth-child(2){width:10%!important;text-align:center!important}
+body.pdf-preview-mode .quote-items th:nth-child(3),body.pdf-preview-mode .quote-items td:nth-child(3){width:17%!important;text-align:right!important}
+body.pdf-preview-mode .quote-items th:nth-child(4),body.pdf-preview-mode .quote-items td:nth-child(4){width:12%!important;text-align:center!important}
+body.pdf-preview-mode .quote-items th:nth-child(5),body.pdf-preview-mode .quote-items td:nth-child(5){width:17%!important;text-align:right!important}
+body.pdf-preview-mode .quote-items td select,body.pdf-preview-mode .quote-items td input,body.pdf-preview-mode .print-hide{display:none!important}
+body.pdf-preview-mode .quote-total{width:42%!important;min-width:270px!important;margin:12px 0 0 auto!important;border:1px solid #cbd5e1!important;border-radius:8px!important;padding:7px 12px!important;background:#fff!important}
+body.pdf-preview-mode .quote-total div{padding:6px 0!important;font-size:9.5px!important;border-bottom:1px solid #e5e7eb!important}.pdf-preview-mode .quote-total .no-print-value{display:none!important}
+body.pdf-preview-mode .quote-total .grand{margin:5px -12px -7px!important;padding:10px 12px!important;border-radius:0 0 7px 7px!important;background:#102a43!important;color:#fff!important;font-size:14px!important;border:0!important}
+body.pdf-preview-mode .quote-footer{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important;margin-top:14px!important}
+body.pdf-preview-mode .quote-footer .card{border:1px solid #cbd5e1!important;border-radius:8px!important;padding:10px 12px!important;background:#fff!important;box-shadow:none!important}
+body.pdf-preview-mode .quote-footer .card label{font-size:8px!important;text-transform:uppercase;letter-spacing:.08em;color:#102a43!important;border-bottom:1px solid #e5e7eb;padding-bottom:5px;margin:0 0 7px!important}
+body.pdf-preview-mode .quote-footer .print-value{font-weight:400!important;font-size:9px!important;line-height:1.5!important;color:#344054!important}
+body.pdf-preview-mode .quote-legal{margin-top:15px!important;padding-top:9px!important;border-top:2px solid #102a43!important;font-size:7.5px!important;line-height:1.5!important;color:#667085!important;text-align:center!important}
+@media(max-width:900px){body.pdf-preview-mode .quote-shell{width:calc(100% - 20px);min-height:auto;padding:24px 18px!important}body.pdf-preview-mode main{padding-top:12px!important}.pdf-preview-toolbar{position:relative}}
+@media print{.pdf-preview-toolbar{display:none!important}body.pdf-preview-mode{background:#fff!important}body.pdf-preview-mode main{padding:0!important}body.pdf-preview-mode .quote-shell{width:auto!important;min-height:0!important;margin:0!important;padding:0!important;box-shadow:none!important}}
+
+
+/* CRM, clientes y seguimiento comercial */
+.crm-grid{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.crm-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-bottom:16px}
+.crm-table{min-width:1250px}.crm-table th,.crm-table td{font-size:12px;vertical-align:middle}.crm-table select,.crm-table input,.crm-table textarea{width:100%;padding:7px;border:1px solid var(--line);border-radius:7px;background:#fff}.crm-table textarea{min-height:52px;resize:vertical}
+.status-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:750;background:#eef2f6;color:#344054}.status-borrador{background:#f2f4f7}.status-enviada{background:#e8f1ff;color:#175cd3}.status-negociacion{background:#fff4e5;color:#b54708}.status-aprobada{background:#ecfdf3;color:#027a48}.status-rechazada{background:#fef3f2;color:#b42318}.status-vencida{background:#fef3f2;color:#912018}.status-vendida{background:#dcfae6;color:#05603a}
+.expiry-ok{color:#18794e;font-weight:700}.expiry-soon{color:#b54708;font-weight:700}.expiry-late{color:#b42318;font-weight:700}
+.client-toolbar{display:flex;gap:8px;align-items:end;flex-wrap:wrap}.client-toolbar>div{flex:1 1 220px}.compact-actions{display:flex;gap:6px;flex-wrap:wrap}.compact-actions button{padding:7px 9px;font-size:11px}
+.funnel{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.funnel-step{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff;text-align:center}.funnel-step strong{display:block;font-size:20px;color:var(--navy)}.funnel-step span{font-size:11px;color:var(--muted)}
+.margin-alert{display:none;margin:12px 0;padding:11px 13px;border-radius:10px;font-size:12px;font-weight:650}.margin-alert.show{display:block}.margin-alert.warn{background:#fff4e5;border:1px solid #f7b27a;color:#93370d}.margin-alert.danger{background:#fef3f2;border:1px solid #fda29b;color:#912018}.margin-alert.good{background:#ecfdf3;border:1px solid #a6f4c5;color:#05603a}
+.print-commercial{display:none}.crm-note{font-size:11px;color:var(--muted);line-height:1.45}.sale-record{background:#f7faff;border:1px solid #c8d9f6;border-radius:8px;padding:8px;margin-top:6px;font-size:11px}
+@media(max-width:1100px){.crm-grid{grid-template-columns:repeat(2,1fr)}.crm-layout{grid-template-columns:1fr}.funnel{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.crm-grid,.funnel{grid-template-columns:1fr}}
+body.pdf-preview-mode .print-commercial{display:grid!important;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;padding-top:10px;border-top:1px solid #d8dee9;font-size:9px;color:#344054}
+body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #marginAlert{display:none!important}
+@media print{.print-commercial{display:grid!important;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;padding-top:10px;border-top:1px solid #d8dee9;font-size:9px;color:#344054}.print-commercial strong{color:#102a43}#crm{display:none!important}#marginAlert{display:none!important}}
+
+
+/* Comisiones avanzadas y base de clientes */
+.commission-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:16px}.commission-header h2{margin:0 0 5px;color:var(--navy)}
+.commission-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 18px}.commission-step{padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:#fff}.commission-step strong{display:block;color:var(--navy);font-size:13px}.commission-step span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.commission-summary{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-top:16px}.commission-result{border:1px solid #a7d7c2;background:#ecfdf3;border-radius:14px;padding:16px}.commission-result .amount{font-size:32px;font-weight:850;color:#05603a;margin:5px 0}.commission-result .rate{font-size:13px;color:#18794e}.commission-breakdown{display:grid;gap:7px}.commission-line{display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}.commission-line:last-child{border-bottom:0}.commission-line.total{font-weight:800;color:var(--navy);font-size:15px}
+.progress-track{height:12px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:10px 0 5px}.progress-fill{height:100%;width:0;background:#18794e;border-radius:999px;transition:width .25s ease}.status-pill{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:750}.status-pill.good{background:#dcfae6;color:#05603a}.status-pill.warn{background:#fff4e5;color:#b54708}.status-pill.bad{background:#fef3f2;color:#b42318}
+.client-base-card{width:100%;min-width:0;overflow:hidden}.client-base-card .table-wrap{width:100%;max-width:100%;overflow-x:auto}.client-table{width:100%;min-width:0!important;table-layout:fixed}.client-table th,.client-table td{white-space:normal;text-align:left;position:static!important}.client-table th:nth-child(1){width:30%}.client-table th:nth-child(2){width:18%}.client-table th:nth-child(3){width:18%}.client-table th:nth-child(4){width:16%}.client-table th:nth-child(5){width:18%}.client-table td:last-child{text-align:right}.client-table .compact-actions{justify-content:flex-end}
+@media(max-width:900px){.commission-steps{grid-template-columns:repeat(2,1fr)}.commission-summary{grid-template-columns:1fr}.client-table{min-width:680px!important}}
+@media(max-width:520px){.commission-steps{grid-template-columns:1fr}}
+
+
+/* Ajustes de presentación del módulo de comisiones */
+.commission-rules-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:stretch;margin-bottom:16px}
+.commission-rules-grid>.card{height:100%;min-width:0}
+.commission-scale-table{width:100%;min-width:0!important;table-layout:fixed;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:4px}
+.commission-scale-table th,.commission-scale-table td{position:static!important;white-space:normal!important;text-align:left!important;padding:9px 10px;font-size:12px;background:#fff}
+.commission-scale-table th{background:#eef3fb;color:#344054;font-weight:750}
+.commission-scale-table td:first-child,.commission-scale-table th:first-child{position:static!important;background:inherit!important;max-width:none!important;width:40%}
+.commission-scale-table td:nth-child(2),.commission-scale-table th:nth-child(2){width:28%}
+.commission-scale-table td:nth-child(3),.commission-scale-table th:nth-child(3){width:32%}
+.commission-scale-table input{width:100%;min-width:0;text-align:right}
+.commission-scale-help{margin-top:10px;padding:10px 12px;border-radius:9px;background:#f7faff;border:1px solid #c8d9f6;color:#344054;font-size:12px;line-height:1.45}
+.commission-scale-help strong{color:var(--navy)}
+.commission-bonus-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}
+.commission-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:0 0 16px}
+.commission-metrics>.card{min-width:0;min-height:132px;display:flex;flex-direction:column;justify-content:center}
+.commission-metrics .kpi{overflow-wrap:anywhere}
+.commission-metrics .metric-caption{font-size:10px;color:var(--muted);line-height:1.35;margin-top:5px}
+.commission-summary{align-items:stretch}
+.commission-summary>.commission-result,.commission-summary>.card{height:100%}
+@media(max-width:1150px){.commission-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.commission-rules-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.commission-bonus-grid,.commission-metrics{grid-template-columns:1fr}.commission-scale-table{font-size:11px}.commission-scale-table th,.commission-scale-table td{padding:7px 6px}}
+
+#vendedores,#crm,#analisis{display:none!important}.margin-input{min-width:76px;width:86px}.projection-positive{color:#08783e}.projection-negative{color:#b42318}
+/* Control de acceso Kaddu */
+.auth-overlay{position:fixed;inset:0;z-index:10000;background:linear-gradient(135deg,#0f2942,#174d75);display:flex;align-items:center;justify-content:center;padding:24px}
+.auth-overlay.hidden{display:none}.auth-card{width:min(430px,100%);background:#fff;border-radius:18px;padding:28px;box-shadow:0 24px 70px rgba(0,0,0,.28)}
+.auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:18px}.auth-mark{width:48px;height:48px;border-radius:12px;background:#ffa908;color:#12304a;display:grid;place-items:center;font-weight:900;font-size:21px}.auth-card h2{margin:0;color:#102a43}.auth-card p{color:#667085;margin:5px 0 18px}.auth-card label{display:block;margin-top:12px}.auth-card input{width:100%;padding:10px;border:1px solid #d8dee9;border-radius:9px;font-size:14px}.auth-error{display:none;margin-top:12px;padding:10px;border-radius:8px;background:#fef3f2;color:#b42318;font-size:12px}.auth-help{margin-top:15px;padding:10px;border-radius:8px;background:#f4f7fb;color:#475467;font-size:11px;line-height:1.45}
+.user-toolbar{display:none;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;margin:12px auto;max-width:1400px;background:#fff;border:1px solid var(--line);border-radius:12px}.user-toolbar.visible{display:flex}.user-identity{display:flex;align-items:center;gap:10px}.user-avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#eaf2ff;color:#174d75;font-weight:800}.role-badge{display:inline-flex;padding:3px 8px;border-radius:999px;background:#eef3fb;color:#344054;font-size:11px;font-weight:750}.security-note{font-size:11px;color:#667085}.permission-hidden{display:none!important}
+@media(max-width:650px){.user-toolbar{align-items:flex-start;flex-direction:column}.security-note{display:none}}
+
+.auth-overlay{background:radial-gradient(circle at top left,#1f5c88 0,#102a43 48%,#091c2d 100%)}
+.auth-card{width:min(460px,100%);padding:32px}.auth-brand{justify-content:center;text-align:center;flex-direction:column}.auth-brand .kdd-logo{color:#102a43}.auth-brand .kdd-logo svg{width:58px;height:68px}.auth-brand .kdd-logo span{font-size:24px}.auth-subtitle{text-align:center;color:#667085;margin:-4px 0 20px}.setup-note{padding:11px 12px;border-radius:9px;background:#eef4ff;color:#344054;font-size:12px;line-height:1.5;margin-bottom:14px}.auth-switch{margin-top:14px;text-align:center;font-size:12px;color:#667085}.auth-switch button{padding:0;background:none;color:#2367d1}.users-layout{display:grid;grid-template-columns:minmax(300px,.75fr) minmax(480px,1.25fr);gap:16px}.user-table{min-width:700px}.user-status{font-weight:700}.user-status.active{color:#18794e}.user-status.inactive{color:#b42318}.account-actions{display:flex;gap:8px;flex-wrap:wrap}.footer-app{text-align:center;color:#667085;font-size:11px;padding:18px 10px 28px}.auth-message{display:none;margin-top:12px;padding:10px;border-radius:8px;font-size:12px}.auth-message.show{display:block}.auth-message.good{background:#ecfdf3;color:#14532d}.auth-message.bad{background:#fef3f2;color:#b42318}@media(max-width:850px){.users-layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="authOverlay" class="auth-overlay">
+  <div class="auth-card">
+    <div class="auth-brand"><div class="kdd-logo" aria-label="Logo Kaddu"><svg version="1.0" x="0" y="0" width="2400" height="2793.0949860251158" viewBox="144.105779876709 94.86455368041992 51.78848602294922 60.27090026855469" preserveAspectRatio="xMidYMid meet" color-interpolation-filters="sRGB"><g><defs><linearGradient id="92" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#fa71cd"></stop> <stop offset="100%" stop-color="#9b59b6"></stop></linearGradient><linearGradient id="93" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f9d423"></stop> <stop offset="100%" stop-color="#f83600"></stop></linearGradient><linearGradient id="94" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#0064d2"></stop> <stop offset="100%" stop-color="#1cb0f6"></stop></linearGradient><linearGradient id="95" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f00978"></stop> <stop offset="100%" stop-color="#3f51b1"></stop></linearGradient><linearGradient id="96" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7873f5"></stop> <stop offset="100%" stop-color="#ec77ab"></stop></linearGradient><linearGradient id="97" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f9d423"></stop> <stop offset="100%" stop-color="#e14fad"></stop></linearGradient><linearGradient id="98" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#009efd"></stop> <stop offset="100%" stop-color="#2af598"></stop></linearGradient><linearGradient id="99" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ffcc00"></stop> <stop offset="100%" stop-color="#00b140"></stop></linearGradient><linearGradient id="100" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#d51007"></stop> <stop offset="100%" stop-color="#ff8177"></stop></linearGradient><linearGradient id="102" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#a2b6df"></stop> <stop offset="100%" stop-color="#0c3483"></stop></linearGradient><linearGradient id="103" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7ac5d8"></stop> <stop offset="100%" stop-color="#eea2a2"></stop></linearGradient><linearGradient id="104" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00ecbc"></stop> <stop offset="100%" stop-color="#007adf"></stop></linearGradient><linearGradient id="105" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#b88746"></stop> <stop offset="100%" stop-color="#fdf5a6"></stop></linearGradient></defs><g class="imagesvg isNoFont" transform="translate(144.61348724365234,95.37228012128664)"><g><rect fill="#333" fill-opacity="0" stroke-width="2" x="0" y="0" width="50.77302427493719" height="59.25544059629713" class="image-rect"></rect> <svg x="0" y="0" width="50.77302427493719" height="59.25544059629713" filtersec="colorsb9811093766" class="image-svg-svg primary" style="overflow: visible;"><svg viewBox="-0.02117646485567093 -0.013836823403835297 108.19795989990234 126.27413940429688"><path d="M34 75.71v46.14c0 4.3-.65 4.65-4.83 3.92-9.49-1.66-17.29-6.08-22.94-13.9C2.62 106.87.06 101.31.05 95Q-.06 49.55 0 4.09C0 .14.24 0 4.29.45 19.33 2 30.09 12.71 33.63 26.6a14.28 14.28 0 0 1 .29 3.52v45.59zM50.19 67.89c0-7.74.08-15.47 0-23.2a12.59 12.59 0 0 1 2-6.94Q62.76 20.14 73.32 2.48A4.56 4.56 0 0 1 77.74 0c9.1.05 18.19 0 27.26 0 3.32 0 3.9.85 2.2 3.73-6.3 10.74-12.79 21.36-19.2 32.04q-12 20-23.87 40c-3.63 6.08-7.32 12.13-11 18.17-.46.74-1 1.82-2 1.57-1.27-.31-.91-1.62-.91-2.56-.04-8.33-.03-16.69-.03-25.06z" fill="#FFA908"></path><path d="M84.78 126.23H64.87c-1.23 0-2.7.32-3.4-1.12s.11-2.62.83-3.8q10.41-17.11 20.77-34.25c1.08-1.78 2.05-1.79 3.35-.34 1.91 2.14 3 4.78 4.41 7.2 5.38 9 10.78 18.1 16 27.24 2.38 4.16 1.74 5.06-3 5.07z" fill="#2C729E"></path></svg><span>KADDU</span></div><div><h2 id="authTitle">Gestor Comercial</h2></div></div>
+    <p class="auth-subtitle" id="authSubtitle">Acceso de usuarios autorizados</p>
+    <form id="loginForm" autocomplete="off">
+      <label for="loginUser">Usuario</label><input id="loginUser" required autocomplete="username">
+      <label for="loginPassword">Contraseña</label><input id="loginPassword" type="password" required autocomplete="current-password">
+      <button type="submit" style="width:100%;margin-top:18px">Ingresar</button>
+      <div id="loginError" class="auth-message bad">Usuario o contraseña incorrectos.</div>
+    </form>
+    <form id="setupForm" autocomplete="off" class="permission-hidden">
+      <div class="setup-note">Primera configuración: crea la cuenta administradora de este equipo.</div>
+      <label for="setupName">Nombre</label><input id="setupName" required autocomplete="name">
+      <label for="setupUser">Usuario administrador</label><input id="setupUser" required autocomplete="username">
+      <label for="setupPassword">Contraseña</label><input id="setupPassword" type="password" required minlength="8" autocomplete="new-password">
+      <label for="setupPassword2">Repetir contraseña</label><input id="setupPassword2" type="password" required minlength="8" autocomplete="new-password">
+      <button type="submit" style="width:100%;margin-top:18px">Crear cuenta y continuar</button>
+      <div id="setupMessage" class="auth-message bad"></div>
+    </form>
+  </div>
+</div>
+<div id="pdfPreviewToolbar" class="pdf-preview-toolbar"><div><div class="preview-title">Vista previa de la cotización</div><small>Así se verá al imprimir o guardar como PDF.</small></div><div class="preview-actions"><button type="button" class="ghost" id="btnCerrarVistaPDF">Volver a editar</button><button type="button" id="btnImprimirPDF">Imprimir / Guardar PDF</button></div></div>
+<header><div class="kdd-logo" aria-label="Logo Kaddu"><svg version="1.0" x="0" y="0" width="2400" height="2793.0949860251158" viewBox="144.105779876709 94.86455368041992 51.78848602294922 60.27090026855469" preserveAspectRatio="xMidYMid meet" color-interpolation-filters="sRGB"><g><defs><linearGradient id="92" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#fa71cd"></stop> <stop offset="100%" stop-color="#9b59b6"></stop></linearGradient><linearGradient id="93" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f9d423"></stop> <stop offset="100%" stop-color="#f83600"></stop></linearGradient><linearGradient id="94" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#0064d2"></stop> <stop offset="100%" stop-color="#1cb0f6"></stop></linearGradient><linearGradient id="95" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f00978"></stop> <stop offset="100%" stop-color="#3f51b1"></stop></linearGradient><linearGradient id="96" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7873f5"></stop> <stop offset="100%" stop-color="#ec77ab"></stop></linearGradient><linearGradient id="97" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f9d423"></stop> <stop offset="100%" stop-color="#e14fad"></stop></linearGradient><linearGradient id="98" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#009efd"></stop> <stop offset="100%" stop-color="#2af598"></stop></linearGradient><linearGradient id="99" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ffcc00"></stop> <stop offset="100%" stop-color="#00b140"></stop></linearGradient><linearGradient id="100" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#d51007"></stop> <stop offset="100%" stop-color="#ff8177"></stop></linearGradient><linearGradient id="102" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#a2b6df"></stop> <stop offset="100%" stop-color="#0c3483"></stop></linearGradient><linearGradient id="103" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7ac5d8"></stop> <stop offset="100%" stop-color="#eea2a2"></stop></linearGradient><linearGradient id="104" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00ecbc"></stop> <stop offset="100%" stop-color="#007adf"></stop></linearGradient><linearGradient id="105" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#b88746"></stop> <stop offset="100%" stop-color="#fdf5a6"></stop></linearGradient></defs><g class="imagesvg isNoFont" transform="translate(144.61348724365234,95.37228012128664)"><g><rect fill="#333" fill-opacity="0" stroke-width="2" x="0" y="0" width="50.77302427493719" height="59.25544059629713" class="image-rect"></rect> <svg x="0" y="0" width="50.77302427493719" height="59.25544059629713" filtersec="colorsb9811093766" class="image-svg-svg primary" style="overflow: visible;"><svg viewBox="-0.02117646485567093 -0.013836823403835297 108.19795989990234 126.27413940429688"><path d="M34 75.71v46.14c0 4.3-.65 4.65-4.83 3.92-9.49-1.66-17.29-6.08-22.94-13.9C2.62 106.87.06 101.31.05 95Q-.06 49.55 0 4.09C0 .14.24 0 4.29.45 19.33 2 30.09 12.71 33.63 26.6a14.28 14.28 0 0 1 .29 3.52v45.59zM50.19 67.89c0-7.74.08-15.47 0-23.2a12.59 12.59 0 0 1 2-6.94Q62.76 20.14 73.32 2.48A4.56 4.56 0 0 1 77.74 0c9.1.05 18.19 0 27.26 0 3.32 0 3.9.85 2.2 3.73-6.3 10.74-12.79 21.36-19.2 32.04q-12 20-23.87 40c-3.63 6.08-7.32 12.13-11 18.17-.46.74-1 1.82-2 1.57-1.27-.31-.91-1.62-.91-2.56-.04-8.33-.03-16.69-.03-25.06z" fill="#FFA908"></path><path d="M84.78 126.23H64.87c-1.23 0-2.7.32-3.4-1.12s.11-2.62.83-3.8q10.41-17.11 20.77-34.25c1.08-1.78 2.05-1.79 3.35-.34 1.91 2.14 3 4.78 4.41 7.2 5.38 9 10.78 18.1 16 27.24 2.38 4.16 1.74 5.06-3 5.07z" fill="#2C729E"></path></svg><span>KADDU</span></div><div><h1>Gestor Comercial Kaddu</h1><p>Gestión comercial, precios y cotizaciones</p></div></header>
+<div id="userToolbar" class="user-toolbar no-print">
+  <div class="user-identity"><div id="userAvatar" class="user-avatar">U</div><div><strong id="currentUserName">Usuario</strong><br><span id="currentRole" class="role-badge">Rol</span></div></div>
+  <div class="account-actions"><button type="button" class="ghost" id="btnMyPassword">Cambiar contraseña</button><button type="button" class="ghost" id="btnLogout">Cerrar sesión</button></div>
+</div>
+
+<main>
+<div class="tabs no-print"><button class="tab active" data-panel="config">1. Costos</button><button class="tab" data-panel="costeo">2. Productos y márgenes</button><button class="tab" data-panel="cotizacion">3. Cotización</button><button class="tab" data-panel="listaPrecios">Lista de precios</button><button class="tab" data-panel="dealers">4. Comerciales</button><button class="tab" data-panel="proyeccion">5. Utilidad proyectada</button><button class="tab" data-panel="usuarios">Usuarios</button></div>
+<section id="usuarios" class="panel">
+<div class="users-layout">
+  <div class="card"><h3>Crear usuario</h3><p class="mini">Cada persona debe usar una cuenta individual.</p>
+    <label>Nombre completo</label><input id="newUserName" autocomplete="off">
+    <label>Usuario</label><input id="newUsername" autocomplete="off">
+    <label>Contraseña temporal</label><input id="newUserPassword" type="password" minlength="8" autocomplete="new-password">
+    <label>Perfil</label><select id="newUserRole"><option value="seller">Vendedor</option><option value="admin">Administrador</option></select>
+    <button type="button" id="btnCreateUser" style="margin-top:14px;width:100%">Crear usuario</button>
+    <div id="userAdminMessage" class="auth-message"></div>
+  </div>
+  <div class="card"><h3>Usuarios autorizados</h3><div class="table-wrap"><table class="user-table"><thead><tr><th>Nombre</th><th>Usuario</th><th>Perfil</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="usersTableBody"></tbody></table></div></div>
+</div>
+</section>
+<section id="config" class="panel active">
+<div class="callout"><strong>Modelo Kaddu:</strong> el costo se construye desde la importación, luego se agrega logística por peso. El escenario operativo usa una bodega propia en Antofagasta, 70% de distribución local y 30% hacia Calama.</div>
+<div class="grid four">
+  <div class="card"><h3>Importación</h3><label>Tipo de cambio CLP por R$</label><input id="tc" type="number" value="190"><label>Flete internacional</label><input id="flete" type="number" value="5500000"><label>Agencia / aduana</label><input id="agencia" type="number" value="300000"><label>IVA importación (informativo)</label><input id="ivaImport" type="number" value="5243000"><label>IVA venta (%)</label><input id="ivaVenta" type="number" value="19" step="0.1"></div>
+  <div class="card"><h3>Operación logística</h3><label>Kilos mensuales estimados</label><input id="kilosMes" type="number" value="23433"><label>Almacenaje bodega propia ($/kg)</label><input id="almacenajeKg" type="number" value="25"><label>Distribución Antofagasta ($/kg)</label><input id="distribucionAntofagasta" type="number" value="100"><label>Distribución Calama ($/kg)</label><input id="distribucionCalama" type="number" value="180"></div>
+  <div class="card"><h3>Mix de distribución</h3><label>Antofagasta (%)</label><input id="mixAntofagasta" type="number" value="70" min="0" max="100"><label>Calama (%)</label><input id="mixCalama" type="number" value="30" min="0" max="100"><div class="mini" style="margin-top:10px">Los porcentajes se normalizan automáticamente para calcular el costo promedio. Para una cotización específica puedes cargar el despacho aparte.</div></div>
+  <div class="card"><h3>Costos comerciales</h3><label>Medio de pago (%)</label><input id="comisionPago" type="number" value="0" step="0.1"><label>Marketing (%)</label><input id="marketing" type="number" value="0" step="0.1"><label>Merma / devoluciones (%)</label><input id="merma" type="number" value="0" step="0.1"></div>
+</div>
+<div class="grid two">
+  <div class="card"><h3>Margen general por canal</h3><p class="mini">Este porcentaje se aplica por defecto a todos los productos del canal. En “Productos y márgenes” puedes definir una excepción independiente para una combinación producto–canal.</p><div class="grid two" style="margin-bottom:0"><div><label>Distribuidor (%)</label><input id="margenDistribuidor" type="number" value="18" min="0" max="85" step="0.5"></div><div><label>Mayorista (%)</label><input id="margenMayorista" type="number" value="22" min="0" max="85" step="0.5"></div><div><label>HORECA (%)</label><input id="margenHoreca" type="number" value="26" min="0" max="85" step="0.5"></div><div><label>Retail (%)</label><input id="margenRetail" type="number" value="35" min="0" max="85" step="0.5"></div><div><label>Venta directa (%)</label><input id="margenDirecta" type="number" value="40" min="0" max="85" step="0.5"></div></div></div>
+  <div class="card"><h3>Lectura del modelo</h3><div class="commission-breakdown"><div class="commission-line"><span>Almacenaje mensual</span><strong id="kpiAlmacenajeMes">$0</strong></div><div class="commission-line"><span>Distribución mensual</span><strong id="kpiDistribucionMes">$0</strong></div><div class="commission-line"><span>Costo logístico promedio</span><strong id="kpiLogisticaKg">$0/kg</strong></div><div class="commission-line total"><span>Operación logística mensual</span><strong id="kpiOperacionMes">$0</strong></div></div></div>
+</div>
+<div class="metric-row"><div class="card"><label>Factura convertida</label><div class="kpi" id="kpiFactura">$0</div></div><div class="card"><label>Costo importado total</label><div class="kpi" id="kpiImportado">$0</div></div><div class="card"><label>Kilos considerados</label><div class="kpi" id="kpiKilos">0 kg</div></div><div class="card"><label>Almacenaje por kg</label><div class="kpi" id="kpiAlmacenajeUnit">$0</div></div><div class="card"><label>Distribución promedio por kg</label><div class="kpi" id="kpiDistribucionUnit">$0</div></div></div>
+<div class="actions"><button onclick="guardarDatos()">Guardar configuración</button><button class="ghost" onclick="restaurarDatos()">Restaurar</button></div>
+</section>
+<section id="costeo" class="panel">
+<div class="cost-toolbar">
+  <div class="control"><label>Vista de costeo</label><select id="costView"><option value="resumen">Resumen de costos</option><option value="distribuidor">Canal Distribuidor</option><option value="mayorista">Canal Mayorista</option><option value="horeca">Canal Horeca</option><option value="retail">Canal Retail</option><option value="directa">Venta directa</option><option value="todos">Todos los canales</option></select></div>
+  <div class="control"><label>Buscar producto</label><input id="costSearch" placeholder="Ej.: lavalozas, 5L, multiuso"></div>
+  <button type="button" id="btnPrintPriceList">Imprimir lista de precios</button>
+  <div class="view-summary" id="costViewSummary">Mostrando estructura de costos.</div>
+</div>
+<div class="table-wrap"><table id="costTable"><thead id="costHead"></thead><tbody id="tbody"></tbody></table></div>
+<p class="note" id="costNote">Selecciona un canal para ver únicamente su precio, utilidad unitaria y margen. Así evitas revisar todas las columnas al mismo tiempo.</p>
+</section>
+<section id="listaPrecios" class="panel">
+<div class="callout"><strong>Lista comercial autorizada:</strong> muestra únicamente precios de venta. No incluye costos, márgenes, utilidades ni información interna.</div>
+<div class="cost-toolbar">
+  <div class="control"><label>Canal comercial</label><select id="sellerPriceChannel"><option value="distribuidor">Distribuidor</option><option value="mayorista" selected>Mayorista</option><option value="horeca">HORECA</option><option value="retail">Retail</option><option value="directa">Venta directa</option><option value="todos">Todos los canales</option></select></div>
+  <div class="control"><label>Buscar producto</label><input id="sellerPriceSearch" placeholder="Ej.: lavalozas, 5L, multiuso"></div>
+  <button type="button" id="btnSellerPrintPriceList">Imprimir / Guardar PDF</button>
+  <div class="view-summary" id="sellerPriceSummary">Precios autorizados del canal Mayorista.</div>
+</div>
+<div class="table-wrap"><table><thead id="sellerPriceHead"></thead><tbody id="sellerPriceBody"></tbody></table></div>
+<p class="note">Esta vista está diseñada para vendedores y solo muestra valores comerciales autorizados.</p>
+</section>
+<section id="cotizacion" class="panel">
+<div class="quote-shell">
+<div class="quote-company"><div class="company-copy"><div class="quote-doc-title">Documento comercial</div><h1>COTIZACIÓN</h1><div class="brand-text"><strong>Kaddu</strong> · Importación y comercialización<br>RUT 78.373.775-2 · Calle Baquedano N° 50<br>Antofagasta, Chile</div><div class="quote-number-badge">Cotización <span id="quoteHeaderNumber">Kaddu-000001</span></div></div><div class="kdd-logo" aria-label="Logo Kaddu"><svg version="1.0" x="0" y="0" width="2400" height="2793.0949860251158" viewBox="144.105779876709 94.86455368041992 51.78848602294922 60.27090026855469" preserveAspectRatio="xMidYMid meet" color-interpolation-filters="sRGB"><g><defs><linearGradient id="92" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#fa71cd"></stop> <stop offset="100%" stop-color="#9b59b6"></stop></linearGradient><linearGradient id="93" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f9d423"></stop> <stop offset="100%" stop-color="#f83600"></stop></linearGradient><linearGradient id="94" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#0064d2"></stop> <stop offset="100%" stop-color="#1cb0f6"></stop></linearGradient><linearGradient id="95" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f00978"></stop> <stop offset="100%" stop-color="#3f51b1"></stop></linearGradient><linearGradient id="96" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7873f5"></stop> <stop offset="100%" stop-color="#ec77ab"></stop></linearGradient><linearGradient id="97" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f9d423"></stop> <stop offset="100%" stop-color="#e14fad"></stop></linearGradient><linearGradient id="98" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#009efd"></stop> <stop offset="100%" stop-color="#2af598"></stop></linearGradient><linearGradient id="99" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ffcc00"></stop> <stop offset="100%" stop-color="#00b140"></stop></linearGradient><linearGradient id="100" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#d51007"></stop> <stop offset="100%" stop-color="#ff8177"></stop></linearGradient><linearGradient id="102" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#a2b6df"></stop> <stop offset="100%" stop-color="#0c3483"></stop></linearGradient><linearGradient id="103" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7ac5d8"></stop> <stop offset="100%" stop-color="#eea2a2"></stop></linearGradient><linearGradient id="104" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00ecbc"></stop> <stop offset="100%" stop-color="#007adf"></stop></linearGradient><linearGradient id="105" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#b88746"></stop> <stop offset="100%" stop-color="#fdf5a6"></stop></linearGradient></defs><g class="imagesvg isNoFont" transform="translate(144.61348724365234,95.37228012128664)"><g><rect fill="#333" fill-opacity="0" stroke-width="2" x="0" y="0" width="50.77302427493719" height="59.25544059629713" class="image-rect"></rect> <svg x="0" y="0" width="50.77302427493719" height="59.25544059629713" filtersec="colorsb9811093766" class="image-svg-svg primary" style="overflow: visible;"><svg viewBox="-0.02117646485567093 -0.013836823403835297 108.19795989990234 126.27413940429688"><path d="M34 75.71v46.14c0 4.3-.65 4.65-4.83 3.92-9.49-1.66-17.29-6.08-22.94-13.9C2.62 106.87.06 101.31.05 95Q-.06 49.55 0 4.09C0 .14.24 0 4.29.45 19.33 2 30.09 12.71 33.63 26.6a14.28 14.28 0 0 1 .29 3.52v45.59zM50.19 67.89c0-7.74.08-15.47 0-23.2a12.59 12.59 0 0 1 2-6.94Q62.76 20.14 73.32 2.48A4.56 4.56 0 0 1 77.74 0c9.1.05 18.19 0 27.26 0 3.32 0 3.9.85 2.2 3.73-6.3 10.74-12.79 21.36-19.2 32.04q-12 20-23.87 40c-3.63 6.08-7.32 12.13-11 18.17-.46.74-1 1.82-2 1.57-1.27-.31-.91-1.62-.91-2.56-.04-8.33-.03-16.69-.03-25.06z" fill="#FFA908"></path><path d="M84.78 126.23H64.87c-1.23 0-2.7.32-3.4-1.12s.11-2.62.83-3.8q10.41-17.11 20.77-34.25c1.08-1.78 2.05-1.79 3.35-.34 1.91 2.14 3 4.78 4.41 7.2 5.38 9 10.78 18.1 16 27.24 2.38 4.16 1.74 5.06-3 5.07z" fill="#2C729E"></path></svg></svg> </g></g><defs v-gra="od"></defs></g></svg><span>Kaddu</span></div></div>
+<div class="print-only print-intro"><div><span>PROPUESTA COMERCIAL</span><strong>Productos de limpieza Barriga Verde</strong></div><div><span>EMITIDA POR</span><strong>Kaddu</strong></div></div>
+<div class="quote-meta-grid">
+<div class="quote-box"><h3>Datos de la cotización</h3><div class="quote-field-grid">
+<div><label>Correlativo</label><input id="quoteNumber" readonly><span class="print-value" id="pvQuoteNumber"></span></div>
+<div><label>Fecha</label><input id="quoteDate" type="date"><span class="print-value" id="pvQuoteDate"></span></div>
+<div><label>Validez</label><input id="quoteValidity" type="number" value="15"><span class="print-value" id="pvQuoteValidity"></span></div>
+<div><label>Lista aplicada</label><select id="quoteChannel"><option value="distribuidor">Distribuidor</option><option value="mayorista">Mayorista</option><option value="horeca">Horeca</option><option value="retail">Retail</option><option value="directa">Venta directa</option></select><span class="print-value" id="pvQuoteChannel"></span></div>
+</div><p class="mini no-print">La lista se asigna automáticamente según el tipo de cliente.</p></div>
+<div class="quote-box"><h3>Datos del cliente</h3><div class="client-toolbar no-print"><div><label>Cliente guardado</label><select id="savedClientSelect"><option value="">Seleccionar cliente...</option></select></div><button type="button" class="ghost" id="btnLoadClient">Cargar</button><button type="button" class="secondary" id="btnSaveClient">Guardar cliente</button></div><div class="quote-field-grid">
+<div><label>Tipo de cliente</label><select id="clientType"><option value="mayorista">Mayorista</option><option value="distribuidor">Distribuidor</option><option value="horeca">Horeca</option><option value="retail">Retail / cliente final</option><option value="institucional">Institucional / empresa de aseo</option></select><span class="print-value" id="pvClientType"></span></div>
+<div><label>RUT</label><input id="clientRut" placeholder="12.345.678-9"><span class="print-value" id="pvClientRut"></span></div>
+<div class="wide"><label>Razón social / nombre</label><input id="clientName" placeholder="Nombre o empresa"><span class="print-value" id="pvClientName"></span></div>
+<div class="wide"><label>Dirección</label><input id="clientAddress"><span class="print-value" id="pvClientAddress"></span></div>
+<div><label>Zona comercial / destino</label><select id="clientZone"><option value="norte">Antofagasta y Norte</option><option value="zofri">Iquique / ZOFRI (alternativa)</option><option value="centro">Santiago y Zona Centro</option><option value="sur">Zona Sur</option><option value="otro">Otro destino</option></select><span class="print-value" id="pvClientZone"></span></div>
+<div><label>Ciudad de destino</label><input id="clientCity" placeholder="Ej.: Santiago, Concepción, Iquique"><span class="print-value" id="pvClientCity"></span></div>
+<div class="wide"><label>Contacto / correo</label><input id="clientContact"><span class="print-value" id="pvClientContact"></span></div><div><label>Vendedor responsable</label><input id="quoteSeller" placeholder="Nombre del vendedor"><span class="print-value" id="pvQuoteSeller"></span></div><div><label>Teléfono vendedor</label><input id="quoteSellerPhone" placeholder="+56 9..."><span class="print-value" id="pvQuoteSellerPhone"></span></div><div class="wide"><label>Correo vendedor</label><input id="quoteSellerEmail" placeholder="ventas@kaddu.cl"><span class="print-value" id="pvQuoteSellerEmail"></span></div><div><label>Plazo estimado de entrega</label><input id="quoteDelivery" placeholder="Ej.: 3 a 5 días hábiles"><span class="print-value" id="pvQuoteDelivery"></span></div><div><label>Forma de despacho</label><select id="quoteShippingMethod"><option value="Despacho coordinado">Despacho coordinado</option><option value="Retiro en bodega">Retiro en bodega</option><option value="Transporte pagado por cliente">Transporte pagado por cliente</option><option value="Por definir">Por definir</option></select><span class="print-value" id="pvQuoteShippingMethod"></span></div>
+</div></div></div>
+<div class="actions no-print"><button type="button" id="btnAgregarProducto">+ Agregar producto</button><button type="button" class="secondary" id="btnGuardarCotizacion">Guardar cotización</button><button type="button" class="secondary" id="btnPDF">Vista previa / guardar PDF</button><button type="button" class="ghost" id="btnNuevaCotizacion">Nueva cotización</button><span id="lineStatus" class="mini" style="align-self:center"></span></div><div id="saveStatus" class="save-status no-print"><div><strong id="saveStatusTitle">Cotización guardada</strong><span id="saveStatusText"></span></div><div class="save-status-actions"><button type="button" id="btnOpenSaved">Abrir</button><button type="button" class="secondary" id="btnPdfSaved">Ver / guardar PDF</button><button type="button" class="ghost" id="btnHidePreview">Cerrar</button></div></div>
+<div class="table-wrap quote-items"><table><thead><tr><th>Producto</th><th>Cantidad</th><th>Precio unit. neto</th><th>Descuento %</th><th>Total neto</th><th class="print-hide">Acción</th></tr></thead><tbody id="quoteBody"></tbody></table></div>
+<div id="marginAlert" class="margin-alert"></div><div class="quote-total"><div><span>Subtotal neto</span><strong id="quoteSubtotal">$0</strong></div><div><span>Despacho cobrado al cliente</span><span><input class="no-print-value" id="quoteShipping" type="number" value="0" style="width:130px;text-align:right"><strong class="print-value" id="pvQuoteShipping"></strong></span></div><div><span>IVA</span><strong id="quoteIVA">$0</strong></div><div class="grand"><span>Total cotización</span><strong id="quoteGrand">$0</strong></div></div>
+<div class="quote-footer"><div class="card"><label>Condiciones de pago</label><textarea id="quotePayment">Transferencia bancaria. Valores expresados en pesos chilenos.</textarea><div class="print-value" id="pvQuotePayment"></div></div><div class="card"><label>Observaciones</label><textarea id="quoteNotes">Cotización sujeta a disponibilidad de stock. Despacho se cobra según destino, salvo acuerdo comercial.</textarea><div class="print-value" id="pvQuoteNotes"></div></div></div>
+<div class="print-commercial"><div><strong>Ejecutivo comercial</strong><br><span id="pdfSellerContact">-</span></div><div><strong>Entrega y despacho</strong><br><span id="pdfDeliveryInfo">-</span></div></div><div class="quote-legal">Kaddu · RUT 78.373.775-2 · Antofagasta, Chile · Documento comercial generado por el Gestor Kaddu</div><div class="saved-quotes no-print"><div class="history-toolbar"><div><h3 style="margin:0 0 4px">Historial de cotizaciones</h3><div class="mini">Abre una cotización guardada o genera nuevamente su PDF.</div></div><div class="actions"><button type="button" class="ghost" id="btnExportQuotes">Exportar respaldo</button><button type="button" class="ghost" id="btnImportQuotes">Importar respaldo</button><input type="file" id="quoteBackupFile" accept="application/json" hidden></div></div><div class="storage-note"><span class="storage-dot"></span><div><strong>Guardado local:</strong> los datos quedan en este navegador mientras uses el mismo archivo/origen y no borres sus datos. No se guarda un PDF automáticamente; el PDF se crea cuando presionas “Ver / guardar PDF”. Para proteger el historial ante limpieza del navegador o cambio de computador, usa “Exportar respaldo”.</div></div><div class="table-wrap" id="savedQuotesList"></div></div>
+</div></section>
+<section id="vendedores" class="panel">
+<div class="commission-header"><div><h2>Plan y simulador de comisiones</h2><div class="mini">Define la política, prueba un período y revisa qué recibe el vendedor y qué conserva la empresa.</div></div><span class="status-pill good">Simulación · no afecta ventas reales</span></div>
+<div class="commission-steps"><div class="commission-step"><strong>1. Define la base</strong><span>Venta confirmada o efectivamente cobrada.</span></div><div class="commission-step"><strong>2. Elige el método</strong><span>Venta, meta o modelo mixto.</span></div><div class="commission-step"><strong>3. Aplica condiciones</strong><span>Margen mínimo, devoluciones, bonos y tope.</span></div><div class="commission-step"><strong>4. Revisa el resultado</strong><span>Comisión individual y costo total.</span></div></div>
+<div class="grid three">
+<div class="card"><h3>Vendedor y período</h3><label>Nombre del vendedor</label><input id="nombreVendedor" value="Vendedor 1"><label>Período</label><select id="periodoComision"><option>Mensual</option><option>Trimestral</option><option>Anual</option></select><label>Sueldo base</label><input id="sueldoVendedor" type="number" value="0"><label>Cargas (%)</label><input id="cargasVendedor" type="number" value="25"><label>Movilización</label><input id="movilizacion" type="number" value="0"><label>Número de vendedores</label><input id="cantidadVendedores" type="number" value="1" min="1"></div>
+<div class="card"><h3>Política de comisión</h3><label>Método</label><select id="metodoComision"><option value="venta">Por venta neta</option><option value="meta" selected>Por cumplimiento de meta</option><option value="mixto">Mixto: base + meta</option></select><label>Tipo de escala</label><select id="tipoEscala"><option value="retroactiva">Retroactiva: tasa sobre toda la base</option><option value="progresiva">Progresiva: tasa por tramo</option></select><label>Comisión base sobre venta (%)</label><input id="comisionVendedor" type="number" value="2" step="0.1"><label>Base de liberación</label><select id="condicionCobranza"><option value="si" selected>Solo ventas cobradas</option><option value="no">Ventas confirmadas</option></select><label>Tope de comisión por vendedor</label><input id="topeComision" type="number" value="0"><div class="mini">Ingresa 0 para no aplicar tope.</div></div>
+<div class="card"><h3>Resultado del período</h3><label>Meta de venta neta</label><input id="metaVenta" type="number" value="10000000"><label>Venta neta lograda</label><input id="ventaReal" type="number" value="8500000"><label>Porcentaje cobrado (%)</label><input id="porcentajeCobrado" type="number" value="100" min="0" max="100"><label>Margen real (%)</label><input id="margenMeta" type="number" value="35"><label>Margen mínimo para comisionar (%)</label><input id="margenMinimo" type="number" value="20"><label>Notas de crédito / devoluciones</label><input id="devolucionesComision" type="number" value="0"></div>
+</div>
+<div class="commission-rules-grid">
+<div class="card"><h3>Escala de comisión por cumplimiento de meta</h3><table class="commission-scale-table"><thead><tr><th>Cumplimiento mínimo</th><th>Comisión</th><th>Interpretación</th></tr></thead><tbody><tr><td>Desde 80%</td><td><input id="tasa80" type="number" value="1" step="0.1" aria-label="Comisión desde 80 por ciento"> %</td><td>80% a 99,99% de la meta</td></tr><tr><td>Desde 100%</td><td><input id="tasa100" type="number" value="2" step="0.1" aria-label="Comisión desde 100 por ciento"> %</td><td>100% a 109,99% de la meta</td></tr><tr><td>Desde 110%</td><td><input id="tasa110" type="number" value="3" step="0.1" aria-label="Comisión desde 110 por ciento"> %</td><td>110% a 119,99% de la meta</td></tr><tr><td>Desde 120%</td><td><input id="tasa120" type="number" value="4" step="0.1" aria-label="Comisión desde 120 por ciento"> %</td><td>120% o más de la meta</td></tr></tbody></table><div class="commission-scale-help" id="explicacionEscala"><strong>Cómo se lee:</strong> si el vendedor cumple 85% de la meta, se aplica 1% de comisión sobre la base comisionable.</div></div>
+<div class="card"><h3>Bonos complementarios</h3><div class="commission-bonus-grid"><div><label>Bono fijo por cliente nuevo</label><input id="bonoCliente" type="number" value="20000"></div><div><label>Cantidad de clientes nuevos</label><input id="clientesNuevos" type="number" value="0"></div><div><label>Bono adicional sobre la base (%)</label><input id="bonoMargen" type="number" value="0.5" step="0.1"></div><div><label>Activar desde margen real (%)</label><input id="umbralBonoMargen" type="number" value="35" step="0.1"></div></div></div>
+</div>
+<div class="commission-metrics"><div class="card"><label>Cumplimiento de la meta</label><div class="kpi" id="kpiCumplimiento">0%</div><div class="progress-track"><div class="progress-fill" id="barraCumplimiento"></div></div></div><div class="card"><label>Base comisionable</label><div class="kpi" id="kpiBaseComision">$0</div><div class="metric-caption">Monto sobre el cual se calculan comisión y bonos.</div></div><div class="card"><label>Comisión total sobre la base</label><div class="kpi" id="kpiTasaEfectiva">0%</div><div class="metric-caption">Incluye comisión por meta, comisión base y bonos porcentuales.</div></div><div class="card"><label>Bonos totales</label><div class="kpi" id="kpiBonosVendedor">$0</div><div class="metric-caption">Bonos por clientes nuevos y margen.</div></div><div class="card"><label>Comisión final</label><div class="kpi" id="kpiComisionFinal">$0</div><div class="metric-caption">Resultado después de bonos y tope configurado.</div></div></div>
+<div class="commission-summary"><div class="commission-result"><div class="mini">Resultado individual de <strong id="nombreResultado">Vendedor 1</strong></div><div class="amount" id="comisionResultadoGrande">$0</div><div class="rate" id="estadoComision">Pendiente de cálculo</div><div class="progress-track"><div class="progress-fill" id="barraResultado"></div></div></div><div class="card"><h3>Desglose individual</h3><div class="commission-breakdown" id="desgloseComision"></div></div></div>
+<div class="metric-row" style="margin-top:16px"><div class="card"><label>Costo fijo vendedor</label><div class="kpi" id="kpiCostoVendedor">$0</div></div><div class="card"><label>Comisión variable total</label><div class="kpi" id="kpiComisionVendedor">$0</div></div><div class="card"><label>Costo fuerza de venta</label><div class="kpi" id="kpiFuerzaVenta">$0</div></div><div class="card"><label>Contribución estimada</label><div class="kpi" id="kpiContribucion">$0</div></div><div class="card"><label>Resultado empresa</label><div class="kpi" id="kpiResultadoVendedor">$0</div></div></div>
+<div class="callout" id="recomendacionVendedor"></div><div class="card"><h3>Auditoría del cálculo</h3><div id="detalleComision" class="mini"></div></div>
+</section>
+
+
+<section id="crm" class="panel">
+  <div class="callout"><strong>CRM comercial Kaddu:</strong> administra clientes, seguimiento, vencimientos, probabilidad de cierre y conversión de cotizaciones en ventas. Toda la información queda en el respaldo integral.</div>
+  <div class="crm-grid">
+    <div class="card"><label>Cotizaciones abiertas</label><div class="kpi" id="crmOpen">0</div><div class="mini">Borrador, enviada o negociación</div></div>
+    <div class="card"><label>Valor ponderado</label><div class="kpi" id="crmWeighted">$0</div><div class="mini">Monto neto × probabilidad</div></div>
+    <div class="card"><label>Tasa de conversión</label><div class="kpi" id="crmConversion">0%</div><div class="mini">Vendidas sobre cotizaciones cerradas</div></div>
+    <div class="card"><label>Por vencer / vencidas</label><div class="kpi" id="crmExpiring">0</div><div class="mini">Requieren seguimiento</div></div>
+    <div class="card"><label>Ventas confirmadas</label><div class="kpi" id="crmSales">$0</div><div class="mini">Neto registrado como venta</div></div>
+  </div>
+  <div class="card" style="margin-bottom:16px"><h3>Embudo comercial</h3><div class="funnel" id="crmFunnel"></div></div>
+  <div class="crm-layout">
+    <div class="card"><div class="history-toolbar"><div><h3 style="margin:0">Seguimiento de cotizaciones</h3><div class="mini">Actualiza estado, próximo contacto, probabilidad y responsable.</div></div><div><input id="crmSearch" placeholder="Buscar cliente, número o ciudad"></div></div><div class="table-wrap"><table class="crm-table"><thead><tr><th>Cotización</th><th>Cliente / destino</th><th>Estado</th><th>Prob. %</th><th>Próximo contacto</th><th>Vencimiento</th><th>Vendedor</th><th>Seguimiento</th><th>Acciones</th></tr></thead><tbody id="crmQuoteRows"></tbody></table></div></div>
+    <div class="card client-base-card"><h3>Base de clientes</h3><div class="mini" style="margin-bottom:10px">Los clientes guardados se pueden cargar directamente en una nueva cotización.</div><div class="table-wrap"><table class="client-table"><thead><tr><th>Cliente</th><th>RUT</th><th>Ciudad</th><th>Canal</th><th>Acciones</th></tr></thead><tbody id="crmClientRows"></tbody></table></div></div>
+  </div>
+</section>
+
+
+<section id="dealers" class="panel">
+  <div class="callout"><strong>Comerciales y comisiones:</strong> el canal define el precio. El tipo de venta define si corresponde comisión y cómo se calcula.</div>
+  <div class="grid two">
+    <div class="card"><h3>Configuración de la venta</h3>
+      <label>Tipo de venta</label>
+      <select id="commercialType">
+        <option value="sin_comision">Venta sin comisión</option>
+        <option value="dealer">Dealer</option>
+        <option value="vendedor">Vendedor</option>
+      </select>
+      <div id="commercialCommissionFields">
+        <label>Forma de comisión</label>
+        <select id="commissionMode">
+          <option value="percent_sales">Porcentaje sobre venta neta</option>
+          <option value="fixed_unit">Monto fijo por unidad vendida</option>
+          <option value="tiered_sales">Porcentaje escalonado por venta neta</option>
+          <option value="hybrid">Mixta: porcentaje + monto por unidad</option>
+        </select>
+        <div id="commissionRateWrap"><label>Comisión sobre venta neta (%)</label><input id="commissionRate" type="number" value="5" min="0" max="50" step="0.1"></div>
+        <div id="commissionUnitWrap" style="display:none"><label>Comisión por unidad vendida</label><input id="commissionPerUnit" type="text" inputmode="numeric" value="0"></div>
+        <div id="commissionTierWrap" style="display:none">
+          <label>Meta / umbral de venta neta</label><input id="commissionThreshold" type="text" inputmode="numeric" value="10.000.000">
+          <label>Comisión bajo la meta (%)</label><input id="commissionRateLow" type="number" value="3" min="0" max="50" step="0.1">
+          <label>Comisión al cumplir la meta (%)</label><input id="commissionRateHigh" type="number" value="5" min="0" max="50" step="0.1">
+        </div>
+      </div>
+      <hr style="border:0;border-top:1px solid #d8e0ec;margin:18px 0">
+      <h4 style="margin:0 0 8px">Simulación individual</h4>
+      <label>Venta neta atribuida</label><input id="commercialSales" type="text" inputmode="numeric" value="0">
+      <label>Unidades vendidas atribuidas</label><input id="commercialUnits" type="text" inputmode="numeric" value="0">
+      <label><input id="commercialApplyProjection" type="checkbox" checked style="width:auto;margin-right:8px">Aplicar esta comisión a la utilidad proyectada</label>
+    </div>
+    <div class="card"><h3>Resultado de la comisión</h3><div class="commission-breakdown">
+      <div class="commission-line"><span>Tipo aplicado</span><strong id="commercialTypeResult">Venta sin comisión</strong></div>
+      <div class="commission-line"><span>Forma de cálculo</span><strong id="commercialModeResult">Sin comisión</strong></div>
+      <div class="commission-line"><span>Tasa efectiva</span><strong id="commercialEffectiveRate">0%</strong></div>
+      <div class="commission-line"><span>Comisión estimada</span><strong id="commercialCommissionAmount">$0</strong></div>
+      <div class="commission-line"><span>Venta neta después de comisión</span><strong id="commercialNetAfterCommission">$0</strong></div>
+      <div class="commission-line total"><span>Comisión aplicada a la proyección</span><strong id="dealerComisionProyectada">$0</strong></div>
+    </div><p class="note">La comisión se descuenta de la utilidad. No modifica el costo importado ni el precio definido por el canal.</p></div>
+  </div>
+</section>
+<section id="proyeccion" class="panel">
+  <div class="callout"><strong>Utilidad proyectada:</strong> calcula cuánto venderías y ganarías si comercializas el volumen cargado de cada producto con su margen objetivo, el ajuste del canal y la comisión del comercial.</div>
+  <div class="grid four">
+    <div class="card"><label>Canal de proyección</label><select id="projectionChannel"><option value="distribuidor">Distribuidor</option><option value="mayorista" selected>Mayorista</option><option value="horeca">Horeca</option><option value="retail">Retail</option><option value="directa">Venta directa</option></select></div>
+    <div class="card"><label>Porcentaje del stock que se espera vender (%)</label><input id="projectionSellThrough" type="number" value="100" min="0" max="100" step="1"><div class="mini">100% supone vender todas las unidades importadas; 50% supone vender la mitad.</div></div>
+    <div class="card"><label>Venta neta proyectada</label><div class="kpi" id="projRevenue">$0</div><div class="mini">Sin IVA</div></div>
+    <div class="card"><label>Utilidad proyectada</label><div class="kpi" id="projProfit">$0</div><div class="mini" id="projMargin">Margen 0%</div></div>
+  </div>
+  <div class="grid four">
+    <div class="card"><label>Costo importado</label><div class="kpi" id="projImportCost">$0</div></div>
+    <div class="card"><label>Almacenaje</label><div class="kpi" id="projStorage">$0</div></div>
+    <div class="card"><label>Distribución</label><div class="kpi" id="projDistribution">$0</div></div>
+    <div class="card"><label>Comisión comercial</label><div class="kpi" id="projDealer">$0</div></div>
+  </div>
+  <div class="card"><h3>Rentabilidad proyectada por producto</h3><div class="table-wrap"><table class="analytics-table"><thead><tr><th>Producto</th><th>Unidades</th><th>Origen del margen</th><th>Margen aplicado</th><th>Venta neta</th><th>Costo total</th><th>Utilidad</th></tr></thead><tbody id="projProductRows"></tbody></table></div></div>
+</section>
+<section id="analisis" class="panel">
+  <div class="callout"><strong>Panel de gestión:</strong> resume cotizaciones, márgenes, canales, productos y destinos comerciales. Antofagasta/Norte, Santiago/Centro y Sur se analizan como mercados regulares; Iquique/ZOFRI queda como una alternativa adicional, no como el eje del negocio.</div>
+  <div class="analytics-grid">
+    <div class="card"><label>Cotizaciones guardadas</label><div class="kpi" id="anQuotes">0</div><div class="mini" id="anQuotesDetail">Sin actividad registrada</div></div>
+    <div class="card"><label>Venta neta cotizada</label><div class="kpi" id="anNet">$0</div><div class="mini">No incluye IVA</div></div>
+    <div class="card"><label>Utilidad bruta estimada</label><div class="kpi" id="anProfit">$0</div><div class="mini" id="anMargin">Margen promedio 0%</div></div>
+    <div class="card"><label>Ticket promedio neto</label><div class="kpi" id="anTicket">$0</div><div class="mini" id="anTopChannel">Canal principal: -</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px"><h3>Venta cotizada por zona comercial</h3><div class="region-grid" id="anRegionCards"></div><p class="note optional-note">La zona comercial sirve para segmentar oportunidades y logística. Seleccionar Iquique/ZOFRI no cambia automáticamente el tratamiento tributario de la cotización.</p></div>
+  <div class="analytics-layout">
+    <div class="card chart-box"><h3>Venta neta por canal</h3><div class="bar-list" id="anChannelBars"></div></div>
+    <div class="card"><h3>Lectura ejecutiva</h3><div id="anInsights"></div></div>
+  </div>
+  <div class="analytics-layout">
+    <div class="card"><h3>Productos con mayor venta cotizada</h3><div class="table-wrap"><table class="analytics-table"><thead><tr><th>Producto</th><th>Unidades</th><th>Venta neta</th><th>Utilidad estimada</th></tr></thead><tbody id="anProductRows"></tbody></table></div></div>
+    <div class="card"><h3>Simulador de volumen nacional</h3><div class="grid two" style="margin-bottom:0"><div><label>Producto</label><select id="simProduct"></select></div><div><label>Canal</label><select id="simChannel"><option value="distribuidor">Distribuidor</option><option value="mayorista" selected>Mayorista</option><option value="horeca">Horeca</option><option value="retail">Retail</option><option value="directa">Venta directa</option></select></div><div><label>Unidades</label><input id="simUnits" type="number" value="1000" min="1"></div><div><label>Descuento (%)</label><input id="simDiscount" type="number" value="0" min="0" max="100"></div></div><div class="scenario-result"><div><span>Venta neta</span><strong id="simRevenue">$0</strong></div><div><span>Costo total</span><strong id="simCost">$0</strong></div><div><span>Utilidad</span><strong id="simProfit">$0</strong></div><div><span>Margen real</span><strong id="simMargin">0%</strong></div></div></div>
+  </div>
+  <details class="card scenario-box">
+    <summary style="cursor:pointer;font-weight:750">Escenario adicional: Iquique / ZOFRI <span class="optional-badge">Opcional</span></summary>
+    <p class="note">Este comparador no cambia precios, cotizaciones ni costos nacionales. Solo permite estudiar una operación separada antes de validarla tributaria y aduaneramente.</p>
+    <div class="grid four"><div><label>Producto</label><select id="zfProduct"></select></div><div><label>Unidades</label><input id="zfUnits" type="number" value="1000" min="1"></div><div><label>Margen objetivo (%)</label><input id="zfMargin" type="number" value="25" min="0" max="95"></div><div><label>Costo adicional ZOFRI por unidad</label><input id="zfExtra" type="number" value="0" min="0"></div></div>
+    <div class="scenario-result"><div><span>Costo unitario alternativo</span><strong id="zfCost">$0</strong></div><div><span>Precio neto sugerido</span><strong id="zfPrice">$0</strong></div><div><span>Utilidad total</span><strong id="zfProfit">$0</strong></div><div><span>Diferencia vs. Mayorista nacional</span><strong id="zfDifference">$0</strong></div></div>
+  </details>
+</section>
+</main>
+<script>
+const productos=[["Lava Ropas Multiacción 5L",500,26],["Lava Ropas Lavanda 5L",500,24],["Lava Ropas Coco 5L",444,29],["Lava Ropa 5L",252,22],["Lava Ropas Especial 5L",120,23.5],["Lava Ropas con Glicerina 5L",120,23],["Lavalozas Limón 5L",316,22],["Lavalozas Neutro 5L",280,19.5],["Multiuso Bicarbonato + Alcohol Refil 3L",744,14.5],["Multiuso Bicarbonato + Alcohol 500 ml",600,7.2],["Suavizante de Ropa 5L",168,15.5],["Limpiador Concentrado Lavanda 140 ml",504,7],["Limpiador Concentrado Hierba Limón 140 ml",504,7],["Aromatizante Floral 2L",144,7.75],["Aromatizante Lavanda 2L",120,8.99],["Lava Ropas Multiacción 3L",702,15.39],["Lava Ropas Lavanda 3L",504,17.59],["Lava Ropas Coco 3L",450,17],["Lavalozas Limón 2L",498,9.59],["Lavalozas Neutro 2L",384,9.59]].map((p,i)=>{const n=p[0].toLowerCase(),peso=n.includes('5l')?5:n.includes('3l')?3:n.includes('2l')?2:n.includes('500 ml')?.5:n.includes('140 ml')?.14:1;return{id:i,nombre:p[0],cantidad:p[1],brl:p[2],peso}});
+const ids=['tc','flete','agencia','ivaImport','ivaVenta','kilosMes','almacenajeKg','distribucionAntofagasta','distribucionCalama','mixAntofagasta','mixCalama','comisionPago','marketing','merma','margenDistribuidor','margenMayorista','margenRetail','margenHoreca','margenDirecta','nombreVendedor','sueldoVendedor','cargasVendedor','movilizacion','periodoComision','metodoComision','tipoEscala','comisionVendedor','condicionCobranza','bonoCliente','clientesNuevos','metaVenta','ventaReal','porcentajeCobrado','margenMeta','devolucionesComision','margenMinimo','topeComision','bonoMargen','umbralBonoMargen','tasa80','tasa100','tasa110','tasa120','cantidadVendedores'];
+const fmt=n=>new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(Number.isFinite(n)?n:0),parseNumber=v=>Number(String(v).replace(/\./g,'').replace(',','.').replace(/[^0-9.-]/g,''))||0,num=id=>parseNumber(document.getElementById(id).value);const moneyIds=['flete','agencia','ivaImport','sueldoVendedor','movilizacion','bonoCliente','metaVenta','topeComision','quoteShipping'];function formatMoneyInput(el){if(!el)return;el.value=new Intl.NumberFormat('es-CL',{maximumFractionDigits:0}).format(parseNumber(el.value));el.classList.add('money-input')}function unformatMoneyInput(el){if(!el)return;el.value=String(parseNumber(el.value)||'')}moneyIds.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.type='text';el.inputMode='numeric';formatMoneyInput(el);el.addEventListener('focus',()=>unformatMoneyInput(el));el.addEventListener('blur',()=>{formatMoneyInput(el);recalcular()})});
+function modelo(){const tc=num('tc'),flete=num('flete'),agencia=num('agencia'),ivaVenta=num('ivaVenta')/100,totalBRL=productos.reduce((s,p)=>s+p.cantidad*p.brl,0),facturaCLP=totalBRL*tc,unidades=productos.reduce((s,p)=>s+p.cantidad,0),kilosMes=Math.max(num('kilosMes'),1),almacenajeKg=Math.max(num('almacenajeKg'),0),mixA=Math.max(num('mixAntofagasta'),0),mixC=Math.max(num('mixCalama'),0),mixTotal=Math.max(mixA+mixC,1),distribucionKg=(num('distribucionAntofagasta')*mixA+num('distribucionCalama')*mixC)/mixTotal,logisticaKg=almacenajeKg+distribucionKg,almacenajeMes=kilosMes*almacenajeKg,distribucionMes=kilosMes*distribucionKg,operacionMes=kilosMes*logisticaKg,costosPct=(num('comisionPago')+num('marketing')+num('merma'))/100;return{tc,flete,agencia,ivaVenta,totalBRL,facturaCLP,unidades,kilosMes,almacenajeKg,distribucionKg,logisticaKg,almacenajeMes,distribucionMes,operacionMes,costosPct}}
+function datosProducto(p){const m=modelo(),item=p.cantidad*p.brl,part=item/m.totalBRL,compra=p.brl*m.tc,importado=(item*m.tc+m.flete*part+m.agencia*part)/p.cantidad,almacenaje=p.peso*m.almacenajeKg,distribucion=p.peso*m.distribucionKg,logistica=almacenaje+distribucion,base=importado+logistica;function precio(mg){return base/Math.max(1-mg/100-m.costosPct,.01)}return{compra,importado,almacenaje,distribucion,logistica,base,distribuidor:precio(num('margenDistribuidor')),mayorista:precio(num('margenMayorista')),horeca:precio(num('margenHoreca')),retail:precio(num('margenRetail')),directa:precio(num('margenDirecta'))}}
+function renderCosteo(){
+ const m=modelo(),view=document.getElementById('costView')?.value||'resumen',term=(document.getElementById('costSearch')?.value||'').toLowerCase().trim();
+ const heads={resumen:['Producto','Peso','Cant.','R$/un.','Costo compra','Costo importado','Almacenaje','Distribución','Costo total'],distribuidor:['Producto','Costo total','Precio neto','Precio c/IVA','Utilidad unitaria','Margen'],mayorista:['Producto','Costo total','Precio neto','Precio c/IVA','Utilidad unitaria','Margen'],horeca:['Producto','Costo total','Precio neto','Precio c/IVA','Utilidad unitaria','Margen'],retail:['Producto','Costo total','Precio neto','Precio c/IVA','Utilidad unitaria','Margen'],directa:['Producto','Costo total','Precio neto','Precio c/IVA','Utilidad unitaria','Margen'],todos:['Producto','Costo total','Distribuidor c/IVA','Mayorista c/IVA','Horeca c/IVA','Retail c/IVA','Venta directa c/IVA']};
+ document.getElementById('costHead').innerHTML='<tr>'+heads[view].map(x=>`<th>${x}</th>`).join('')+'</tr>';
+ const tb=document.getElementById('tbody');tb.innerHTML='';
+ productos.filter(p=>!term||p.nombre.toLowerCase().includes(term)).forEach(p=>{const d=datosProducto(p),tr=document.createElement('tr');let cells=[];
+  if(view==='resumen')cells=[p.nombre,p.peso.toLocaleString('es-CL',{maximumFractionDigits:2})+' kg',p.cantidad.toLocaleString('es-CL'),p.brl.toLocaleString('es-CL',{minimumFractionDigits:2}),fmt(d.compra),fmt(d.importado),fmt(d.almacenaje),fmt(d.distribucion),`<strong>${fmt(d.base)}</strong>`];
+  else if(view==='todos')cells=[p.nombre,fmt(d.base),fmt(d.distribuidor*(1+m.ivaVenta)),fmt(d.mayorista*(1+m.ivaVenta)),fmt(d.horeca*(1+m.ivaVenta)),fmt(d.retail*(1+m.ivaVenta)),fmt(d.directa*(1+m.ivaVenta))];
+  else {const price=d[view],margin=(price-d.base)/price*100;cells=[p.nombre,fmt(d.base),fmt(price),fmt(price*(1+m.ivaVenta)),`<span class="positive">${fmt(price-d.base)}</span>`,margin.toLocaleString('es-CL',{maximumFractionDigits:1})+'%'];}
+  tr.innerHTML=cells.map((x,i)=>`<td>${x}</td>`).join('');tb.appendChild(tr);
+ });
+ const labels={resumen:'Estructura de costos por producto',distribuidor:'Lista y rentabilidad Distribuidor',mayorista:'Lista y rentabilidad Mayorista',horeca:'Lista y rentabilidad Horeca',retail:'Lista y rentabilidad Retail',directa:'Lista y rentabilidad Venta directa',todos:'Comparación de precios finales por canal'};
+ document.getElementById('costViewSummary').textContent=labels[view];
+}
+function imprimirListaPrecios(){
+ const view=document.getElementById('costView')?.value||'resumen';
+ if(view==='resumen'){
+  alert('Selecciona Distribuidor, Mayorista, Horeca, Retail, Venta directa o Todos los canales antes de imprimir.');
+  return;
+ }
+ const m=modelo(),term=(document.getElementById('costSearch')?.value||'').toLowerCase().trim();
+ const lista=productos.filter(p=>!term||p.nombre.toLowerCase().includes(term));
+ const labels={distribuidor:'Distribuidores',mayorista:'Mayoristas',horeca:'Horeca',retail:'Retail',directa:'Venta directa',todos:'Todos los canales'};
+ const fecha=new Date().toLocaleDateString('es-CL');
+ let headers=[],rows='';
+ if(view==='todos'){
+  headers=['Producto','Distribuidor c/IVA','Mayorista c/IVA','Horeca c/IVA','Retail c/IVA','Venta directa c/IVA'];
+  rows=lista.map(p=>{const d=datosProducto(p);return `<tr><td>${p.nombre}</td><td>${fmt(d.distribuidor*(1+m.ivaVenta))}</td><td>${fmt(d.mayorista*(1+m.ivaVenta))}</td><td>${fmt(d.horeca*(1+m.ivaVenta))}</td><td>${fmt(d.retail*(1+m.ivaVenta))}</td><td>${fmt(d.directa*(1+m.ivaVenta))}</td></tr>`}).join('');
+ }else{
+  headers=['Producto','Precio neto','IVA','Precio final'];
+  rows=lista.map(p=>{const d=datosProducto(p),neto=d[view],iva=neto*m.ivaVenta;return `<tr><td>${p.nombre}</td><td>${fmt(neto)}</td><td>${fmt(iva)}</td><td><strong>${fmt(neto+iva)}</strong></td></tr>`}).join('');
+ }
+ const html=`<!doctype html><html lang="es-CL"><head><meta charset="utf-8"><title>Lista de precios - ${labels[view]}</title><style>
+  @page{size:A4;margin:14mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#17202a;margin:0}header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #102a43;padding-bottom:12px;margin-bottom:18px}h1{font-size:24px;margin:0;color:#102a43}.brand{font-size:18px;font-weight:800;color:#102a43}.meta{font-size:11px;text-align:right;color:#475467}.notice{font-size:11px;color:#667085;margin:0 0 12px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#102a43;color:#fff;text-align:right;padding:8px 7px}td{padding:7px;border-bottom:1px solid #d8dee9;text-align:right}th:first-child,td:first-child{text-align:left}tbody tr:nth-child(even){background:#f8fafc}footer{margin-top:18px;padding-top:9px;border-top:1px solid #d8dee9;font-size:10px;color:#667085}.actions{margin-bottom:14px;text-align:right}.actions button{border:0;border-radius:8px;padding:9px 13px;background:#2367d1;color:#fff;font-weight:700;cursor:pointer}@media print{.actions{display:none}}
+ #vendedores,#crm,#analisis{display:none!important}.margin-input{min-width:76px;width:86px}.projection-positive{color:#08783e}.projection-negative{color:#b42318}</style></head><body><div class="actions"><button onclick="window.print()">Imprimir / Guardar PDF</button></div><header><div><div class="brand">Kaddu</div><h1>Lista de precios – ${labels[view]}</h1></div><div class="meta">Fecha: ${fecha}<br>Valores expresados en pesos chilenos</div></header><p class="notice">Documento comercial. No incluye costos internos, utilidades, márgenes ni análisis de gestión.</p><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${headers.length}">No hay productos que coincidan con la búsqueda.</td></tr>`}</tbody></table><footer>Precios sujetos a vigencia y condiciones comerciales de Kaddu.</footer>
+
+
+<div class="footer-app no-print">Kaddu · Gestor Comercial · Versión 1.0 · © 2026 Kaddu</div></body></html>`;
+ const w=window.open('','_blank');
+ if(!w){alert('El navegador bloqueó la ventana de impresión. Habilita las ventanas emergentes para este archivo.');return}
+ w.document.open();w.document.write(html);w.document.close();w.focus();
+}
+
+function recalcular(){const m=modelo();document.getElementById('kpiFactura').textContent=fmt(m.facturaCLP);document.getElementById('kpiImportado').textContent=fmt(m.facturaCLP+m.flete+m.agencia);document.getElementById('kpiKilos').textContent=m.kilosMes.toLocaleString('es-CL')+' kg';document.getElementById('kpiAlmacenajeUnit').textContent=fmt(m.almacenajeKg)+'/kg';document.getElementById('kpiDistribucionUnit').textContent=fmt(m.distribucionKg)+'/kg';document.getElementById('kpiAlmacenajeMes').textContent=fmt(m.almacenajeMes);document.getElementById('kpiDistribucionMes').textContent=fmt(m.distribucionMes);document.getElementById('kpiLogisticaKg').textContent=fmt(m.logisticaKg)+'/kg';document.getElementById('kpiOperacionMes').textContent=fmt(m.operacionMes);renderCosteo();recalcularCotizacion();renderDealer();renderProjection()}
+let lineas=[];let activeQuoteIvaRate=null;
+function canalPrecio(p){const d=datosProducto(p),c=document.getElementById('quoteChannel').value;return d[c]}
+function agregarLinea(){
+  const nuevo={productId:0,qty:1,discount:0};
+  lineas.push(nuevo);
+  renderLineas(lineas.length-1);
+}
+function quitarLinea(i){lineas.splice(i,1);renderLineas()}
+function precioLinea(l,p){return Number.isFinite(Number(l.unitPrice))&&Number(l.unitPrice)>0?Number(l.unitPrice):canalPrecio(p)}
+function renderLineas(nuevaIndex=-1){
+  const tb=document.getElementById('quoteBody');
+  tb.innerHTML='';
+  lineas.forEach((l,i)=>{
+    const p=productos.find(x=>x.id===Number(l.productId))||productos[0];
+    l.productId=p.id;
+    const price=precioLinea(l,p),total=l.qty*price*(1-l.discount/100),tr=document.createElement('tr');
+    if(i===nuevaIndex)tr.classList.add('new-line');
+    tr.innerHTML=`<td><select data-action="product" data-index="${i}">${productos.map(x=>`<option value="${x.id}" ${x.id===l.productId?'selected':''}>${x.nombre}</option>`).join('')}</select><span class="print-value">${p.nombre}</span></td><td><input data-action="qty" data-index="${i}" type="number" min="1" value="${l.qty}"><span class="print-value">${l.qty}</span></td><td>${fmt(price)}</td><td><input data-action="discount" data-index="${i}" type="number" min="0" max="100" value="${l.discount}"><span class="print-value">${l.discount}%</span></td><td>${fmt(total)}</td><td class="print-hide"><button type="button" class="danger" data-action="remove" data-index="${i}">Eliminar</button></td>`;
+    tb.appendChild(tr);
+  });
+  document.getElementById('lineStatus').textContent=`${lineas.length} producto${lineas.length===1?'':'s'} en la cotización`;
+  recalcularCotizacion();
+  if(nuevaIndex>=0){const rows=tb.querySelectorAll('tr');rows[nuevaIndex]?.scrollIntoView({behavior:'smooth',block:'nearest'});}
+}
+function recalcularCotizacion(){let sub=0,cost=0;lineas.forEach(l=>{const p=productos.find(x=>x.id===Number(l.productId))||productos[0],qty=Number(l.qty)||0;sub+=qty*precioLinea(l,p)*(1-(Number(l.discount)||0)/100);cost+=qty*datosProducto(p).base});const ship=num('quoteShipping'),ivaRate=activeQuoteIvaRate===null?num('ivaVenta'):activeQuoteIvaRate,iva=(sub+ship)*ivaRate/100,total=sub+ship+iva,margin=sub?((sub-cost)/sub*100):0;document.getElementById('quoteSubtotal').textContent=fmt(sub);document.getElementById('quoteIVA').textContent=fmt(iva);document.getElementById('quoteGrand').textContent=fmt(total);document.getElementById('pvQuoteShipping').textContent=fmt(ship);const a=document.getElementById('marginAlert');if(a){a.className='margin-alert show '+(margin<0?'danger':margin<20?'warn':'good');a.textContent=margin<0?'Alerta: la cotización queda bajo costo. Revisa precios y descuentos.':margin<20?'Atención: margen estimado '+margin.toLocaleString('es-CL',{maximumFractionDigits:1})+'%, bajo el mínimo recomendado de 20%.':'Margen estimado '+margin.toLocaleString('es-CL',{maximumFractionDigits:1})+'%.'}syncPrintValues()}
+function correlativoActual(){let n=Number(localStorage.getItem('kddQuoteSeq')||1);return 'Kaddu-'+String(n).padStart(6,'0')}
+function nuevaCotizacion(){if(!confirm('¿Crear una nueva cotización y avanzar el correlativo?'))return;let n=Number(localStorage.getItem('kddQuoteSeq')||1)+1;localStorage.setItem('kddQuoteSeq',n);
+// --- Modelo Kaddu: margen general por canal + excepciones producto/canal ---
+const CHANNELS=['distribuidor','mayorista','horeca','retail','directa'];
+const CHANNEL_LABELS={distribuidor:'Distribuidor',mayorista:'Mayorista',horeca:'HORECA',retail:'Retail',directa:'Venta directa'};
+let productChannelMargins={};
+function loadProductMargins(){try{productChannelMargins=JSON.parse(localStorage.getItem('kddProductChannelMargins')||'{}')||{}}catch(e){productChannelMargins={}}}
+function saveProductChannelMargin(productId,channel,value){
+ const key=String(productId); if(!productChannelMargins[key]) productChannelMargins[key]={};
+ const raw=String(value??'').trim();
+ if(raw==='') delete productChannelMargins[key][channel];
+ else productChannelMargins[key][channel]=Math.min(Math.max(parseNumber(raw),0),85);
+ if(!Object.keys(productChannelMargins[key]).length) delete productChannelMargins[key];
+ localStorage.setItem('kddProductChannelMargins',JSON.stringify(productChannelMargins));
+ renderCosteo();renderProjection();recalcularCotizacion();
+}
+function clearProductChannelMargin(productId,channel){saveProductChannelMargin(productId,channel,'')}
+function generalChannelMargin(channel){const map={distribuidor:'margenDistribuidor',mayorista:'margenMayorista',horeca:'margenHoreca',retail:'margenRetail',directa:'margenDirecta'};return Math.min(Math.max(num(map[channel]||'margenMayorista'),0),85)}
+function productOverride(p,channel){const v=productChannelMargins[String(p.id)]?.[channel];return Number.isFinite(Number(v))?Number(v):null}
+function appliedMargin(p,channel){const own=productOverride(p,channel);return own===null?generalChannelMargin(channel):own}
+function marginOrigin(p,channel){return productOverride(p,channel)===null?'Heredado':'Personalizado'}
+function datosProducto(p){const m=modelo(),item=p.cantidad*p.brl,part=item/m.totalBRL,compra=p.brl*m.tc,importado=(item*m.tc+m.flete*part+m.agencia*part)/p.cantidad,almacenaje=p.peso*m.almacenajeKg,distribucion=p.peso*m.distribucionKg,logistica=almacenaje+distribucion,base=importado+logistica;function precioCanal(channel){const mg=appliedMargin(p,channel);return base/Math.max(1-mg/100-m.costosPct,.01)}return{compra,importado,almacenaje,distribucion,logistica,base,distribuidor:precioCanal('distribuidor'),mayorista:precioCanal('mayorista'),horeca:precioCanal('horeca'),retail:precioCanal('retail'),directa:precioCanal('directa')}}
+function pct(v){return Number(v||0).toLocaleString('es-CL',{minimumFractionDigits:0,maximumFractionDigits:1})+'%'}
+function renderCosteo(){
+ const m=modelo(),view=document.getElementById('costView')?.value||'resumen',term=(document.getElementById('costSearch')?.value||'').toLowerCase().trim(),channel=view==='resumen'||view==='todos'?'mayorista':view;
+ const heads=view==='resumen'?['Producto','Peso','Unidades importadas','Costo importado','Logística','Costo total','Margen aplicado','Precio neto','IVA','Precio con IVA','Utilidad total']:view==='todos'?['Producto','Distribuidor','Mayorista','HORECA','Retail','Venta directa']:['Producto','Costo total','Margen general','Margen específico','Origen','Margen aplicado','Precio neto','IVA','Precio con IVA','Utilidad unitaria','Utilidad proyectada'];
+ document.getElementById('costHead').innerHTML='<tr>'+heads.map(x=>`<th>${x}</th>`).join('')+'</tr>';const tb=document.getElementById('tbody');tb.innerHTML='';
+ productos.filter(p=>!term||p.nombre.toLowerCase().includes(term)).forEach(p=>{const d=datosProducto(p),tr=document.createElement('tr');let cells=[];
+ if(view==='resumen'){const price=d.mayorista,iva=price*m.ivaVenta,profit=(price-d.base)*p.cantidad;cells=[p.nombre,p.peso+' kg',p.cantidad.toLocaleString('es-CL'),fmt(d.importado),fmt(d.logistica),`<strong>${fmt(d.base)}</strong>`,pct(appliedMargin(p,'mayorista')),fmt(price),fmt(iva),`<strong>${fmt(price+iva)}</strong>`,`<strong class="${profit>=0?'positive':'negative'}">${fmt(profit)}</strong>`]}
+ else if(view==='todos'){cells=[p.nombre,...CHANNELS.map(ch=>{const price=d[ch],origin=marginOrigin(p,ch);return `<div><strong>${pct(appliedMargin(p,ch))}</strong> · ${fmt(price)}</div><div class="mini">${origin}</div>`})]}
+ else{const own=productOverride(p,channel),mg=appliedMargin(p,channel),price=d[channel],iva=price*m.ivaVenta,profit=price-d.base;const overrideInput=`<input class="margin-input" type="number" min="0" max="85" step="0.5" placeholder="Heredar" value="${own===null?'':own}" onchange="saveProductChannelMargin(${p.id},'${channel}',this.value)">`;const status=own===null?'<span class="status-pill good">Heredado</span>':`<span class="status-pill">Personalizado</span> <button type="button" class="ghost" style="padding:4px 7px;font-size:11px" onclick="clearProductChannelMargin(${p.id},'${channel}')">Restablecer</button>`;cells=[p.nombre,fmt(d.base),pct(generalChannelMargin(channel)),overrideInput,status,pct(mg),fmt(price),fmt(iva),`<strong>${fmt(price+iva)}</strong>`,fmt(profit),fmt(profit*p.cantidad)]}
+ tr.innerHTML=cells.map(x=>`<td>${x}</td>`).join('');tb.appendChild(tr)});
+ const label={resumen:'Resumen de precios con IVA · referencia Mayorista',todos:'Comparación de margen y precio neto por canal',distribuidor:'Canal Distribuidor',mayorista:'Canal Mayorista',horeca:'Canal HORECA',retail:'Canal Retail',directa:'Venta directa'}[view];document.getElementById('costViewSummary').textContent=label;document.getElementById('costNote').textContent=view==='resumen'?'La vista resumen usa Mayorista como referencia e incluye precio neto, IVA y precio final.':'Cada producto hereda el margen general del canal. Un margen específico reemplaza el general solo para ese producto y ese canal.';
+}
+function renderDealer(){const venta=Math.max(num('dealerVenta'),0),meta=Math.max(num('dealerMeta'),0),rate=Math.max(num('dealerComision'),0)/100,commission=venta*rate,compliance=meta?venta/meta*100:0;document.getElementById('dealerCumplimiento').textContent=pct(compliance);document.getElementById('dealerComisionMonto').textContent=fmt(commission);document.getElementById('dealerVentaNeta').textContent=fmt(venta-commission);renderProjection()}
+function renderProjection(){if(!document.getElementById('projRevenue'))return;const channel=document.getElementById('projectionChannel').value,factor=Math.min(Math.max(num('projectionSellThrough'),0),100)/100,commercialActive=document.getElementById('dealerActivo').checked,commercialRate=commercialActive?Math.max(num('dealerComision'),0)/100:0;let revenue=0,importCost=0,storage=0,distribution=0,profitBeforeCommercial=0;const rows=[];productos.forEach(p=>{const d=datosProducto(p),qty=p.cantidad*factor,price=d[channel],rev=price*qty,cost=d.base*qty,profit=rev-cost;revenue+=rev;importCost+=d.importado*qty;storage+=d.almacenaje*qty;distribution+=d.distribucion*qty;profitBeforeCommercial+=profit;rows.push({p,qty,rev,cost,profit})});const commission=revenue*commercialRate,profit=profitBeforeCommercial-commission,margin=revenue?profit/revenue*100:0;document.getElementById('projRevenue').textContent=fmt(revenue);document.getElementById('projProfit').textContent=fmt(profit);document.getElementById('projProfit').className='kpi '+(profit>=0?'projection-positive':'projection-negative');document.getElementById('projMargin').textContent='Margen final '+pct(margin);document.getElementById('projImportCost').textContent=fmt(importCost);document.getElementById('projStorage').textContent=fmt(storage);document.getElementById('projDistribution').textContent=fmt(distribution);document.getElementById('projDealer').textContent=fmt(commission);document.getElementById('dealerComisionProyectada').textContent=fmt(commission);document.getElementById('projProductRows').innerHTML=rows.map(x=>{const commissionShare=x.rev*commercialRate,netProfit=x.profit-commissionShare;return `<tr><td>${x.p.nombre}</td><td>${x.qty.toLocaleString('es-CL',{maximumFractionDigits:0})}</td><td>${marginOrigin(x.p,channel)}</td><td>${pct(appliedMargin(x.p,channel))}</td><td>${fmt(x.rev)}</td><td>${fmt(x.cost)}</td><td class="${netProfit>=0?'positive':'negative'}"><strong>${fmt(netProfit)}</strong></td></tr>`}).join('')}
+loadProductMargins();
+['dealerNombre','dealerComision','dealerMeta','dealerVenta','dealerActivo','commercialType'].forEach(id=>document.getElementById(id)?.addEventListener('input',renderDealer));
+['projectionChannel','projectionSellThrough'].forEach(id=>document.getElementById(id)?.addEventListener('input',renderProjection));
+['margenDistribuidor','margenMayorista','margenHoreca','margenRetail','margenDirecta'].forEach(id=>document.getElementById(id)?.addEventListener('input',()=>{renderCosteo();renderProjection();recalcularCotizacion()}));
+// Formato chileno con separadores de miles en campos monetarios principales.
+['tc','flete','agencia','ivaImport','kilosMes','almacenajeKg','distribucionAntofagasta','distribucionCalama','dealerMeta','dealerVenta','quoteShipping'].forEach(id=>{const el=document.getElementById(id);if(!el||el.dataset.clFormatted)return;el.dataset.clFormatted='1';el.type='text';el.inputMode='numeric';formatMoneyInput(el);el.addEventListener('focus',()=>unformatMoneyInput(el));el.addEventListener('blur',()=>{formatMoneyInput(el);recalcular();renderDealer();renderProjection()})});
+document.getElementById('quoteNumber').value=correlativoActual();document.getElementById('quoteChannel').value=typeToChannel[document.getElementById('clientType').value]||'mayorista';document.getElementById('quoteDate').value=new Date().toISOString().slice(0,10);['clientName','clientRut','clientAddress','clientContact','clientCity','quoteSeller','quoteSellerPhone','quoteSellerEmail','quoteDelivery'].forEach(id=>document.getElementById(id).value='');document.getElementById('clientZone').value='norte';document.getElementById('quoteShipping').value='0';formatMoneyInput(document.getElementById('quoteShipping'));activeQuoteIvaRate=null;lineas=[];agregarLinea();recalcularCotizacion()}
+function syncPrintValues(){const pairs={quoteNumber:'pvQuoteNumber',quoteDate:'pvQuoteDate',quoteValidity:'pvQuoteValidity',quoteChannel:'pvQuoteChannel',clientType:'pvClientType',clientName:'pvClientName',clientRut:'pvClientRut',clientAddress:'pvClientAddress',clientZone:'pvClientZone',clientCity:'pvClientCity',clientContact:'pvClientContact',quoteSeller:'pvQuoteSeller',quoteSellerPhone:'pvQuoteSellerPhone',quoteSellerEmail:'pvQuoteSellerEmail',quoteDelivery:'pvQuoteDelivery',quoteShippingMethod:'pvQuoteShippingMethod',quotePayment:'pvQuotePayment',quoteNotes:'pvQuoteNotes'};Object.entries(pairs).forEach(([a,b])=>{const e=document.getElementById(a);let v=e.tagName==='SELECT'?e.options[e.selectedIndex].text:e.value;if(a==='quoteValidity')v=v+' días';document.getElementById(b).textContent=v||'-'});document.getElementById('quoteHeaderNumber').textContent=document.getElementById('quoteNumber').value||'-';document.getElementById('pdfSellerContact').textContent=[document.getElementById('quoteSeller').value,document.getElementById('quoteSellerPhone').value,document.getElementById('quoteSellerEmail').value].filter(Boolean).join(' · ')||'-';document.getElementById('pdfDeliveryInfo').textContent=[document.getElementById('quoteDelivery').value,document.getElementById('quoteShippingMethod').value].filter(Boolean).join(' · ')||'-'}
+function quoteSnapshot(){const channel=document.getElementById('quoteChannel').value;const frozenLines=lineas.map(x=>{const p=productos.find(z=>z.id===Number(x.productId))||productos[0];return{...x,productName:p.nombre,unitPrice:precioLinea(x,p)}});return{number:document.getElementById('quoteNumber').value,date:document.getElementById('quoteDate').value,validity:document.getElementById('quoteValidity').value,channel,clientType:document.getElementById('clientType').value,clientRut:document.getElementById('clientRut').value,clientName:document.getElementById('clientName').value,clientAddress:document.getElementById('clientAddress').value,clientZone:document.getElementById('clientZone').value,clientCity:document.getElementById('clientCity').value,clientContact:document.getElementById('clientContact').value,seller:document.getElementById('quoteSeller').value,sellerPhone:document.getElementById('quoteSellerPhone').value,sellerEmail:document.getElementById('quoteSellerEmail').value,delivery:document.getElementById('quoteDelivery').value,shippingMethod:document.getElementById('quoteShippingMethod').value,status:'borrador',probability:20,nextContact:'',followUp:'',rejectionReason:'',shipping:num('quoteShipping'),ivaRate:activeQuoteIvaRate===null?num('ivaVenta'):activeQuoteIvaRate,payment:document.getElementById('quotePayment').value,notes:document.getElementById('quoteNotes').value,lines:frozenLines,savedAt:new Date().toISOString()}}
+function zoneLabel(v){return({norte:'Antofagasta y Norte',zofri:'Iquique / ZOFRI',centro:'Santiago y Zona Centro',sur:'Zona Sur',otro:'Otro destino'})[v]||'Sin zona'}
+function channelLabel(v){return({distribuidor:'Distribuidor',mayorista:'Mayorista',horeca:'Horeca',retail:'Retail',directa:'Venta directa'})[v]||v}
+function quoteTotal(q){const net=(q.lines||[]).reduce((sum,l)=>{const p=productos.find(x=>x.id===Number(l.productId))||productos[0],d=datosProducto(p),fallback=d[q.channel]||d.mayorista,price=Number(l.unitPrice)||fallback;return sum+(Number(l.qty)||0)*price*(1-(Number(l.discount)||0)/100)},0)+(Number(q.shipping)||0);const ivaRate=Number.isFinite(Number(q.ivaRate))?Number(q.ivaRate):num('ivaVenta');return{net,iva:net*ivaRate/100,total:net*(1+ivaRate/100)}}
+function mostrarVistaGuardada(q){const totals=quoteTotal(q);document.getElementById('saveStatus').classList.add('show');document.getElementById('saveStatusTitle').textContent='Guardada: '+q.number;document.getElementById('saveStatusText').textContent=(q.clientName||'Sin cliente')+' · '+fmt(totals.total)+' · disponible en el historial';document.getElementById('btnOpenSaved').onclick=()=>cargarCotizacion(q.number);document.getElementById('btnPdfSaved').onclick=()=>pdfCotizacionGuardada(q.number);}
+function guardarCotizacion(){if(!document.getElementById('clientName').value.trim())return alert('Ingresa la razón social o nombre del cliente.');if(!lineas.length)return alert('Agrega al menos un producto.');const q=quoteSnapshot();const saved=JSON.parse(localStorage.getItem('kddSavedQuotes')||'[]');const idx=saved.findIndex(x=>x.number===q.number);if(idx>=0){q.status=saved[idx].status||q.status;q.probability=saved[idx].probability??q.probability;q.nextContact=saved[idx].nextContact||'';q.followUp=saved[idx].followUp||'';q.rejectionReason=saved[idx].rejectionReason||'';q.sale=saved[idx].sale||null;saved[idx]=q}else saved.unshift(q);try{localStorage.setItem('kddSavedQuotes',JSON.stringify(saved.slice(0,250)))}catch(e){alert('No fue posible guardar en este navegador. Exporta un respaldo o libera espacio.');return null}renderSavedQuotes();renderAnalisis();renderCRM();refreshClientSelect();mostrarVistaGuardada(q);return q}
+function cargarCotizacion(number){const saved=JSON.parse(localStorage.getItem('kddSavedQuotes')||'[]');const q=saved.find(x=>x.number===number);if(!q)return alert('No se encontró la cotización guardada.');document.getElementById('quoteNumber').value=q.number;document.getElementById('quoteDate').value=q.date;document.getElementById('quoteValidity').value=q.validity;document.getElementById('quoteChannel').value=q.channel;document.getElementById('clientType').value=q.clientType;document.getElementById('clientRut').value=q.clientRut;document.getElementById('clientName').value=q.clientName;document.getElementById('clientAddress').value=q.clientAddress||'';document.getElementById('clientZone').value=q.clientZone||'norte';document.getElementById('clientCity').value=q.clientCity||'';document.getElementById('clientContact').value=q.clientContact||'';document.getElementById('quoteSeller').value=q.seller||'';document.getElementById('quoteSellerPhone').value=q.sellerPhone||'';document.getElementById('quoteSellerEmail').value=q.sellerEmail||'';document.getElementById('quoteDelivery').value=q.delivery||'';document.getElementById('quoteShippingMethod').value=q.shippingMethod||'Despacho coordinado';document.getElementById('quoteShipping').value=q.shipping;formatMoneyInput(document.getElementById('quoteShipping'));activeQuoteIvaRate=Number.isFinite(Number(q.ivaRate))?Number(q.ivaRate):null;document.getElementById('quotePayment').value=q.payment;document.getElementById('quoteNotes').value=q.notes;lineas=(q.lines||[]).map(x=>({...x}));renderLineas();recalcularCotizacion();document.getElementById('saveStatus').classList.remove('show');window.scrollTo({top:0,behavior:'smooth'});return q}
+function eliminarCotizacion(number){if(!confirm('¿Eliminar la cotización '+number+'?'))return;let saved=JSON.parse(localStorage.getItem('kddSavedQuotes')||'[]');saved=saved.filter(x=>x.number!==number);localStorage.setItem('kddSavedQuotes',JSON.stringify(saved));renderSavedQuotes();renderAnalisis()}
+function pdfCotizacionGuardada(number){const q=cargarCotizacion(number);if(!q)return;mostrarVistaPDF()}
+function renderSavedQuotes(){const box=document.getElementById('savedQuotesList');if(!box)return;const saved=JSON.parse(localStorage.getItem('kddSavedQuotes')||'[]');if(!saved.length){box.innerHTML='<div class="history-empty">Aún no hay cotizaciones guardadas.</div>';return;}const head='<div class="saved-quote-row saved-quote-head"><span>Número</span><span>Cliente</span><span>Fecha</span><span>Destino</span><span>Total</span><span style="text-align:right">Acciones</span></div>';box.innerHTML=head+saved.map(q=>{const totals=quoteTotal(q);return `<div class="saved-quote-row"><strong>${q.number}</strong><span>${q.clientName||'Sin cliente'}<br><small>${q.clientCity||''}</small></span><span>${q.date||'-'}</span><span class="zone">${zoneLabel(q.clientZone)}</span><span><strong>${fmt(totals.total)}</strong><br><small>${(q.lines||[]).length} producto(s)</small></span><span class="saved-quote-actions"><button type="button" onclick="cargarCotizacion('${q.number}')">Abrir</button><button type="button" class="secondary" onclick="pdfCotizacionGuardada('${q.number}')">PDF</button><button type="button" class="danger" onclick="eliminarCotizacion('${q.number}')">Eliminar</button></span></div>`}).join('')}
+function descargarPDF(){const q=guardarCotizacion();if(!q)return;mostrarVistaPDF()}
+function mostrarVistaPDF(){syncPrintValues();document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.querySelector('[data-panel="cotizacion"]')?.classList.add('active');document.getElementById('cotizacion').classList.add('active');document.body.classList.add('pdf-preview-mode');window.scrollTo({top:0,behavior:'smooth'})}
+function cerrarVistaPDF(){document.body.classList.remove('pdf-preview-mode');window.scrollTo({top:0,behavior:'smooth'})}
+function imprimirVistaPDF(){syncPrintValues();requestAnimationFrame(()=>requestAnimationFrame(()=>window.print()))}
+function exportarCotizaciones(){const payload={version:2,exportedAt:new Date().toISOString(),quotes:JSON.parse(localStorage.getItem('kddSavedQuotes')||'[]'),clients:JSON.parse(localStorage.getItem('kddClients')||'[]'),config:JSON.parse(localStorage.getItem('bvChileConfigV3')||'null'),quoteSeq:localStorage.getItem('kddQuoteSeq')||'1'};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='respaldo_completo_kdd_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function importarCotizaciones(file){if(!file)return;const r=new FileReader();r.onload=()=>{try{const data=JSON.parse(r.result),incoming=Array.isArray(data)?data:(data.quotes||[]);if(!Array.isArray(incoming))throw new Error('Formato inválido');const current=JSON.parse(localStorage.getItem('kddSavedQuotes')||'[]'),map=new Map(current.map(q=>[q.number,q]));incoming.forEach(q=>{if(q&&q.number)map.set(q.number,q)});localStorage.setItem('kddSavedQuotes',JSON.stringify(Array.from(map.values()).sort((a,b)=>String(b.savedAt||'').localeCompare(String(a.savedAt||''))).slice(0,500)));if(Array.isArray(data.clients))localStorage.setItem('kddClients',JSON.stringify(data.clients));if(data.config)localStorage.setItem('bvChileConfigV3',JSON.stringify(data.config));if(data.quoteSeq)localStorage.setItem('kddQuoteSeq',String(data.quoteSeq));renderSavedQuotes();renderClients();renderCRM();renderAnalisis();refreshClientSelect();alert('Respaldo integral importado correctamente.')}catch(e){alert('El archivo no corresponde a un respaldo válido de Kaddu.')}};r.readAsText(file)}
+function guardarDatos(){const d={};ids.forEach(id=>d[id]=document.getElementById(id).value);localStorage.setItem('bvChileConfigV3',JSON.stringify(d));alert('Configuración guardada en este navegador.')}
+function restaurarDatos(){const d=JSON.parse(localStorage.getItem('bvChileConfigV3')||'null');if(!d)return alert('No hay configuración guardada.');ids.forEach(id=>{if(d[id]!==undefined)document.getElementById(id).value=d[id]});recalcular()}
+function recalcularVendedor(){
+ const n=Math.max(num('cantidadVendedores'),1),meta=Math.max(num('metaVenta'),0),venta=Math.max(num('ventaReal'),0),devoluciones=Math.max(num('devolucionesComision'),0),ventaValida=Math.max(venta-devoluciones,0),cobrado=Math.min(Math.max(num('porcentajeCobrado'),0),100)/100,baseBruta=document.getElementById('condicionCobranza').value==='si'?ventaValida*cobrado:ventaValida,cumplimiento=meta>0?ventaValida/meta*100:0,metodo=document.getElementById('metodoComision').value,tipoEscala=document.getElementById('tipoEscala').value,margen=num('margenMeta'),margenMin=num('margenMinimo');
+ const elegible=margen>=margenMin,base=elegible?baseBruta:0,t80=num('tasa80'),t100=num('tasa100'),t110=num('tasa110'),t120=num('tasa120');
+ let tasaMeta=0,variableMeta=0;
+ if(tipoEscala==='retroactiva'){
+   if(cumplimiento>=120)tasaMeta=t120;else if(cumplimiento>=110)tasaMeta=t110;else if(cumplimiento>=100)tasaMeta=t100;else if(cumplimiento>=80)tasaMeta=t80;
+   variableMeta=base*tasaMeta/100;
+ }else if(meta>0){
+   const tramo80=Math.max(Math.min(ventaValida,meta)-meta*.8,0),tramo100=Math.max(Math.min(ventaValida,meta*1.1)-meta,0),tramo110=Math.max(Math.min(ventaValida,meta*1.2)-meta*1.1,0),tramo120=Math.max(ventaValida-meta*1.2,0);
+   const factor=ventaValida>0?base/ventaValida:0;
+   variableMeta=(tramo80*t80+tramo100*t100+tramo110*t110+tramo120*t120)/100*factor;
+   tasaMeta=base>0?variableMeta/base*100:0;
+ }
+ const tasaVenta=num('comisionVendedor'),variableVenta=(metodo==='venta'||metodo==='mixto')?base*tasaVenta/100:0,aporteMeta=(metodo==='meta'||metodo==='mixto')?variableMeta:0;
+ const bonoClientes=num('bonoCliente')*num('clientesNuevos'),bonoMargen=margen>=num('umbralBonoMargen')?base*num('bonoMargen')/100:0,bonos=elegible?bonoClientes+bonoMargen:0;
+ const sinTope=variableVenta+aporteMeta+bonos,tope=num('topeComision'),comisionFinal=tope>0?Math.min(sinTope,tope):sinTope,ajusteTope=Math.max(sinTope-comisionFinal,0),tasaEfectiva=base>0?comisionFinal/base*100:0;
+ const fijo=num('sueldoVendedor')*(1+num('cargasVendedor')/100)+num('movilizacion'),total=(fijo+comisionFinal)*n,contrib=ventaValida*margen/100,res=contrib-total;
+ document.getElementById('kpiCumplimiento').textContent=cumplimiento.toLocaleString('es-CL',{maximumFractionDigits:1})+'%';document.getElementById('kpiBaseComision').textContent=fmt(base);document.getElementById('kpiTasaEfectiva').textContent=tasaEfectiva.toLocaleString('es-CL',{maximumFractionDigits:2})+'%';document.getElementById('kpiCostoVendedor').textContent=fmt(fijo);document.getElementById('kpiComisionVendedor').textContent=fmt((variableVenta+aporteMeta)*n);document.getElementById('kpiBonosVendedor').textContent=fmt(bonos*n);document.getElementById('kpiComisionFinal').textContent=fmt(comisionFinal*n);document.getElementById('kpiFuerzaVenta').textContent=fmt(total);document.getElementById('kpiContribucion').textContent=fmt(contrib);document.getElementById('kpiResultadoVendedor').textContent=fmt(res);
+ document.getElementById('nombreResultado').textContent=document.getElementById('nombreVendedor').value||'Vendedor';document.getElementById('comisionResultadoGrande').textContent=fmt(comisionFinal);document.getElementById('barraCumplimiento').style.width=Math.min(cumplimiento,130)/1.3+'%';document.getElementById('barraResultado').style.width=Math.min(cumplimiento,100)+'%';
+ const estado=!elegible?'Sin comisión: margen bajo':cumplimiento>=100?'Meta cumplida':cumplimiento>=80?'En tramo de comisión':'Bajo el mínimo de meta';document.getElementById('estadoComision').textContent=estado+' · tasa efectiva '+tasaEfectiva.toLocaleString('es-CL',{maximumFractionDigits:2})+'%';
+ document.getElementById('explicacionEscala').innerHTML=tipoEscala==='retroactiva'?`<strong>Cómo se lee:</strong> con ${cumplimiento.toLocaleString('es-CL',{maximumFractionDigits:1})}% de cumplimiento corresponde una comisión de ${tasaMeta.toLocaleString('es-CL',{maximumFractionDigits:2})}% sobre toda la base comisionable.`:`<strong>Escala progresiva:</strong> cada porcentaje se aplica solo a la parte de venta incluida en su tramo. La tasa promedio resultante es ${tasaMeta.toLocaleString('es-CL',{maximumFractionDigits:2})}%.`;
+ document.getElementById('desgloseComision').innerHTML=`<div class="commission-line"><span>Comisión base por venta</span><strong>${fmt(variableVenta)}</strong></div><div class="commission-line"><span>Comisión por meta</span><strong>${fmt(aporteMeta)}</strong></div><div class="commission-line"><span>Bono clientes nuevos</span><strong>${fmt(elegible?bonoClientes:0)}</strong></div><div class="commission-line"><span>Bono por margen</span><strong>${fmt(elegible?bonoMargen:0)}</strong></div>${ajusteTope?`<div class="commission-line"><span>Ajuste por tope</span><strong>−${fmt(ajusteTope)}</strong></div>`:''}<div class="commission-line total"><span>Total individual</span><strong>${fmt(comisionFinal)}</strong></div>`;
+ document.getElementById('recomendacionVendedor').innerHTML=!elegible?`<strong class="negative">No se libera comisión.</strong> El margen real de ${margen}% está bajo el mínimo configurado de ${margenMin}%.`:`<strong class="${res>=0?'positive':'negative'}">${estado}.</strong> La empresa conserva ${fmt(res)} después del costo fijo y variable de ${n} vendedor(es), antes de otros gastos e impuestos.`;
+ document.getElementById('detalleComision').innerHTML=`Venta neta ${fmt(venta)} − devoluciones ${fmt(devoluciones)} = <strong>${fmt(ventaValida)}</strong>. Base ${document.getElementById('condicionCobranza').value==='si'?'cobrada':'confirmada'}: <strong>${fmt(baseBruta)}</strong>. Margen real: <strong>${margen}%</strong>; mínimo exigido: <strong>${margenMin}%</strong>. Método: <strong>${metodo}</strong>; escala: <strong>${tipoEscala}</strong>. Comisión antes de tope: <strong>${fmt(sinTope)}</strong>${tope>0?`; tope configurado: <strong>${fmt(tope)}</strong>`:''}. Resultado individual: <strong>${fmt(comisionFinal)}</strong>.`;
+}
+
+const typeToChannel={mayorista:'mayorista',distribuidor:'distribuidor',horeca:'horeca',retail:'directa',institucional:'horeca'};
+document.getElementById('clientType').addEventListener('change',()=>{document.getElementById('quoteChannel').value=typeToChannel[document.getElementById('clientType').value]||'mayorista';lineas.forEach(l=>delete l.unitPrice);renderLineas();});
+document.getElementById('btnAgregarProducto').addEventListener('click',agregarLinea);
+document.getElementById('btnSaveClient').addEventListener('click',guardarClienteActual);document.getElementById('btnLoadClient').addEventListener('click',()=>cargarCliente(document.getElementById('savedClientSelect').value));document.getElementById('savedClientSelect').addEventListener('change',e=>{if(e.target.value)cargarCliente(e.target.value)});document.getElementById('crmSearch')?.addEventListener('input',renderCRM);
+document.getElementById('btnGuardarCotizacion').addEventListener('click',guardarCotizacion);document.getElementById('btnPDF').addEventListener('click',descargarPDF);
+document.getElementById('btnNuevaCotizacion').addEventListener('click',nuevaCotizacion);document.getElementById('btnCerrarVistaPDF').addEventListener('click',cerrarVistaPDF);document.getElementById('btnImprimirPDF').addEventListener('click',imprimirVistaPDF);window.addEventListener('afterprint',()=>{});document.getElementById('btnHidePreview').addEventListener('click',()=>document.getElementById('saveStatus').classList.remove('show'));document.getElementById('btnExportQuotes').addEventListener('click',exportarCotizaciones);document.getElementById('btnImportQuotes').addEventListener('click',()=>document.getElementById('quoteBackupFile').click());document.getElementById('quoteBackupFile').addEventListener('change',e=>{importarCotizaciones(e.target.files[0]);e.target.value=''})
+document.getElementById('quoteBody').addEventListener('change',e=>{const action=e.target.dataset.action,index=Number(e.target.dataset.index);if(!Number.isInteger(index)||!lineas[index])return;if(action==='product'){lineas[index].productId=Number(e.target.value);delete lineas[index].unitPrice;}if(action==='qty')lineas[index].qty=Math.max(Number(e.target.value)||1,1);if(action==='discount')lineas[index].discount=Math.min(Math.max(Number(e.target.value)||0,0),100);renderLineas();});
+document.getElementById('quoteBody').addEventListener('click',e=>{if(e.target.dataset.action==='remove')quitarLinea(Number(e.target.dataset.index));});
+document.getElementById('costView').addEventListener('change',renderCosteo);document.getElementById('costSearch').addEventListener('input',renderCosteo);document.getElementById('btnPrintPriceList').addEventListener('click',imprimirListaPrecios);
+ids.forEach(id=>{const el=document.getElementById(id);if(el){el.addEventListener('input',recalcular);el.addEventListener('change',recalcular)}});['quoteChannel','clientType','quoteShipping','quoteValidity','clientName','clientRut','clientAddress','clientZone','clientCity','clientContact','quoteSeller','quoteSellerPhone','quoteSellerEmail','quoteDelivery','quoteShippingMethod','quotePayment','quoteNotes','quoteDate'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{if(id==='quoteChannel'){lineas.forEach(l=>delete l.unitPrice);renderLineas();}else if(id!=='clientType')recalcularCotizacion()}));document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.panel).classList.add('active')}));
+
+
+const statusLabels={borrador:'Borrador',enviada:'Enviada',negociacion:'En negociación',aprobada:'Aprobada',rechazada:'Rechazada',vencida:'Vencida',vendida:'Convertida en venta'};
+function getQuotes(){try{return JSON.parse(localStorage.getItem('kddSavedQuotes')||'[]')}catch(e){return[]}}
+function setQuotes(qs){localStorage.setItem('kddSavedQuotes',JSON.stringify(qs.slice(0,500)));renderSavedQuotes();renderCRM();renderAnalisis()}
+function getClients(){try{return JSON.parse(localStorage.getItem('kddClients')||'[]')}catch(e){return[]}}
+function setClients(cs){localStorage.setItem('kddClients',JSON.stringify(cs.slice(0,500)));refreshClientSelect();renderClients()}
+function clientKey(rut,name){return (rut||'').replace(/\W/g,'').toLowerCase()||String(name||'').trim().toLowerCase()}
+function guardarClienteActual(){const name=document.getElementById('clientName').value.trim();if(!name)return alert('Ingresa el nombre o razón social del cliente.');const c={id:clientKey(document.getElementById('clientRut').value,name),name,rut:document.getElementById('clientRut').value,address:document.getElementById('clientAddress').value,zone:document.getElementById('clientZone').value,city:document.getElementById('clientCity').value,contact:document.getElementById('clientContact').value,type:document.getElementById('clientType').value,channel:document.getElementById('quoteChannel').value,updatedAt:new Date().toISOString()};let cs=getClients(),i=cs.findIndex(x=>x.id===c.id);if(i>=0)cs[i]=c;else cs.unshift(c);setClients(cs);document.getElementById('savedClientSelect').value=c.id;alert('Cliente guardado correctamente.')}
+function cargarCliente(id){const c=getClients().find(x=>x.id===id);if(!c)return;document.getElementById('clientName').value=c.name||'';document.getElementById('clientRut').value=c.rut||'';document.getElementById('clientAddress').value=c.address||'';document.getElementById('clientZone').value=c.zone||'norte';document.getElementById('clientCity').value=c.city||'';document.getElementById('clientContact').value=c.contact||'';document.getElementById('clientType').value=c.type||'mayorista';document.getElementById('quoteChannel').value=c.channel||typeToChannel[c.type]||'mayorista';lineas.forEach(l=>delete l.unitPrice);renderLineas();recalcularCotizacion()}
+function eliminarCliente(id){if(!confirm('¿Eliminar este cliente de la base?'))return;setClients(getClients().filter(c=>c.id!==id))}
+function refreshClientSelect(){const el=document.getElementById('savedClientSelect');if(!el)return;const current=el.value;el.innerHTML='<option value="">Seleccionar cliente...</option>'+getClients().sort((a,b)=>a.name.localeCompare(b.name,'es')).map(c=>`<option value="${c.id}">${c.name}${c.city?' · '+c.city:''}</option>`).join('');el.value=current}
+function renderClients(){const tb=document.getElementById('crmClientRows');if(!tb)return;const cs=getClients();tb.innerHTML=cs.length?cs.map(c=>`<tr><td><strong>${c.name}</strong><br><small>${c.contact||''}</small></td><td>${c.rut||'-'}</td><td>${c.city||'-'}</td><td>${channelLabel(c.channel||'mayorista')}</td><td><div class="compact-actions"><button onclick="cargarClienteDesdeCRM('${c.id}')">Usar</button><button class="danger" onclick="eliminarCliente('${c.id}')">Eliminar</button></div></td></tr>`).join(''):'<tr><td colspan="5">No hay clientes guardados.</td></tr>'}
+function cargarClienteDesdeCRM(id){cargarCliente(id);document.querySelector('[data-panel="cotizacion"]').click()}
+function quoteExpiry(q){const d=new Date((q.date||new Date().toISOString().slice(0,10))+'T12:00:00'),days=Number(q.validity)||0;d.setDate(d.getDate()+days);const today=new Date();today.setHours(0,0,0,0);const diff=Math.ceil((d-today)/86400000);return{date:d,diff,label:d.toLocaleDateString('es-CL')}}
+function updateQuoteField(number,field,value){const qs=getQuotes(),q=qs.find(x=>x.number===number);if(!q)return;q[field]=field==='probability'?Math.min(100,Math.max(0,Number(value)||0)):value;if(field==='status'&&value==='rechazada'&&!q.rejectionReason)q.rejectionReason=prompt('Motivo de rechazo (opcional):','')||'';q.updatedAt=new Date().toISOString();setQuotes(qs)}
+function convertirVenta(number){const qs=getQuotes(),q=qs.find(x=>x.number===number);if(!q)return;const invoice=prompt('Número de factura, pedido u OC:','')||'';const payment=prompt('Estado de pago (Pendiente / Pagado / Parcial):','Pendiente')||'Pendiente';q.status='vendida';q.probability=100;q.sale={reference:invoice,date:new Date().toISOString().slice(0,10),payment,deliveryStatus:'Pendiente',net:quoteTotal(q).net};setQuotes(qs);alert('Cotización convertida en venta.')}
+function renovarCotizacion(number){const q=getQuotes().find(x=>x.number===number);if(!q)return;let n=Number(localStorage.getItem('kddQuoteSeq')||1)+1;localStorage.setItem('kddQuoteSeq',n);const copy={...q,number:'Kaddu-'+String(n).padStart(6,'0'),date:new Date().toISOString().slice(0,10),status:'borrador',probability:20,nextContact:'',followUp:'',sale:null,savedAt:new Date().toISOString()};const qs=getQuotes();qs.unshift(copy);setQuotes(qs);cargarCotizacion(copy.number);document.querySelector('[data-panel="cotizacion"]').click()}
+function renderCRM(){const tb=document.getElementById('crmQuoteRows');if(!tb)return;const term=(document.getElementById('crmSearch')?.value||'').toLowerCase(),qs=getQuotes(),filtered=qs.filter(q=>!term||[q.number,q.clientName,q.clientCity,q.seller].join(' ').toLowerCase().includes(term));tb.innerHTML=filtered.length?filtered.map(q=>{const exp=quoteExpiry(q),status=q.status||'borrador',expiryClass=exp.diff<0?'expiry-late':exp.diff<=3?'expiry-soon':'expiry-ok',sale=q.sale?`<div class="sale-record">Venta: ${q.sale.reference||'sin referencia'} · ${q.sale.payment||'Pendiente'}</div>`:'';return `<tr><td><strong>${q.number}</strong><br><small>${q.date||'-'} · ${fmt(quoteTotal(q).net)} neto</small>${sale}</td><td>${q.clientName||'Sin cliente'}<br><small>${q.clientCity||zoneLabel(q.clientZone)}</small></td><td><select onchange="updateQuoteField('${q.number}','status',this.value)">${Object.entries(statusLabels).map(([k,v])=>`<option value="${k}" ${status===k?'selected':''}>${v}</option>`).join('')}</select></td><td><input type="number" min="0" max="100" value="${q.probability??20}" onchange="updateQuoteField('${q.number}','probability',this.value)"></td><td><input type="date" value="${q.nextContact||''}" onchange="updateQuoteField('${q.number}','nextContact',this.value)"></td><td><span class="${expiryClass}">${exp.label}<br>${exp.diff<0?'Vencida hace '+Math.abs(exp.diff)+' días':exp.diff===0?'Vence hoy':exp.diff+' días'}</span></td><td><input value="${(q.seller||'').replace(/"/g,'&quot;')}" onchange="updateQuoteField('${q.number}','seller',this.value)"></td><td><textarea onchange="updateQuoteField('${q.number}','followUp',this.value)">${q.followUp||''}</textarea></td><td><div class="compact-actions"><button onclick="cargarCotizacion('${q.number}');document.querySelector('[data-panel=\'cotizacion\']').click()">Abrir</button><button class="secondary" onclick="pdfCotizacionGuardada('${q.number}')">PDF</button><button onclick="convertirVenta('${q.number}')">Venta</button><button class="ghost" onclick="renovarCotizacion('${q.number}')">Renovar</button></div></td></tr>`}).join(''):'<tr><td colspan="9">No hay cotizaciones para mostrar.</td></tr>';
+const open=qs.filter(q=>['borrador','enviada','negociacion'].includes(q.status||'borrador')),closed=qs.filter(q=>['vendida','rechazada'].includes(q.status)),sales=qs.filter(q=>q.status==='vendida'),weighted=open.reduce((a,q)=>a+quoteTotal(q).net*(Number(q.probability??20)/100),0),expiring=qs.filter(q=>{const d=quoteExpiry(q).diff;return d<=3&&!['vendida','rechazada'].includes(q.status)}).length,salesNet=sales.reduce((a,q)=>a+(q.sale?.net||quoteTotal(q).net),0);document.getElementById('crmOpen').textContent=open.length;document.getElementById('crmWeighted').textContent=fmt(weighted);document.getElementById('crmConversion').textContent=(closed.length?sales.length/closed.length*100:0).toLocaleString('es-CL',{maximumFractionDigits:1})+'%';document.getElementById('crmExpiring').textContent=expiring;document.getElementById('crmSales').textContent=fmt(salesNet);const order=['borrador','enviada','negociacion','aprobada','vendida','rechazada'];document.getElementById('crmFunnel').innerHTML=order.map(k=>`<div class="funnel-step"><strong>${qs.filter(q=>(q.status||'borrador')===k).length}</strong><span>${statusLabels[k]}</span></div>`).join('');renderClients();refreshClientSelect()}
+function quoteAnalytics(q){const channel=q.channel||'mayorista',zone=q.clientZone||'norte',lines=q.lines||[];let net=0,cost=0,units=0;lines.forEach(l=>{const p=productos.find(x=>x.id===Number(l.productId))||productos[0],d=datosProducto(p),qty=Number(l.qty)||0,disc=(Number(l.discount)||0)/100,price=Number(l.unitPrice)||(d[channel]||d.mayorista);net+=qty*price*(1-disc);cost+=qty*d.base;units+=qty});net+=Number(q.shipping)||0;return{net,cost,profit:net-cost,units,channel,zone}}
+function renderAnalisis(){const box=document.getElementById('anQuotes');if(!box)return;const saved=JSON.parse(localStorage.getItem('kddSavedQuotes')||'[]'),metrics=saved.map(quoteAnalytics),net=metrics.reduce((s,x)=>s+x.net,0),profit=metrics.reduce((s,x)=>s+x.profit,0),units=metrics.reduce((s,x)=>s+x.units,0),margin=net?profit/net*100:0;box.textContent=saved.length.toLocaleString('es-CL');document.getElementById('anQuotesDetail').textContent=units.toLocaleString('es-CL')+' unidades cotizadas';document.getElementById('anNet').textContent=fmt(net);document.getElementById('anProfit').textContent=fmt(profit);document.getElementById('anMargin').textContent='Margen promedio '+margin.toLocaleString('es-CL',{maximumFractionDigits:1})+'%';document.getElementById('anTicket').textContent=fmt(saved.length?net/saved.length:0);const labels={distribuidor:'Distribuidor',mayorista:'Mayorista',horeca:'Horeca',retail:'Retail',directa:'Venta directa'},groups={};metrics.forEach(x=>{groups[x.channel]=(groups[x.channel]||0)+x.net});const entries=Object.entries(groups).sort((a,b)=>b[1]-a[1]),max=Math.max(...entries.map(x=>x[1]),1);document.getElementById('anTopChannel').textContent='Canal principal: '+(entries[0]?labels[entries[0][0]]||entries[0][0]:'-');document.getElementById('anChannelBars').innerHTML=entries.length?entries.map(([k,v])=>`<div class="bar-item"><span>${labels[k]||k}</span><div class="bar-bg"><div class="bar-value" style="width:${v/max*100}%"></div></div><strong>${fmt(v)}</strong></div>`).join(''):'<p class="mini">Guarda cotizaciones para visualizar la distribución por canal.</p>';const zoneOrder=['norte','centro','sur','zofri','otro'],zoneGroups={};metrics.forEach(x=>{zoneGroups[x.zone]=(zoneGroups[x.zone]||0)+x.net});document.getElementById('anRegionCards').innerHTML=zoneOrder.map(z=>`<div class="region-card"><h4>${zoneLabel(z)}</h4><div class="kpi">${fmt(zoneGroups[z]||0)}</div><div class="zone-note">${saved.filter(q=>(q.clientZone||'norte')===z).length} cotización(es)</div></div>`).join('');const productMap={};saved.forEach(q=>(q.lines||[]).forEach(l=>{const p=productos.find(x=>x.id===Number(l.productId))||productos[0],d=datosProducto(p),qty=Number(l.qty)||0,price=Number(l.unitPrice)||(d[q.channel]||d.mayorista),disc=(Number(l.discount)||0)/100,key=p.id;if(!productMap[key])productMap[key]={name:p.nombre,units:0,net:0,profit:0};productMap[key].units+=qty;productMap[key].net+=qty*price*(1-disc);productMap[key].profit+=qty*(price*(1-disc)-d.base)}));const ranked=Object.values(productMap).sort((a,b)=>b.net-a.net).slice(0,8);document.getElementById('anProductRows').innerHTML=ranked.length?ranked.map(x=>`<tr><td>${x.name}</td><td>${x.units.toLocaleString('es-CL')}</td><td>${fmt(x.net)}</td><td class="${x.profit>=0?'positive':'negative'}">${fmt(x.profit)}</td></tr>`).join(''):'<tr><td colspan="4">Aún no hay información suficiente.</td></tr>';const insights=[];if(!saved.length)insights.push('Guarda cotizaciones para construir indicadores comerciales reales.');else{insights.push(`El ticket promedio neto es ${fmt(net/saved.length)}.`);if(entries[0])insights.push(`${labels[entries[0][0]]||entries[0][0]} concentra la mayor venta cotizada.`);insights.push(margin<25?'El margen promedio está bajo 25%; conviene revisar descuentos y mezcla de canales.':'El margen promedio se mantiene en un rango comercial favorable.');if(ranked[0])insights.push(`${ranked[0].name} lidera la venta neta cotizada.`)}document.getElementById('anInsights').innerHTML=insights.map(x=>`<div class="insight">${x}</div>`).join('');renderSimuladores()}
+function renderSimuladores(){const ps=document.getElementById('simProduct');if(!ps)return;if(!ps.options.length){const opts=productos.map(p=>`<option value="${p.id}">${p.nombre}</option>`).join('');ps.innerHTML=opts;document.getElementById('zfProduct').innerHTML=opts}const p=productos.find(x=>x.id===Number(ps.value))||productos[0],d=datosProducto(p),channel=document.getElementById('simChannel').value,qty=Math.max(num('simUnits'),1),disc=Math.min(Math.max(num('simDiscount'),0),100)/100,price=(d[channel]||d.mayorista)*(1-disc),revenue=price*qty,cost=d.base*qty,profit=revenue-cost;document.getElementById('simRevenue').textContent=fmt(revenue);document.getElementById('simCost').textContent=fmt(cost);document.getElementById('simProfit').textContent=fmt(profit);document.getElementById('simProfit').className=profit>=0?'positive':'negative';document.getElementById('simMargin').textContent=(revenue?profit/revenue*100:0).toLocaleString('es-CL',{maximumFractionDigits:1})+'%';const zp=productos.find(x=>x.id===Number(document.getElementById('zfProduct').value))||productos[0],zd=datosProducto(zp),zu=Math.max(num('zfUnits'),1),zm=num('zfMargin')/100,zextra=num('zfExtra'),zcost=zd.importado+zextra,zprice=zcost/Math.max(1-zm,.01),zprofit=(zprice-zcost)*zu,nationalProfit=(zd.mayorista-zd.base)*zu,diff=zprofit-nationalProfit;document.getElementById('zfCost').textContent=fmt(zcost);document.getElementById('zfPrice').textContent=fmt(zprice);document.getElementById('zfProfit').textContent=fmt(zprofit);document.getElementById('zfDifference').textContent=fmt(diff);document.getElementById('zfDifference').className=diff>=0?'positive':'negative'}
+['simProduct','simChannel','simUnits','simDiscount','zfProduct','zfUnits','zfMargin','zfExtra'].forEach(id=>document.getElementById(id)?.addEventListener('input',renderSimuladores));
+
+// --- Modelo Kaddu: margen por producto + proyección de utilidad ---
+const defaultProductMargins=[24,24,26,22,24,24,23,23,30,36,28,42,42,34,34,27,27,28,30,30];
+function loadProductMargins(){let saved={};try{saved=JSON.parse(localStorage.getItem('kddProductMargins')||'{}')}catch(e){}productos.forEach((p,i)=>p.margenProducto=Number(saved[p.id]??defaultProductMargins[i]??28));}
+function saveProductMargin(id,value){const p=productos.find(x=>x.id===Number(id));if(!p)return;p.margenProducto=Math.min(Math.max(Number(value)||0,0),85);const data={};productos.forEach(x=>data[x.id]=x.margenProducto);localStorage.setItem('kddProductMargins',JSON.stringify(data));renderCosteo();renderProjection();recalcularCotizacion();}
+function channelAdjustment(channel){const map={distribuidor:'margenDistribuidor',mayorista:'margenMayorista',horeca:'margenHoreca',retail:'margenRetail',directa:'margenDirecta'};return num(map[channel]||'margenMayorista')}
+function appliedMargin(p,channel){return Math.min(Math.max((Number(p.margenProducto)||0)+channelAdjustment(channel),0),85)}
+function datosProducto(p){const m=modelo(),item=p.cantidad*p.brl,part=item/m.totalBRL,compra=p.brl*m.tc,importado=(item*m.tc+m.flete*part+m.agencia*part)/p.cantidad,almacenaje=p.peso*m.almacenajeKg,distribucion=p.peso*m.distribucionKg,logistica=almacenaje+distribucion,base=importado+logistica;function precioCanal(channel){const mg=appliedMargin(p,channel);return base/Math.max(1-mg/100-m.costosPct,.01)}return{compra,importado,almacenaje,distribucion,logistica,base,distribuidor:precioCanal('distribuidor'),mayorista:precioCanal('mayorista'),horeca:precioCanal('horeca'),retail:precioCanal('retail'),directa:precioCanal('directa')}}
+function renderCosteo(){
+ const m=modelo(),view=document.getElementById('costView')?.value||'resumen',term=(document.getElementById('costSearch')?.value||'').toLowerCase().trim(),channel=view==='resumen'||view==='todos'?'mayorista':view;
+ const heads=view==='resumen'?['Producto','Peso','Unidades importadas','Costo importado','Logística','Costo total','Margen producto','Precio mayorista','Utilidad total']:view==='todos'?['Producto','Margen producto','Distribuidor','Mayorista','Horeca','Retail','Directa']:['Producto','Costo total','Margen producto','Ajuste canal','Margen aplicado','Precio neto','Utilidad unitaria','Utilidad proyectada'];
+ document.getElementById('costHead').innerHTML='<tr>'+heads.map(x=>`<th>${x}</th>`).join('')+'</tr>';const tb=document.getElementById('tbody');tb.innerHTML='';
+ productos.filter(p=>!term||p.nombre.toLowerCase().includes(term)).forEach(p=>{const d=datosProducto(p),tr=document.createElement('tr'),marginInput=`<input class="margin-input" type="number" min="0" max="85" step="0.5" value="${p.margenProducto}" onchange="saveProductMargin(${p.id},this.value)">`;let cells=[];
+ if(view==='resumen'){const price=d.mayorista,profit=(price-d.base)*p.cantidad;cells=[p.nombre,p.peso+' kg',p.cantidad.toLocaleString('es-CL'),fmt(d.importado),fmt(d.logistica),`<strong>${fmt(d.base)}</strong>`,marginInput,fmt(price),`<strong class="${profit>=0?'positive':'negative'}">${fmt(profit)}</strong>`]}
+ else if(view==='todos'){cells=[p.nombre,marginInput,fmt(d.distribuidor),fmt(d.mayorista),fmt(d.horeca),fmt(d.retail),fmt(d.directa)]}
+ else{const mg=appliedMargin(p,channel),price=d[channel],profit=price-d.base;cells=[p.nombre,fmt(d.base),marginInput,channelAdjustment(channel).toLocaleString('es-CL')+' ptos',mg.toLocaleString('es-CL',{maximumFractionDigits:1})+'%',fmt(price),fmt(profit),fmt(profit*p.cantidad)]}
+ tr.innerHTML=cells.map(x=>`<td>${x}</td>`).join('');tb.appendChild(tr)});
+ const label={resumen:'Resumen con margen individual por producto',todos:'Comparación de precios netos por canal',distribuidor:'Canal Distribuidor',mayorista:'Canal Mayorista',horeca:'Canal Horeca',retail:'Canal Retail',directa:'Venta directa'}[view];document.getElementById('costViewSummary').textContent=label;document.getElementById('costNote').textContent='El margen aplicado es el margen del producto más el ajuste del canal. La utilidad proyectada usa las unidades importadas de cada producto y el porcentaje de venta seleccionado.';
+}
+function renderDealer(){const venta=Math.max(num('dealerVenta'),0),meta=Math.max(num('dealerMeta'),0),rate=Math.max(num('dealerComision'),0)/100,commission=venta*rate,compliance=meta?venta/meta*100:0;document.getElementById('dealerCumplimiento').textContent=compliance.toLocaleString('es-CL',{maximumFractionDigits:1})+'%';document.getElementById('dealerComisionMonto').textContent=fmt(commission);document.getElementById('dealerVentaNeta').textContent=fmt(venta-commission);renderProjection()}
+function renderProjection(){if(!document.getElementById('projRevenue'))return;const channel=document.getElementById('projectionChannel').value,factor=Math.min(Math.max(num('projectionSellThrough'),0),100)/100,dealerActive=document.getElementById('dealerActivo').checked,dealerRate=dealerActive?Math.max(num('dealerComision'),0)/100:0;let revenue=0,importCost=0,storage=0,distribution=0,profitBeforeDealer=0;const rows=[];productos.forEach(p=>{const d=datosProducto(p),qty=p.cantidad*factor,price=d[channel],rev=price*qty,cost=d.base*qty,profit=rev-cost;revenue+=rev;importCost+=d.importado*qty;storage+=d.almacenaje*qty;distribution+=d.distribucion*qty;profitBeforeDealer+=profit;rows.push({p,qty,rev,cost,profit})});const dealer=revenue*dealerRate,profit=profitBeforeDealer-dealer,margin=revenue?profit/revenue*100:0;document.getElementById('projRevenue').textContent=fmt(revenue);document.getElementById('projProfit').textContent=fmt(profit);document.getElementById('projProfit').className='kpi '+(profit>=0?'projection-positive':'projection-negative');document.getElementById('projMargin').textContent='Margen final '+margin.toLocaleString('es-CL',{maximumFractionDigits:1})+'%';document.getElementById('projImportCost').textContent=fmt(importCost);document.getElementById('projStorage').textContent=fmt(storage);document.getElementById('projDistribution').textContent=fmt(distribution);document.getElementById('projDealer').textContent=fmt(dealer);document.getElementById('dealerComisionProyectada').textContent=fmt(dealer);document.getElementById('projProductRows').innerHTML=rows.map(x=>{const dealerShare=x.rev*dealerRate,netProfit=x.profit-dealerShare;return `<tr><td>${x.p.nombre}</td><td>${x.qty.toLocaleString('es-CL',{maximumFractionDigits:0})}</td><td>${x.p.margenProducto.toLocaleString('es-CL')}%</td><td>${appliedMargin(x.p,channel).toLocaleString('es-CL',{maximumFractionDigits:1})}%</td><td>${fmt(x.rev)}</td><td>${fmt(x.cost)}</td><td class="${netProfit>=0?'positive':'negative'}"><strong>${fmt(netProfit)}</strong></td></tr>`}).join('')}
+loadProductMargins();
+['dealerNombre','dealerComision','dealerMeta','dealerVenta','dealerActivo'].forEach(id=>document.getElementById(id)?.addEventListener('input',renderDealer));
+['projectionChannel','projectionSellThrough'].forEach(id=>document.getElementById(id)?.addEventListener('input',renderProjection));
+
+document.getElementById('quoteNumber').value=correlativoActual();document.getElementById('quoteChannel').value=typeToChannel[document.getElementById('clientType').value]||'mayorista';document.getElementById('quoteDate').value=new Date().toISOString().slice(0,10);agregarLinea();recalcular();renderSavedQuotes();refreshClientSelect();renderDealer();renderProjection();
+</script>
+<script>
+// Correcciones finales: formato chileno, márgenes heredados y modelo flexible de comisiones.
+(function(){
+  const clInteger = new Intl.NumberFormat('es-CL',{maximumFractionDigits:0});
+  const parseCL = v => Number(String(v ?? '').replace(/\./g,'').replace(',','.').replace(/[^0-9.-]/g,'')) || 0;
+  const formatIntegerInput = el => { if(el) el.value = clInteger.format(parseCL(el.value)); };
+  const bindIntegerInput = id => {
+    const el=document.getElementById(id); if(!el || el.dataset.finalFormatted) return;
+    el.dataset.finalFormatted='1'; el.type='text'; el.inputMode='numeric'; formatIntegerInput(el);
+    el.addEventListener('focus',()=>{el.value=String(parseCL(el.value)||'')});
+    el.addEventListener('blur',()=>{formatIntegerInput(el); if(typeof recalcular==='function') recalcular(); if(typeof renderCommercial==='function') renderCommercial(); if(typeof renderProjection==='function') renderProjection();});
+  };
+  ['tc','flete','agencia','ivaImport','kilosMes','almacenajeKg','distribucionAntofagasta','distribucionCalama','commercialSales','commercialUnits','commissionPerUnit','commissionThreshold','quoteShipping','simUnits','zfUnits','zfExtra'].forEach(bindIntegerInput);
+
+  // Margen aplicado: excepción producto/canal si existe; de lo contrario, margen general del canal.
+  window.generalChannelMargin=function(channel){
+    const map={distribuidor:'margenDistribuidor',mayorista:'margenMayorista',horeca:'margenHoreca',retail:'margenRetail',directa:'margenDirecta'};
+    return Math.min(Math.max(num(map[channel]||'margenMayorista'),0),85);
+  };
+  window.loadMarginOverrides=function(){
+    let saved={}; try{saved=JSON.parse(localStorage.getItem('kddMarginOverrides')||'{}')}catch(e){}
+    productos.forEach(p=>p.marginOverrides=saved[p.id]||{});
+  };
+  window.saveMarginOverride=function(productId,channel,value){
+    const p=productos.find(x=>x.id===Number(productId)); if(!p)return;
+    p.marginOverrides=p.marginOverrides||{};
+    const raw=String(value??'').trim();
+    if(raw==='') delete p.marginOverrides[channel]; else p.marginOverrides[channel]=Math.min(Math.max(parseCL(raw),0),85);
+    const data={}; productos.forEach(x=>{if(x.marginOverrides&&Object.keys(x.marginOverrides).length)data[x.id]=x.marginOverrides});
+    localStorage.setItem('kddMarginOverrides',JSON.stringify(data)); renderCosteo(); renderProjection(); recalcularCotizacion();
+  };
+  window.appliedMargin=function(p,channel){
+    const own=p.marginOverrides&&p.marginOverrides[channel];
+    return own===undefined||own===null||own===''?generalChannelMargin(channel):Number(own);
+  };
+  window.marginOrigin=function(p,channel){return p.marginOverrides&&p.marginOverrides[channel]!==undefined?'Personalizado':'Heredado'};
+  window.datosProducto=function(p){
+    const m=modelo(),item=p.cantidad*p.brl,part=item/m.totalBRL,compra=p.brl*m.tc,
+      importado=(item*m.tc+m.flete*part+m.agencia*part)/p.cantidad,
+      almacenaje=p.peso*m.almacenajeKg,distribucion=p.peso*m.distribucionKg,
+      logistica=almacenaje+distribucion,base=importado+logistica;
+    function precioCanal(channel){const mg=appliedMargin(p,channel);return base/Math.max(1-mg/100-m.costosPct,.01)}
+    return{compra,importado,almacenaje,distribucion,logistica,base,distribuidor:precioCanal('distribuidor'),mayorista:precioCanal('mayorista'),horeca:precioCanal('horeca'),retail:precioCanal('retail'),directa:precioCanal('directa')};
+  };
+  window.renderCosteo=function(){
+    const m=modelo(),view=document.getElementById('costView')?.value||'resumen',term=(document.getElementById('costSearch')?.value||'').toLowerCase().trim(),channel=view==='resumen'||view==='todos'?'mayorista':view;
+    const heads=view==='resumen'
+      ? ['Producto','Peso','Unidades importadas','Costo importado','Logística','Costo total','Margen aplicado','Precio neto','IVA','Precio con IVA']
+      : view==='todos'
+        ? ['Producto','Distribuidor','Mayorista','HORECA','Retail','Venta directa']
+        : ['Producto','Costo total','Margen general','Margen específico','Origen','Margen aplicado','Precio neto','IVA','Precio con IVA','Utilidad unitaria'];
+    document.getElementById('costHead').innerHTML='<tr>'+heads.map(x=>`<th>${x}</th>`).join('')+'</tr>';
+    const tb=document.getElementById('tbody'); tb.innerHTML='';
+    productos.filter(p=>!term||p.nombre.toLowerCase().includes(term)).forEach(p=>{
+      const d=datosProducto(p),tr=document.createElement('tr'); let cells=[];
+      if(view==='resumen'){
+        const price=d.mayorista,iva=price*m.ivaVenta;
+        cells=[
+          p.nombre,
+          p.peso.toLocaleString('es-CL',{maximumFractionDigits:2})+' kg',
+          p.cantidad.toLocaleString('es-CL'),
+          fmt(d.importado),
+          fmt(d.logistica),
+          `<strong>${fmt(d.base)}</strong>`,
+          pct(appliedMargin(p,'mayorista')),
+          fmt(price),
+          fmt(iva),
+          `<strong>${fmt(price+iva)}</strong>`
+        ];
+      } else if(view==='todos'){
+        cells=[p.nombre,...['distribuidor','mayorista','horeca','retail','directa'].map(ch=>`${pct(appliedMargin(p,ch))}<div class="mini">${marginOrigin(p,ch)}</div>`)];
+      } else {
+        const own=p.marginOverrides&&p.marginOverrides[channel]!==undefined?p.marginOverrides[channel]:'',price=d[channel],iva=price*m.ivaVenta,profit=price-d.base;
+        const override=`<input class="margin-input" type="number" min="0" max="85" step="0.5" placeholder="Heredar" value="${own}" onchange="saveMarginOverride(${p.id},'${channel}',this.value)">`;
+        cells=[
+          p.nombre,
+          fmt(d.base),
+          pct(generalChannelMargin(channel)),
+          override,
+          marginOrigin(p,channel),
+          pct(appliedMargin(p,channel)),
+          fmt(price),
+          fmt(iva),
+          `<strong>${fmt(price+iva)}</strong>`,
+          fmt(profit)
+        ];
+      }
+      tr.innerHTML=cells.map(x=>`<td>${x}</td>`).join('');tb.appendChild(tr);
+    });
+    const label={resumen:'Resumen de costos y precios · referencia Mayorista',todos:'Márgenes efectivos por canal',distribuidor:'Canal Distribuidor',mayorista:'Canal Mayorista',horeca:'Canal HORECA',retail:'Canal Retail',directa:'Venta directa'}[view];
+    document.getElementById('costViewSummary').textContent=label;
+    document.getElementById('costNote').textContent='Las “Unidades importadas” son las unidades reales incluidas en el embarque. La utilidad proyectada total se consulta únicamente en el módulo “Utilidad proyectada”.';
+  };
+
+  function typeLabel(v){return {sin_comision:'Venta sin comisión',dealer:'Dealer',vendedor:'Vendedor'}[v]||v}
+  function modeLabel(v){return {percent_sales:'% sobre venta neta',fixed_unit:'Monto por unidad',tiered_sales:'Escalonada por venta neta',hybrid:'% + monto por unidad'}[v]||'Sin comisión'}
+  window.calculateCommercialCommission=function(sales,units){
+    const type=document.getElementById('commercialType')?.value||'sin_comision';
+    if(type==='sin_comision')return {amount:0,effectiveRate:0,label:'Sin comisión'};
+    const mode=document.getElementById('commissionMode')?.value||'percent_sales'; let amount=0,label=modeLabel(mode);
+    if(mode==='percent_sales') amount=sales*Math.max(num('commissionRate'),0)/100;
+    else if(mode==='fixed_unit') amount=units*Math.max(parseCL(document.getElementById('commissionPerUnit')?.value),0);
+    else if(mode==='tiered_sales'){
+      const threshold=Math.max(parseCL(document.getElementById('commissionThreshold')?.value),0),rate=sales>=threshold?Math.max(num('commissionRateHigh'),0):Math.max(num('commissionRateLow'),0); amount=sales*rate/100; label+=sales>=threshold?' · meta cumplida':' · bajo meta';
+    } else if(mode==='hybrid') amount=sales*Math.max(num('commissionRate'),0)/100+units*Math.max(parseCL(document.getElementById('commissionPerUnit')?.value),0);
+    return {amount,effectiveRate:sales?amount/sales*100:0,label};
+  };
+  window.updateCommercialFields=function(){
+    const type=document.getElementById('commercialType').value,mode=document.getElementById('commissionMode').value,active=type!=='sin_comision';
+    document.getElementById('commercialCommissionFields').style.display=active?'block':'none';
+    document.getElementById('commissionRateWrap').style.display=active&&['percent_sales','hybrid'].includes(mode)?'block':'none';
+    document.getElementById('commissionUnitWrap').style.display=active&&['fixed_unit','hybrid'].includes(mode)?'block':'none';
+    document.getElementById('commissionTierWrap').style.display=active&&mode==='tiered_sales'?'block':'none';
+    renderCommercial();
+  };
+  window.renderCommercial=function(){
+    const sales=Math.max(parseCL(document.getElementById('commercialSales')?.value),0),units=Math.max(parseCL(document.getElementById('commercialUnits')?.value),0),type=document.getElementById('commercialType')?.value||'sin_comision',res=calculateCommercialCommission(sales,units);
+    document.getElementById('commercialTypeResult').textContent=typeLabel(type);
+    document.getElementById('commercialModeResult').textContent=res.label;
+    document.getElementById('commercialEffectiveRate').textContent=pct(res.effectiveRate);
+    document.getElementById('commercialCommissionAmount').textContent=fmt(res.amount);
+    document.getElementById('commercialNetAfterCommission').textContent=fmt(sales-res.amount);
+    renderProjection();
+  };
+  window.renderDealer=renderCommercial;
+  window.renderProjection=function(){
+    if(!document.getElementById('projRevenue'))return;
+    const channel=document.getElementById('projectionChannel').value,factor=Math.min(Math.max(num('projectionSellThrough'),0),100)/100,apply=document.getElementById('commercialApplyProjection')?.checked;
+    let revenue=0,importCost=0,storage=0,distribution=0,profitBefore=0,totalUnits=0;const rows=[];
+    productos.forEach(p=>{const d=datosProducto(p),qty=p.cantidad*factor,price=d[channel],rev=price*qty,cost=d.base*qty,profit=rev-cost;revenue+=rev;importCost+=d.importado*qty;storage+=d.almacenaje*qty;distribution+=d.distribucion*qty;profitBefore+=profit;totalUnits+=qty;rows.push({p,qty,rev,cost,profit})});
+    const commercial=apply?calculateCommercialCommission(revenue,totalUnits):{amount:0,effectiveRate:0},profit=profitBefore-commercial.amount,margin=revenue?profit/revenue*100:0;
+    document.getElementById('projRevenue').textContent=fmt(revenue);document.getElementById('projProfit').textContent=fmt(profit);document.getElementById('projProfit').className='kpi '+(profit>=0?'projection-positive':'projection-negative');document.getElementById('projMargin').textContent='Margen final '+pct(margin);document.getElementById('projImportCost').textContent=fmt(importCost);document.getElementById('projStorage').textContent=fmt(storage);document.getElementById('projDistribution').textContent=fmt(distribution);document.getElementById('projDealer').textContent=fmt(commercial.amount);document.getElementById('dealerComisionProyectada').textContent=fmt(commercial.amount);
+    document.getElementById('projProductRows').innerHTML=rows.map(x=>{const share=revenue?commercial.amount*(x.rev/revenue):0,net=x.profit-share;return `<tr><td>${x.p.nombre}</td><td>${x.qty.toLocaleString('es-CL',{maximumFractionDigits:0})}</td><td>${marginOrigin(x.p,channel)}</td><td>${pct(appliedMargin(x.p,channel))}</td><td>${fmt(x.rev)}</td><td>${fmt(x.cost)}</td><td class="${net>=0?'positive':'negative'}"><strong>${fmt(net)}</strong></td></tr>`}).join('');
+  };
+
+  loadMarginOverrides();
+  ['commercialType','commissionMode'].forEach(id=>document.getElementById(id)?.addEventListener('change',updateCommercialFields));
+  ['commissionRate','commissionPerUnit','commissionThreshold','commissionRateLow','commissionRateHigh','commercialSales','commercialUnits','commercialApplyProjection'].forEach(id=>document.getElementById(id)?.addEventListener('input',renderCommercial));
+  ['margenDistribuidor','margenMayorista','margenHoreca','margenRetail','margenDirecta'].forEach(id=>document.getElementById(id)?.addEventListener('input',()=>{renderCosteo();renderProjection();recalcularCotizacion()}));
+  updateCommercialFields(); renderCosteo(); renderProjection();
+})();
+</script>
+<script>
+/* V7 - Regla unica de margen:
+   excepcion producto/canal REEMPLAZA al margen del canal; nunca se suma ni se resta. */
+(function(){
+  'use strict';
+  const STORAGE_KEY='kdd_margin_overrides_reemplazo_v1';
+  const CHANNELS=['distribuidor','mayorista','horeca','retail','directa'];
+  const MARGIN_IDS={
+    distribuidor:'margenDistribuidor', mayorista:'margenMayorista', horeca:'margenHoreca',
+    retail:'margenRetail', directa:'margenDirecta'
+  };
+  const LABELS={distribuidor:'Distribuidor',mayorista:'Mayorista',horeca:'HORECA',retail:'Retail',directa:'Venta directa'};
+
+  function numberValue(value){
+    const raw=String(value??'').trim().replace(/\./g,'').replace(',','.').replace(/[^0-9.-]/g,'');
+    const n=Number(raw);
+    return Number.isFinite(n)?n:0;
+  }
+  function clampMargin(value){ return Math.min(85,Math.max(0,numberValue(value))); }
+  function generalMargin(channel){ return clampMargin(document.getElementById(MARGIN_IDS[channel])?.value); }
+  function loadOverrides(){
+    let saved={};
+    try{ saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{}; }catch(_){ saved={}; }
+    productos.forEach(p=>{ p.channelMarginOverrides=saved[String(p.id)]||{}; });
+  }
+  function persistOverrides(){
+    const saved={};
+    productos.forEach(p=>{
+      const own=p.channelMarginOverrides||{};
+      if(Object.keys(own).length) saved[String(p.id)]=own;
+    });
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(saved));
+  }
+  function hasOverride(p,channel){
+    return Object.prototype.hasOwnProperty.call(p.channelMarginOverrides||{},channel);
+  }
+  function effectiveMargin(p,channel){
+    return hasOverride(p,channel)?clampMargin(p.channelMarginOverrides[channel]):generalMargin(channel);
+  }
+  function productData(p){
+    const m=modelo(), item=p.cantidad*p.brl, part=item/m.totalBRL;
+    const importado=(item*m.tc+m.flete*part+m.agencia*part)/p.cantidad;
+    const almacenaje=p.peso*m.almacenajeKg, distribucion=p.peso*m.distribucionKg;
+    const logistica=almacenaje+distribucion, base=importado+logistica;
+    const price=channel=>base/Math.max(1-effectiveMargin(p,channel)/100-m.costosPct,.01);
+    return {
+      importado,almacenaje,distribucion,logistica,base,
+      distribuidor:price('distribuidor'),mayorista:price('mayorista'),horeca:price('horeca'),
+      retail:price('retail'),directa:price('directa')
+    };
+  }
+
+  window.appliedMargin=effectiveMargin;
+  window.marginOrigin=(p,channel)=>hasOverride(p,channel)?'Personalizado':'Canal';
+  window.datosProducto=productData;
+  window.saveMarginOverride=function(productId,channel,value){
+    const p=productos.find(x=>x.id===Number(productId));
+    if(!p||!CHANNELS.includes(channel)) return;
+    p.channelMarginOverrides=p.channelMarginOverrides||{};
+    const raw=String(value??'').trim();
+    if(raw==='') delete p.channelMarginOverrides[channel];
+    else p.channelMarginOverrides[channel]=clampMargin(raw);
+    persistOverrides();
+    renderCosteo();
+    try{ renderProjection(); }catch(e){ console.error('Proyeccion:',e); }
+    try{ recalcularCotizacion(); }catch(e){ console.error('Cotizacion:',e); }
+    try{ renderAnalisis(); }catch(e){ /* modulo opcional */ }
+  };
+
+  window.renderCosteo=function(){
+    const m=modelo();
+    const view=document.getElementById('costView')?.value||'resumen';
+    const term=(document.getElementById('costSearch')?.value||'').toLowerCase().trim();
+    const channel=CHANNELS.includes(view)?view:'mayorista';
+    const head=document.getElementById('costHead'), body=document.getElementById('tbody');
+    if(!head||!body) return;
+    const headers=view==='resumen'
+      ? ['Producto','Peso','Unidades importadas','Costo importado','Logística','Costo total','Margen','Precio','IVA','Precio con IVA']
+      : view==='todos'
+        ? ['Producto',...CHANNELS.map(c=>LABELS[c])]
+        : ['Producto','Costo total','Margen','Precio neto','IVA','Precio con IVA','Utilidad unitaria'];
+    head.innerHTML='<tr>'+headers.map(h=>`<th>${h}</th>`).join('')+'</tr>';
+    body.innerHTML='';
+    productos.filter(p=>!term||p.nombre.toLowerCase().includes(term)).forEach(p=>{
+      const d=productData(p), tr=document.createElement('tr');
+      let cells=[];
+      if(view==='resumen'){
+        const price=d.mayorista, iva=price*m.ivaVenta;
+        cells=[p.nombre,`${p.peso.toLocaleString('es-CL',{maximumFractionDigits:2})} kg`,p.cantidad.toLocaleString('es-CL'),fmt(d.importado),fmt(d.logistica),`<strong>${fmt(d.base)}</strong>`,`${effectiveMargin(p,'mayorista').toLocaleString('es-CL',{maximumFractionDigits:1})}%`,fmt(price),fmt(iva),`<strong>${fmt(price+iva)}</strong>`];
+      }else if(view==='todos'){
+        cells=[p.nombre,...CHANNELS.map(ch=>{
+          const margin=effectiveMargin(p,ch), own=hasOverride(p,ch);
+          return `<div style="display:flex;flex-direction:column;gap:5px;min-width:130px"><div style="display:flex;gap:5px;align-items:center"><input type="number" min="0" max="85" step="0.5" value="${margin}" title="Este porcentaje reemplaza el margen general de ${LABELS[ch]} solo para este producto" onchange="saveMarginOverride(${p.id},'${ch}',this.value)">${own?`<button type="button" class="ghost" style="padding:4px 6px;font-size:10px" onclick="saveMarginOverride(${p.id},'${ch}','')">Usar canal</button>`:''}</div><strong>${fmt(d[ch])}</strong></div>`;
+        })];
+      }else{
+        const margin=effectiveMargin(p,channel), own=hasOverride(p,channel), price=d[channel], iva=price*m.ivaVenta;
+        const control=`<div style="display:flex;gap:6px;align-items:center"><input type="number" min="0" max="85" step="0.5" value="${margin}" title="Reemplaza el margen del canal solo para este producto" onchange="saveMarginOverride(${p.id},'${channel}',this.value)">${own?`<button type="button" class="ghost" style="padding:5px 8px;font-size:11px" onclick="saveMarginOverride(${p.id},'${channel}','')">Usar canal</button>`:''}</div>`;
+        cells=[p.nombre,fmt(d.base),control,fmt(price),fmt(iva),`<strong>${fmt(price+iva)}</strong>`,fmt(price-d.base)];
+      }
+      tr.innerHTML=cells.map(c=>`<td>${c}</td>`).join('');
+      body.appendChild(tr);
+    });
+    const summary=document.getElementById('costViewSummary');
+    if(summary) summary.textContent=view==='resumen'?'Resumen de costos y precios · referencia Mayorista':view==='todos'?'Margen y precio por producto en cada canal':`Canal ${LABELS[channel]}`;
+    const note=document.getElementById('costNote');
+    if(note) note.textContent=view==='todos'?'Cada producto usa el margen general de cada canal. Al editar una celda, el nuevo porcentaje lo reemplaza solo para ese producto y canal.':view==='resumen'?'La vista resumen utiliza Mayorista como referencia.':'El margen del canal se usa por defecto. Si editas el producto, el nuevo porcentaje reemplaza ese margen; no se suma.';
+  };
+
+  window.renderProjection=function(){
+    if(!document.getElementById('projRevenue')) return;
+    const channel=document.getElementById('projectionChannel')?.value||'mayorista';
+    const factor=Math.min(Math.max(num('projectionSellThrough'),0),100)/100;
+    const apply=document.getElementById('commercialApplyProjection')?.checked;
+    let revenue=0,importCost=0,storage=0,distribution=0,profitBefore=0,totalUnits=0;
+    const rows=[];
+    productos.forEach(p=>{
+      const d=productData(p), qty=p.cantidad*factor, price=d[channel], rev=price*qty, cost=d.base*qty, profit=rev-cost;
+      revenue+=rev; importCost+=d.importado*qty; storage+=d.almacenaje*qty; distribution+=d.distribucion*qty; profitBefore+=profit; totalUnits+=qty;
+      rows.push({p,qty,rev,cost,profit});
+    });
+    const commercial=apply&&typeof calculateCommercialCommission==='function'?calculateCommercialCommission(revenue,totalUnits):{amount:0};
+    const profit=profitBefore-commercial.amount, margin=revenue?profit/revenue*100:0;
+    document.getElementById('projRevenue').textContent=fmt(revenue);
+    document.getElementById('projProfit').textContent=fmt(profit);
+    document.getElementById('projProfit').className='kpi '+(profit>=0?'projection-positive':'projection-negative');
+    document.getElementById('projMargin').textContent='Margen final '+pct(margin);
+    document.getElementById('projImportCost').textContent=fmt(importCost);
+    document.getElementById('projStorage').textContent=fmt(storage);
+    document.getElementById('projDistribution').textContent=fmt(distribution);
+    document.getElementById('projDealer').textContent=fmt(commercial.amount);
+    const dealer=document.getElementById('dealerComisionProyectada'); if(dealer) dealer.textContent=fmt(commercial.amount);
+    const tbody=document.getElementById('projProductRows');
+    if(tbody) tbody.innerHTML=rows.map(x=>{
+      const share=revenue?commercial.amount*(x.rev/revenue):0, net=x.profit-share;
+      return `<tr><td>${x.p.nombre}</td><td>${x.qty.toLocaleString('es-CL',{maximumFractionDigits:0})}</td><td>${pct(effectiveMargin(x.p,channel))}</td><td>${fmt(x.rev)}</td><td>${fmt(x.cost)}</td><td class="${net>=0?'positive':'negative'}"><strong>${fmt(net)}</strong></td></tr>`;
+    }).join('');
+    const table=tbody?.closest('table');
+    const header=table?.querySelector('thead tr');
+    if(header) header.innerHTML='<th>Producto</th><th>Unidades</th><th>Margen</th><th>Venta neta</th><th>Costo total</th><th>Utilidad</th>';
+    const title=table?.closest('.card')?.querySelector('h3');
+    if(title) title.textContent=`Rentabilidad proyectada por producto · ${LABELS[channel]||channel}`;
+  };
+
+  loadOverrides();
+  const refresh=()=>{ renderCosteo(); try{renderProjection();}catch(e){console.error(e)} try{recalcularCotizacion();}catch(e){console.error(e)} };
+  document.getElementById('costView')?.addEventListener('change',renderCosteo);
+  document.getElementById('costSearch')?.addEventListener('input',renderCosteo);
+  document.getElementById('projectionChannel')?.addEventListener('change',renderProjection);
+  document.getElementById('projectionSellThrough')?.addEventListener('input',renderProjection);
+  CHANNELS.forEach(ch=>document.getElementById(MARGIN_IDS[ch])?.addEventListener('input',refresh));
+  renderCosteo();
+  renderProjection();
+})();
+</script>
+<script>
+(function(){
+  'use strict';
+  const USERS_KEY='kadduUsersV1';
+  const SESSION_KEY='kadduSessionV1';
+  const PERMISSIONS={admin:['config','costeo','cotizacion','listaPrecios','dealers','proyeccion','usuarios'],seller:['cotizacion','listaPrecios']};
+  let currentUser=null;
+  const byId=id=>document.getElementById(id);
+  const clean=v=>String(v||'').trim();
+  const userKey=v=>clean(v).toLowerCase();
+  async function hashPassword(password){
+    const bytes=new TextEncoder().encode(String(password));
+    const digest=await crypto.subtle.digest('SHA-256',bytes);
+    return Array.from(new Uint8Array(digest)).map(x=>x.toString(16).padStart(2,'0')).join('');
+  }
+  function getUsers(){try{return JSON.parse(localStorage.getItem(USERS_KEY)||'{}')||{}}catch(e){return {}}}
+  function saveUsers(users){localStorage.setItem(USERS_KEY,JSON.stringify(users))}
+  function allowed(panel){return Boolean(currentUser&&(PERMISSIONS[currentUser.role]||[]).includes(panel))}
+  function activate(panel){
+    if(!allowed(panel)) panel=currentUser?.role==='seller'?'cotizacion':'config';
+    document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('active',el.dataset.panel===panel));
+    document.querySelectorAll('.panel').forEach(el=>el.classList.toggle('active',el.id===panel));
+    if(panel==='usuarios') renderUsers();
+  }
+  function showMessage(id,text,good=false){const el=byId(id);if(!el)return;el.textContent=text;el.className='auth-message show '+(good?'good':'bad')}
+  function hideMessage(id){const el=byId(id);if(el)el.classList.remove('show')}
+  function showInitialScreen(){
+    const hasUsers=Object.keys(getUsers()).length>0;
+    byId('loginForm').classList.toggle('permission-hidden',!hasUsers);
+    byId('setupForm').classList.toggle('permission-hidden',hasUsers);
+    byId('authTitle').textContent=hasUsers?'Gestor Comercial':'Configuración inicial';
+    byId('authSubtitle').textContent=hasUsers?'Acceso de usuarios autorizados':'Crea la primera cuenta administradora';
+  }
+  function applyPermissions(){
+    document.body.dataset.role=currentUser.role;
+    document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('permission-hidden',!allowed(el.dataset.panel)));
+    document.querySelectorAll('.panel').forEach(el=>el.classList.toggle('permission-hidden',!allowed(el.id)));
+    byId('currentUserName').textContent=currentUser.name;
+    byId('currentRole').textContent=currentUser.role==='admin'?'Administrador':'Vendedor';
+    byId('userAvatar').textContent=currentUser.name.split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase();
+    byId('userToolbar').classList.add('visible');
+    const seller=byId('quoteSeller');
+    if(currentUser.role==='seller'){
+      if(seller){seller.value=currentUser.name;seller.readOnly=true}
+      ['btnExportQuotes','btnImportQuotes'].forEach(id=>byId(id)?.classList.add('permission-hidden'));
+      activate('cotizacion');
+    }else{
+      if(seller)seller.readOnly=false;
+      activate('config');
+    }
+  }
+  async function login(username,password){
+    const key=userKey(username), users=getUsers(), user=users[key];
+    if(!user||user.active===false||user.passwordHash!==await hashPassword(password))return false;
+    currentUser={username:key,...user};
+    sessionStorage.setItem(SESSION_KEY,JSON.stringify({username:key}));
+    byId('authOverlay').classList.add('hidden');
+    applyPermissions();
+    return true;
+  }
+  async function setupAdmin(event){
+    event.preventDefault();hideMessage('setupMessage');
+    const name=clean(byId('setupName').value), username=userKey(byId('setupUser').value), p1=byId('setupPassword').value, p2=byId('setupPassword2').value;
+    if(!name||!username){showMessage('setupMessage','Completa el nombre y el usuario.');return}
+    if(p1.length<8){showMessage('setupMessage','La contraseña debe tener al menos 8 caracteres.');return}
+    if(p1!==p2){showMessage('setupMessage','Las contraseñas no coinciden.');return}
+    const users={};users[username]={name,role:'admin',active:true,passwordHash:await hashPassword(p1),createdAt:new Date().toISOString()};saveUsers(users);
+    await login(username,p1);
+  }
+  async function createUser(){
+    hideMessage('userAdminMessage');
+    const name=clean(byId('newUserName').value), username=userKey(byId('newUsername').value), password=byId('newUserPassword').value, role=byId('newUserRole').value;
+    const users=getUsers();
+    if(!name||!username||!password){showMessage('userAdminMessage','Completa todos los campos.');return}
+    if(password.length<8){showMessage('userAdminMessage','La contraseña debe tener al menos 8 caracteres.');return}
+    if(users[username]){showMessage('userAdminMessage','Ese usuario ya existe.');return}
+    users[username]={name,role,active:true,passwordHash:await hashPassword(password),createdAt:new Date().toISOString()};saveUsers(users);
+    byId('newUserName').value='';byId('newUsername').value='';byId('newUserPassword').value='';
+    showMessage('userAdminMessage','Usuario creado correctamente.',true);renderUsers();
+  }
+  function renderUsers(){
+    const body=byId('usersTableBody');if(!body)return;
+    const users=getUsers();
+    body.innerHTML=Object.entries(users).map(([username,u])=>`<tr><td>${u.name}</td><td>${username}</td><td>${u.role==='admin'?'Administrador':'Vendedor'}</td><td><span class="user-status ${u.active===false?'inactive':'active'}">${u.active===false?'Inactivo':'Activo'}</span></td><td><div class="account-actions"><button type="button" class="ghost" data-reset="${username}">Cambiar clave</button><button type="button" class="${u.active===false?'':'danger'}" data-toggle="${username}" ${username===currentUser?.username?'disabled':''}>${u.active===false?'Activar':'Desactivar'}</button></div></td></tr>`).join('');
+    body.querySelectorAll('[data-toggle]').forEach(btn=>btn.addEventListener('click',()=>toggleUser(btn.dataset.toggle)));
+    body.querySelectorAll('[data-reset]').forEach(btn=>btn.addEventListener('click',()=>resetPassword(btn.dataset.reset)));
+  }
+  function toggleUser(username){const users=getUsers();if(!users[username]||username===currentUser.username)return;users[username].active=users[username].active===false;saveUsers(users);renderUsers()}
+  async function resetPassword(username){
+    const password=prompt('Ingresa la nueva contraseña para '+username+' (mínimo 8 caracteres):');
+    if(password===null)return;if(password.length<8){alert('La contraseña debe tener al menos 8 caracteres.');return}
+    const users=getUsers();if(!users[username])return;users[username].passwordHash=await hashPassword(password);saveUsers(users);alert('Contraseña actualizada.');
+  }
+  async function changeMyPassword(){
+    const current=prompt('Contraseña actual:');if(current===null)return;
+    const users=getUsers(), user=users[currentUser.username];if(!user||user.passwordHash!==await hashPassword(current)){alert('La contraseña actual no es correcta.');return}
+    const next=prompt('Nueva contraseña (mínimo 8 caracteres):');if(next===null)return;if(next.length<8){alert('La contraseña debe tener al menos 8 caracteres.');return}
+    const repeat=prompt('Repite la nueva contraseña:');if(next!==repeat){alert('Las contraseñas no coinciden.');return}
+    user.passwordHash=await hashPassword(next);saveUsers(users);alert('Contraseña actualizada.');
+  }
+  function renderSellerPriceList(){
+    const channel=byId('sellerPriceChannel')?.value||'mayorista',term=(byId('sellerPriceSearch')?.value||'').toLowerCase().trim(),m=modelo();
+    const labels={distribuidor:'Distribuidor',mayorista:'Mayorista',horeca:'HORECA',retail:'Retail',directa:'Venta directa',todos:'Todos los canales'};
+    const headers=channel==='todos'?['Producto','Distribuidor c/IVA','Mayorista c/IVA','HORECA c/IVA','Retail c/IVA','Venta directa c/IVA']:['Producto','Precio neto','IVA','Precio con IVA'];
+    byId('sellerPriceHead').innerHTML='<tr>'+headers.map(x=>`<th>${x}</th>`).join('')+'</tr>';
+    const rows=productos.filter(p=>!term||p.nombre.toLowerCase().includes(term)).map(p=>{const d=datosProducto(p);let cells;if(channel==='todos')cells=[p.nombre,fmt(d.distribuidor*(1+m.ivaVenta)),fmt(d.mayorista*(1+m.ivaVenta)),fmt(d.horeca*(1+m.ivaVenta)),fmt(d.retail*(1+m.ivaVenta)),fmt(d.directa*(1+m.ivaVenta))];else{const net=d[channel],iva=net*m.ivaVenta;cells=[p.nombre,fmt(net),fmt(iva),`<strong>${fmt(net+iva)}</strong>`]}return '<tr>'+cells.map(x=>`<td>${x}</td>`).join('')+'</tr>'}).join('');
+    byId('sellerPriceBody').innerHTML=rows||`<tr><td colspan="${headers.length}">No hay productos que coincidan con la búsqueda.</td></tr>`;byId('sellerPriceSummary').textContent='Precios autorizados: '+labels[channel]+'.';
+  }
+  function printSellerPriceList(){
+    const channel=byId('sellerPriceChannel')?.value||'mayorista',term=(byId('sellerPriceSearch')?.value||'').toLowerCase().trim(),m=modelo();
+    const labels={distribuidor:'Distribuidor',mayorista:'Mayorista',horeca:'HORECA',retail:'Retail',directa:'Venta directa',todos:'Todos los canales'};
+    const headers=channel==='todos'?['Producto','Distribuidor c/IVA','Mayorista c/IVA','HORECA c/IVA','Retail c/IVA','Venta directa c/IVA']:['Producto','Precio neto','IVA','Precio con IVA'];
+    const rows=productos.filter(p=>!term||p.nombre.toLowerCase().includes(term)).map(p=>{const d=datosProducto(p);let cells;if(channel==='todos')cells=[p.nombre,fmt(d.distribuidor*(1+m.ivaVenta)),fmt(d.mayorista*(1+m.ivaVenta)),fmt(d.horeca*(1+m.ivaVenta)),fmt(d.retail*(1+m.ivaVenta)),fmt(d.directa*(1+m.ivaVenta))];else{const net=d[channel],iva=net*m.ivaVenta;cells=[p.nombre,fmt(net),fmt(iva),fmt(net+iva)]}return '<tr>'+cells.map(x=>`<td>${x}</td>`).join('')+'</tr>'}).join('');
+    const fecha=new Date().toLocaleDateString('es-CL');
+    const html=`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Lista de precios Kaddu</title><style>@page{size:A4;margin:14mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#17202a;margin:0}header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #102a43;padding-bottom:12px;margin-bottom:18px}h1{font-size:24px;margin:0;color:#102a43}.brand{font-size:18px;font-weight:800;color:#102a43}.meta{font-size:11px;text-align:right;color:#475467}.notice{font-size:11px;color:#667085;margin:0 0 12px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#102a43;color:#fff;text-align:right;padding:8px 7px}td{padding:7px;border-bottom:1px solid #d8dee9;text-align:right}th:first-child,td:first-child{text-align:left}tbody tr:nth-child(even){background:#f8fafc}footer{margin-top:18px;padding-top:9px;border-top:1px solid #d8dee9;font-size:10px;color:#667085}.actions{margin-bottom:14px;text-align:right}.actions button{border:0;border-radius:8px;padding:9px 13px;background:#2367d1;color:#fff;font-weight:700;cursor:pointer}@media print{.actions{display:none}}</style></head><body><div class="actions"><button onclick="window.print()">Imprimir / Guardar PDF</button></div><header><div><div class="brand">Kaddu</div><h1>Lista de precios – ${labels[channel]}</h1></div><div class="meta">Fecha: ${fecha}<br>Valores expresados en pesos chilenos</div></header><p class="notice">Documento comercial. Precios sujetos a vigencia y condiciones comerciales.</p><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${headers.length}">No hay productos.</td></tr>`}</tbody></table><footer>Kaddu · Documento comercial</footer></body></html>`;
+    const w=window.open('','_blank');if(!w){alert('El navegador bloqueó la ventana de impresión. Autoriza las ventanas emergentes para continuar.');return}w.document.open();w.document.write(html);w.document.close();w.focus();
+  }
+  async function init(){
+    document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',event=>{if(currentUser&&!allowed(tab.dataset.panel)){event.preventDefault();event.stopImmediatePropagation();activate(currentUser.role==='seller'?'cotizacion':'config')}},true));
+    byId('loginForm')?.addEventListener('submit',async event=>{event.preventDefault();hideMessage('loginError');if(!await login(byId('loginUser').value,byId('loginPassword').value))showMessage('loginError','Usuario o contraseña incorrectos.')});
+    byId('setupForm')?.addEventListener('submit',setupAdmin);byId('btnCreateUser')?.addEventListener('click',createUser);byId('btnMyPassword')?.addEventListener('click',changeMyPassword);
+    byId('sellerPriceChannel')?.addEventListener('change',renderSellerPriceList);byId('sellerPriceSearch')?.addEventListener('input',renderSellerPriceList);byId('btnSellerPrintPriceList')?.addEventListener('click',printSellerPriceList);renderSellerPriceList();
+    byId('btnLogout')?.addEventListener('click',()=>{sessionStorage.removeItem(SESSION_KEY);location.reload()});
+    showInitialScreen();
+    try{const saved=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null'),users=getUsers();if(saved?.username&&users[saved.username]&&users[saved.username].active!==false){currentUser={username:saved.username,...users[saved.username]};byId('authOverlay').classList.add('hidden');applyPermissions()}}catch(e){sessionStorage.removeItem(SESSION_KEY)}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script></body></html>
