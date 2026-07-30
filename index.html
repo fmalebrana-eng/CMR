@@ -187,8 +187,19 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
 .auth-overlay{background:radial-gradient(circle at top left,#1f5c88 0,#102a43 48%,#091c2d 100%)}
 .auth-card{width:min(460px,100%);padding:32px}.auth-brand{justify-content:center;text-align:center;flex-direction:column}.auth-brand .kdd-logo{color:#102a43}.auth-brand .kdd-logo svg{width:58px;height:68px}.auth-brand .kdd-logo span{font-size:24px}.auth-subtitle{text-align:center;color:#667085;margin:-4px 0 20px}.setup-note{padding:11px 12px;border-radius:9px;background:#eef4ff;color:#344054;font-size:12px;line-height:1.5;margin-bottom:14px}.auth-switch{margin-top:14px;text-align:center;font-size:12px;color:#667085}.auth-switch button{padding:0;background:none;color:#2367d1}.users-layout{display:grid;grid-template-columns:minmax(300px,.75fr) minmax(480px,1.25fr);gap:16px}.user-table{min-width:700px}.user-status{font-weight:700}.user-status.active{color:#18794e}.user-status.inactive{color:#b42318}.account-actions{display:flex;gap:8px;flex-wrap:wrap}.footer-app{text-align:center;color:#667085;font-size:11px;padding:18px 10px 28px}.auth-message{display:none;margin-top:12px;padding:10px;border-radius:8px;font-size:12px}.auth-message.show{display:block}.auth-message.good{background:#ecfdf3;color:#14532d}.auth-message.bad{background:#fef3f2;color:#b42318}@media(max-width:850px){.users-layout{grid-template-columns:1fr}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style id="supabase-connection-style">
+#supabaseConnectionStatus{position:fixed;right:14px;bottom:14px;z-index:9998;display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;background:#fff;border:1px solid #d8dee9;box-shadow:0 4px 18px rgba(16,42,67,.16);font:600 12px/1.2 Inter,system-ui,sans-serif;color:#475467}
+#supabaseConnectionStatus .dot{width:9px;height:9px;border-radius:50%;background:#f59e0b}
+#supabaseConnectionStatus.connected .dot{background:#18794e}
+#supabaseConnectionStatus.error .dot{background:#b42318}
+@media print{#supabaseConnectionStatus{display:none!important}}
+</style>
 </head>
 <body>
+<div id="supabaseConnectionStatus" title="Estado de conexión con Supabase"><span class="dot"></span><span class="label">Conectando a Supabase…</span></div>
+
 <div id="authOverlay" class="auth-overlay">
   <div class="auth-card">
     <div class="auth-brand"><div class="kdd-logo" aria-label="Logo Kaddu"><svg version="1.0" x="0" y="0" width="2400" height="2793.0949860251158" viewBox="144.105779876709 94.86455368041992 51.78848602294922 60.27090026855469" preserveAspectRatio="xMidYMid meet" color-interpolation-filters="sRGB"><g><defs><linearGradient id="92" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#fa71cd"></stop> <stop offset="100%" stop-color="#9b59b6"></stop></linearGradient><linearGradient id="93" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f9d423"></stop> <stop offset="100%" stop-color="#f83600"></stop></linearGradient><linearGradient id="94" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#0064d2"></stop> <stop offset="100%" stop-color="#1cb0f6"></stop></linearGradient><linearGradient id="95" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f00978"></stop> <stop offset="100%" stop-color="#3f51b1"></stop></linearGradient><linearGradient id="96" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7873f5"></stop> <stop offset="100%" stop-color="#ec77ab"></stop></linearGradient><linearGradient id="97" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f9d423"></stop> <stop offset="100%" stop-color="#e14fad"></stop></linearGradient><linearGradient id="98" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#009efd"></stop> <stop offset="100%" stop-color="#2af598"></stop></linearGradient><linearGradient id="99" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ffcc00"></stop> <stop offset="100%" stop-color="#00b140"></stop></linearGradient><linearGradient id="100" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#d51007"></stop> <stop offset="100%" stop-color="#ff8177"></stop></linearGradient><linearGradient id="102" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#a2b6df"></stop> <stop offset="100%" stop-color="#0c3483"></stop></linearGradient><linearGradient id="103" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7ac5d8"></stop> <stop offset="100%" stop-color="#eea2a2"></stop></linearGradient><linearGradient id="104" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00ecbc"></stop> <stop offset="100%" stop-color="#007adf"></stop></linearGradient><linearGradient id="105" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#b88746"></stop> <stop offset="100%" stop-color="#fdf5a6"></stop></linearGradient></defs><g class="imagesvg isNoFont" transform="translate(144.61348724365234,95.37228012128664)"><g><rect fill="#333" fill-opacity="0" stroke-width="2" x="0" y="0" width="50.77302427493719" height="59.25544059629713" class="image-rect"></rect> <svg x="0" y="0" width="50.77302427493719" height="59.25544059629713" filtersec="colorsb9811093766" class="image-svg-svg primary" style="overflow: visible;"><svg viewBox="-0.02117646485567093 -0.013836823403835297 108.19795989990234 126.27413940429688"><path d="M34 75.71v46.14c0 4.3-.65 4.65-4.83 3.92-9.49-1.66-17.29-6.08-22.94-13.9C2.62 106.87.06 101.31.05 95Q-.06 49.55 0 4.09C0 .14.24 0 4.29.45 19.33 2 30.09 12.71 33.63 26.6a14.28 14.28 0 0 1 .29 3.52v45.59zM50.19 67.89c0-7.74.08-15.47 0-23.2a12.59 12.59 0 0 1 2-6.94Q62.76 20.14 73.32 2.48A4.56 4.56 0 0 1 77.74 0c9.1.05 18.19 0 27.26 0 3.32 0 3.9.85 2.2 3.73-6.3 10.74-12.79 21.36-19.2 32.04q-12 20-23.87 40c-3.63 6.08-7.32 12.13-11 18.17-.46.74-1 1.82-2 1.57-1.27-.31-.91-1.62-.91-2.56-.04-8.33-.03-16.69-.03-25.06z" fill="#FFA908"></path><path d="M84.78 126.23H64.87c-1.23 0-2.7.32-3.4-1.12s.11-2.62.83-3.8q10.41-17.11 20.77-34.25c1.08-1.78 2.05-1.79 3.35-.34 1.91 2.14 3 4.78 4.41 7.2 5.38 9 10.78 18.1 16 27.24 2.38 4.16 1.74 5.06-3 5.07z" fill="#2C729E"></path></svg><span>KADDU</span></div><div><h2 id="authTitle">Gestor Comercial</h2></div></div>
@@ -414,6 +425,74 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
   </details>
 </section>
 </main>
+
+<script id="supabase-bootstrap">
+(() => {
+  const SUPABASE_URL = 'https://rtihicgmawcligutxlnd.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_T-j-rllnNUyo6uEf5df8Fw_Dd7FlBp-';
+
+  function setConnectionStatus(state, message) {
+    const el = document.getElementById('supabaseConnectionStatus');
+    if (!el) return;
+    el.classList.remove('connected', 'error');
+    if (state) el.classList.add(state);
+    const label = el.querySelector('.label');
+    if (label) label.textContent = message;
+  }
+
+  async function initializeSupabase() {
+    try {
+      if (!window.supabase?.createClient) {
+        throw new Error('No se pudo cargar la librería de Supabase');
+      }
+
+      window.kadduSupabase = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY,
+        {
+          auth: {
+            autoRefreshToken: true,
+            persistSession: true,
+            detectSessionInUrl: true
+          }
+        }
+      );
+
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/`, {
+        method: 'GET',
+        headers: {
+          apikey: SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Supabase respondió ${response.status}`);
+      }
+
+      window.dispatchEvent(new CustomEvent('kaddu:supabase-ready', {
+        detail: { client: window.kadduSupabase }
+      }));
+      setConnectionStatus('connected', 'Supabase conectado');
+      console.info('[Kaddu] Conexión con Supabase lista.');
+    } catch (error) {
+      console.error('[Kaddu] Error de conexión con Supabase:', error);
+      setConnectionStatus('error', 'Supabase sin conexión');
+    }
+  }
+
+  window.KADDU_SUPABASE = Object.freeze({
+    url: SUPABASE_URL,
+    client: () => window.kadduSupabase || null
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeSupabase, { once: true });
+  } else {
+    initializeSupabase();
+  }
+})();
+</script>
 <script>
 const productos=[["Lava Ropas Multiacción 5L",500,26],["Lava Ropas Lavanda 5L",500,24],["Lava Ropas Coco 5L",444,29],["Lava Ropa 5L",252,22],["Lava Ropas Especial 5L",120,23.5],["Lava Ropas con Glicerina 5L",120,23],["Lavalozas Limón 5L",316,22],["Lavalozas Neutro 5L",280,19.5],["Multiuso Bicarbonato + Alcohol Refil 3L",744,14.5],["Multiuso Bicarbonato + Alcohol 500 ml",600,7.2],["Suavizante de Ropa 5L",168,15.5],["Limpiador Concentrado Lavanda 140 ml",504,7],["Limpiador Concentrado Hierba Limón 140 ml",504,7],["Aromatizante Floral 2L",144,7.75],["Aromatizante Lavanda 2L",120,8.99],["Lava Ropas Multiacción 3L",702,15.39],["Lava Ropas Lavanda 3L",504,17.59],["Lava Ropas Coco 3L",450,17],["Lavalozas Limón 2L",498,9.59],["Lavalozas Neutro 2L",384,9.59]].map((p,i)=>{const n=p[0].toLowerCase(),peso=n.includes('5l')?5:n.includes('3l')?3:n.includes('2l')?2:n.includes('500 ml')?.5:n.includes('140 ml')?.14:1;return{id:i,nombre:p[0],cantidad:p[1],brl:p[2],peso}});
 const ids=['tc','flete','agencia','ivaImport','ivaVenta','kilosMes','almacenajeKg','distribucionAntofagasta','distribucionCalama','mixAntofagasta','mixCalama','comisionPago','marketing','merma','margenDistribuidor','margenMayorista','margenRetail','margenHoreca','margenDirecta','nombreVendedor','sueldoVendedor','cargasVendedor','movilizacion','periodoComision','metodoComision','tipoEscala','comisionVendedor','condicionCobranza','bonoCliente','clientesNuevos','metaVenta','ventaReal','porcentajeCobrado','margenMeta','devolucionesComision','margenMinimo','topeComision','bonoMargen','umbralBonoMargen','tasa80','tasa100','tasa110','tasa120','cantidadVendedores'];
