@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es-CL">
 <head>
-<meta charset="utf-8"><meta name="kaddu-build" content="conversion-seguimiento-v1"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="kaddu-build" content="crm-v1.1.0-gestor-supabase"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gestor Comercial Kaddu</title>
 <style>
 :root{--bg:#f4f7fb;--card:#fff;--text:#17202a;--muted:#667085;--line:#d8dee9;--accent:#2367d1;--navy:#102a43;--good:#18794e;--bad:#b42318;--soft:#eef4ff}
@@ -245,6 +245,15 @@ body[data-role="seller"] #marginAlert{display:none!important}
 .catalog-product-thumb{width:48px;height:48px;flex:0 0 48px;object-fit:contain;border:1px solid var(--line);border-radius:9px;background:#fff}
 .catalog-product-placeholder{display:grid;place-items:center;color:#98a2b3;font-size:9px;background:#f8fafc}
 @media print{body[data-role="seller"] #marginAlert{display:none!important}.catalog-product-thumb{width:32px;height:32px;flex-basis:32px}.catalog-product-cell{min-width:0}}
+
+.commercial-subtabs{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 18px}.commercial-subtab{border:1px solid #cbd5e1;background:#eaf0f8;color:#102a43;padding:10px 16px;border-radius:10px;font-weight:700;cursor:pointer}.commercial-subtab.active{background:#286bd6;color:#fff;border-color:#286bd6}.commercial-view{display:none}.commercial-view.active{display:block}
+
+/* Configuracion de catalogos */
+.catalog-layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:16px;align-items:start}
+.catalog-groups{display:grid;gap:7px}.catalog-group-btn{width:100%;text-align:left;background:#fff;color:#344054;border:1px solid var(--line);padding:10px 12px}.catalog-group-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.catalog-toolbar{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}.catalog-toolbar .control{min-width:240px;margin:0}.catalog-table{min-width:720px}.catalog-state{display:inline-flex;padding:4px 9px;border-radius:999px;font-size:11px;font-weight:800}.catalog-state.active{background:#dcfce7;color:#166534}.catalog-state.inactive{background:#fee2e2;color:#991b1b}.catalog-order{width:74px}.catalog-empty{text-align:center;color:var(--muted);padding:24px!important}.catalog-note{margin-top:12px;padding:11px 13px;border:1px solid #c8d9f6;border-radius:10px;background:#f7faff;color:#475467;font-size:12px;line-height:1.45}
+@media(max-width:850px){.catalog-layout{grid-template-columns:1fr}.catalog-groups{grid-template-columns:repeat(2,minmax(0,1fr))}.catalog-group-btn{text-align:center}}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -269,6 +278,14 @@ body[data-role="seller"] #marginAlert{display:none!important}
 .image-viewer-close{position:absolute;right:12px;top:12px;z-index:2;width:40px;height:40px;border:0;border-radius:999px;padding:0;background:#102a43;color:#fff;font-size:24px;line-height:1;cursor:pointer}
 .image-viewer-help{font-size:11px;color:#667085;margin-top:5px;text-align:center}
 @media print{.image-viewer{display:none!important}}
+</style>
+
+<style id="sales-cycle-v1-style">
+.sales-cycle-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:14px}.sales-cycle-head h2{margin:0;color:var(--navy)}.sales-cycle-head p{margin:5px 0 0;color:var(--muted)}.sales-cycle-status{display:flex;gap:8px;flex-wrap:wrap}.sales-cycle-flow{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(135deg,#f8fbff,#eef4ff);margin-bottom:14px}.sales-cycle-flow>div{display:grid;grid-template-columns:28px 1fr;column-gap:8px;align-items:center}.sales-cycle-flow b{grid-row:1/3;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff}.sales-cycle-flow strong{font-size:12px;color:var(--navy)}.sales-cycle-flow span{font-size:10px;color:var(--muted)}.sales-cycle-flow i{font-style:normal;color:#98a2b3}.sales-cycle-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;border-bottom:1px solid var(--line);padding-bottom:10px}.sales-cycle-tab{background:#eef3fb;color:#344054;border:1px solid #d8e0ec}.sales-cycle-tab.active{background:var(--navy);color:#fff}.sales-cycle-view{display:none}.sales-cycle-view.active{display:block}.sc-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.sc-kpis .card{padding:14px}.sc-kpis span{display:block;font-size:11px;color:var(--muted)}.sc-kpis strong{display:block;font-size:24px;color:var(--navy);margin:5px 0}.sc-kpis small{font-size:10px;color:var(--muted)}.sc-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}.sc-card-head h3{margin:0}.sc-card-head p{margin:4px 0 0;font-size:11px;color:var(--muted)}.sc-form{margin-bottom:0}.sc-profile{display:grid;gap:9px}.sc-profile>div{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid var(--line)}.sc-profile span{color:var(--muted);font-size:12px}.sc-alert{display:grid;gap:4px;margin-top:14px;padding:12px;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:12px}.sc-scale{display:grid;gap:8px}.sc-scale>div{display:flex;justify-content:space-between;padding:11px;border:1px solid var(--line);border-radius:9px}.sc-scale span{color:var(--muted)}.sc-table{min-width:900px}.sc-table input,.sc-table select{min-width:110px;padding:8px}.sc-table tfoot td{background:#f8fafc}.sc-period-bar{display:flex;align-items:end;gap:14px;flex-wrap:wrap;margin-bottom:16px}.sc-period-bar>div{min-width:190px}.sc-period-bar button{margin-bottom:10px}.sc-reading{display:grid;gap:10px}.sc-reading>div{padding:11px;border-radius:10px;background:#f8fafc;border:1px solid var(--line)}.sc-reading strong{display:block;color:var(--navy);margin-bottom:3px}.sc-liquidation-lines{display:grid}.sc-liquidation-lines>div{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line)}.sc-liquidation-total{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding:15px;border-radius:12px;background:#ecfdf3;color:#05603a}.sc-liquidation-total strong{font-size:26px}.sc-approval{display:grid;gap:9px;margin-bottom:14px}.sc-approval>div{display:flex;justify-content:space-between;padding:10px;background:#f8fafc;border-radius:8px}.sc-audit{display:grid;gap:9px;font-size:12px}.sc-audit>div{padding:10px 12px;border-left:4px solid #286bd6;background:#f7faff;border-radius:6px}.sc-score-critical{color:#b42318!important}.sc-score-warning{color:#b54708!important}.sc-score-good{color:#18794e!important}.sc-score-excellent{color:#075985!important}@media(max-width:950px){.sc-kpis{grid-template-columns:repeat(2,1fr)}.sales-cycle-flow{justify-content:flex-start;overflow:auto}.sales-cycle-flow i{display:none}}@media(max-width:600px){.sc-kpis{grid-template-columns:1fr}.sales-cycle-head{flex-direction:column}.sales-cycle-tabs{display:grid;grid-template-columns:1fr 1fr}.sales-cycle-tab{width:100%}}
+</style>
+
+<style id="sales-cycle-v3-extra">
+#scPlanRows select{min-width:190px}.status-pill{white-space:normal}.sc-table td{vertical-align:middle}.sc-table small{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -305,16 +322,16 @@ body[data-role="seller"] #marginAlert{display:none!important}
 </div>
 
 <main>
-<div class="tabs no-print"><button class="tab active" data-panel="config">1. Costos</button><button class="tab" data-panel="costeo">2. Productos y márgenes</button><button class="tab" data-panel="productosAdmin">Administrar productos</button><button class="tab" data-panel="cotizacion">3. Cotización</button><button class="tab" data-panel="crm">Conversión y seguimiento</button><button class="tab" data-panel="listaPrecios">Lista de precios</button><button class="tab" data-panel="dealers">4. Comerciales</button><button class="tab" data-panel="proyeccion">5. Utilidad proyectada</button><button class="tab" data-panel="usuarios">Usuarios</button></div>
+<div class="tabs no-print"><button class="tab active" data-panel="config">1. Costos</button><button class="tab" data-panel="costeo">2. Productos y márgenes</button><button class="tab" data-panel="productosAdmin">Administrar productos</button><button class="tab" data-panel="cotizacion">3. Cotización</button><button class="tab" data-panel="crm">Conversión y seguimiento</button><button class="tab" data-panel="listaPrecios">Lista de precios</button><button class="tab" data-panel="dealers">4. Comerciales</button><button class="tab" data-panel="proyeccion">5. Utilidad proyectada</button><button class="tab" data-panel="usuarios">Usuarios</button><button class="tab" data-panel="configuracion">Configuración</button></div>
 <section id="usuarios" class="panel">
 <div class="users-layout">
   <div class="card"><h3>Crear usuario</h3><p class="mini">Cada persona debe usar una cuenta individual. El correo será su acceso.</p><div class="setup-note" style="margin-bottom:12px">Las cuentas y sesiones se administran con Supabase Auth. Los roles y datos comerciales se guardan en la tabla <code>usuarios</code>.</div>
     <label>Nombre completo</label><input id="newUserName" autocomplete="name">
     <label>Correo electrónico</label><input id="newUsername" type="email" autocomplete="email" placeholder="vendedor@empresa.cl">
     <label>Contraseña temporal</label><input id="newUserPassword" type="password" minlength="8" autocomplete="new-password">
-    <label>Rol</label><select id="newUserRole"><option value="seller">Vendedor</option><option value="supervisor">Supervisor</option><option value="admin">Administrador</option></select>
-    <div class="grid two" style="margin-top:10px;margin-bottom:0"><div><label>Zona / equipo</label><input id="newUserZone" placeholder="Ej.: Antofagasta"></div><div><label>Teléfono</label><input id="newUserPhone" type="tel" placeholder="+56 9..."></div></div>
-    <div class="grid two" style="margin-bottom:0"><div><label>Comisión (%)</label><input id="newUserCommission" type="number" min="0" max="100" step="0.1" value="0"></div><div><label>Estado</label><select id="newUserActive"><option value="true">Activo</option><option value="false">Inactivo</option></select></div></div>
+    <label>Rol de acceso</label><select id="newUserRole"><option value="seller">Vendedor</option><option value="supervisor">Supervisor</option><option value="admin">Administrador</option></select><label>Tipo de vendedor</label><select id="newUserSellerType" data-catalog-select="tipo_vendedor"><option value="">Sin asignar</option></select>
+    <div class="grid two" style="margin-top:10px;margin-bottom:0"><div><label>Zona / equipo</label><select id="newUserZone" data-catalog-select="zona"><option value="">Sin asignar</option></select></div><div><label>Teléfono</label><input id="newUserPhone" type="tel" placeholder="+56 9..."></div></div>
+    <div style="margin-bottom:0"><label>Estado</label><select id="newUserActive"><option value="true">Activo</option><option value="false">Inactivo</option></select></div>
     <button type="button" id="btnCreateUser" style="margin-top:14px;width:100%">Crear usuario</button>
     <div id="userAdminMessage" class="auth-message"></div>
   </div>
@@ -325,11 +342,23 @@ body[data-role="seller"] #marginAlert{display:none!important}
   <div class="product-modal-card" role="dialog" aria-modal="true" aria-labelledby="userEditTitle">
     <div class="modal-head"><div><h3 id="userEditTitle">Editar usuario</h3><div class="mini">El correo identifica la cuenta y no puede quedar duplicado.</div></div><button type="button" class="ghost" id="btnCloseUserEdit">Cerrar</button></div>
     <input id="editUserOriginal" type="hidden">
-    <div class="grid two"><div><label>Nombre completo</label><input id="editUserName"></div><div><label>Correo electrónico</label><input id="editUserEmail" type="email"></div><div><label>Rol</label><select id="editUserRole"><option value="seller">Vendedor</option><option value="supervisor">Supervisor</option><option value="admin">Administrador</option></select></div><div><label>Estado</label><select id="editUserActive"><option value="true">Activo</option><option value="false">Inactivo</option></select></div><div><label>Zona / equipo</label><input id="editUserZone"></div><div><label>Teléfono</label><input id="editUserPhone" type="tel"></div><div><label>Comisión (%)</label><input id="editUserCommission" type="number" min="0" max="100" step="0.1"></div></div>
+    <div class="grid two"><div><label>Nombre completo</label><input id="editUserName"></div><div><label>Correo electrónico</label><input id="editUserEmail" type="email"></div><div><label>Rol de acceso</label><select id="editUserRole"><option value="seller">Vendedor</option><option value="supervisor">Supervisor</option><option value="admin">Administrador</option></select></div><div><label>Tipo de vendedor</label><select id="editUserSellerType" data-catalog-select="tipo_vendedor"><option value="">Sin asignar</option></select></div><div><label>Estado</label><select id="editUserActive"><option value="true">Activo</option><option value="false">Inactivo</option></select></div><div><label>Zona / equipo</label><select id="editUserZone" data-catalog-select="zona"><option value="">Sin asignar</option></select></div><div><label>Teléfono</label><input id="editUserPhone" type="tel"></div></div>
     <div class="actions"><button type="button" id="btnSaveUserEdit">Guardar cambios</button><button type="button" class="ghost" id="btnCancelUserEdit">Cancelar</button></div>
     <div id="userEditMessage" class="auth-message"></div>
   </div>
 </div>
+<section id="configuracion" class="panel">
+<div class="commission-header"><div><h2>Configuración del CRM</h2><div class="mini">Administra las listas maestras utilizadas en usuarios, clientes y cotizaciones sin modificar el código.</div></div><span class="status-pill good">Solo administradores</span></div>
+<div class="catalog-layout">
+  <div class="card"><h3>Listas maestras</h3><div id="catalogGroups" class="catalog-groups"></div><div class="catalog-note"><strong>Importante:</strong> desactivar un valor evita que se use en registros nuevos, pero conserva la información histórica.</div></div>
+  <div class="card">
+    <div class="catalog-toolbar"><div><h3 id="catalogTitle" style="margin:0">Catálogo</h3><div id="catalogDescription" class="mini"></div></div><button type="button" id="btnNewCatalogItem">Agregar valor</button></div>
+    <div class="table-wrap"><table class="catalog-table"><thead><tr><th>Nombre</th><th>Código</th><th>Orden</th><th>Predeterminado</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="catalogTableBody"></tbody></table></div>
+    <div id="catalogMessage" class="auth-message"></div>
+  </div>
+</div>
+</section>
+<div id="catalogModal" class="product-modal" aria-hidden="true"><div class="product-modal-card" role="dialog" aria-modal="true"><div class="modal-head"><div><h3 id="catalogModalTitle">Nuevo valor</h3><div class="mini">Los códigos se usan internamente y deben ser únicos dentro de cada lista.</div></div><button type="button" class="ghost" id="btnCloseCatalogModal">Cerrar</button></div><input type="hidden" id="catalogItemId"><div class="grid two"><div><label>Nombre</label><input id="catalogItemName"></div><div><label>Código</label><input id="catalogItemCode" placeholder="ejecutivo_senior"></div><div><label>Orden</label><input id="catalogItemOrder" type="number" min="0" value="10"></div><div><label>Estado</label><select id="catalogItemActive"><option value="true">Activo</option><option value="false">Inactivo</option></select></div><div><label>Predeterminado</label><select id="catalogItemDefault"><option value="false">No</option><option value="true">Sí</option></select></div><div><label>Descripción</label><input id="catalogItemDescription"></div></div><div class="actions"><button type="button" id="btnSaveCatalogItem">Guardar</button><button type="button" class="ghost" id="btnCancelCatalogItem">Cancelar</button></div></div></div>
 <section id="config" class="panel active">
 <div class="callout"><strong>Modelo Kaddu:</strong> el costo se construye desde la importación, luego se agrega logística por peso. El escenario operativo usa una bodega propia en Antofagasta, 70% de distribución local y 30% hacia Calama.</div>
 <div class="grid four">
@@ -417,15 +446,15 @@ body[data-role="seller"] #marginAlert{display:none!important}
 <div><label>Correlativo</label><input id="quoteNumber" readonly><span class="print-value" id="pvQuoteNumber"></span></div>
 <div><label>Fecha</label><input id="quoteDate" type="date"><span class="print-value" id="pvQuoteDate"></span></div>
 <div><label>Validez</label><input id="quoteValidity" type="number" value="15"><span class="print-value" id="pvQuoteValidity"></span></div>
-<div><label>Lista aplicada</label><select id="quoteChannel"><option value="distribuidor">Distribuidor</option><option value="mayorista">Mayorista</option><option value="horeca">Horeca</option><option value="retail">Retail</option><option value="directa">Venta directa</option></select><span class="print-value" id="pvQuoteChannel"></span></div>
+<div><label>Lista aplicada</label><select id="quoteChannel" data-catalog-select="canal_venta"><option value="distribuidor">Distribuidor</option><option value="mayorista">Mayorista</option><option value="horeca">Horeca</option><option value="retail">Retail</option><option value="directa">Venta directa</option></select><span class="print-value" id="pvQuoteChannel"></span></div>
 </div><p class="mini no-print">La lista se asigna automáticamente según el tipo de cliente.</p></div>
 <div class="quote-box"><h3>Datos del cliente</h3><div class="client-toolbar no-print"><div><label>Cliente guardado</label><select id="savedClientSelect"><option value="">Seleccionar cliente...</option></select></div><button type="button" class="ghost" id="btnLoadClient">Cargar</button><button type="button" class="secondary" id="btnSaveClient">Guardar cliente</button></div><div class="quote-field-grid">
-<div><label>Tipo de cliente</label><select id="clientType"><option value="mayorista">Mayorista</option><option value="distribuidor">Distribuidor</option><option value="horeca">Horeca</option><option value="retail">Retail / cliente final</option><option value="institucional">Institucional / empresa de aseo</option></select><span class="print-value" id="pvClientType"></span></div>
+<div><label>Tipo de cliente</label><select id="clientType" data-catalog-select="tipo_cliente"><option value="mayorista">Mayorista</option><option value="distribuidor">Distribuidor</option><option value="horeca">Horeca</option><option value="retail">Retail / cliente final</option><option value="institucional">Institucional / empresa de aseo</option></select><span class="print-value" id="pvClientType"></span></div>
 <div><label>RUT</label><input id="clientRut" placeholder="12.345.678-9"><span class="print-value" id="pvClientRut"></span></div>
 <div class="wide"><label>Razón social / nombre</label><input id="clientName" placeholder="Nombre o empresa"><span class="print-value" id="pvClientName"></span></div>
 <div class="wide"><label>Dirección</label><input id="clientAddress"><span class="print-value" id="pvClientAddress"></span></div>
 <div><label>Zona comercial / destino</label><select id="clientZone"><option value="norte">Antofagasta y Norte</option><option value="zofri">Iquique / ZOFRI (alternativa)</option><option value="centro">Santiago y Zona Centro</option><option value="sur">Zona Sur</option><option value="otro">Otro destino</option></select><span class="print-value" id="pvClientZone"></span></div>
-<div><label>Ciudad de destino</label><input id="clientCity" placeholder="Ej.: Santiago, Concepción, Iquique"><span class="print-value" id="pvClientCity"></span></div>
+<div><label>Ciudad de destino</label><select id="clientCity" data-catalog-select="ciudad"><option value="">Seleccionar ciudad...</option></select><span class="print-value" id="pvClientCity"></span></div>
 <div class="wide"><label>Contacto / correo</label><input id="clientContact"><span class="print-value" id="pvClientContact"></span></div><div><label>Vendedor responsable</label><input id="quoteSeller" placeholder="Nombre del vendedor"><span class="print-value" id="pvQuoteSeller"></span></div><div><label>Teléfono vendedor</label><input id="quoteSellerPhone" placeholder="+56 9..."><span class="print-value" id="pvQuoteSellerPhone"></span></div><div class="wide"><label>Correo vendedor</label><input id="quoteSellerEmail" placeholder="ventas@kaddu.cl"><span class="print-value" id="pvQuoteSellerEmail"></span></div><div><label>Plazo estimado de entrega</label><input id="quoteDelivery" placeholder="Ej.: 3 a 5 días hábiles"><span class="print-value" id="pvQuoteDelivery"></span></div><div><label>Forma de despacho</label><select id="quoteShippingMethod"><option value="Despacho coordinado">Despacho coordinado</option><option value="Retiro en bodega">Retiro en bodega</option><option value="Transporte pagado por cliente">Transporte pagado por cliente</option><option value="Por definir">Por definir</option></select><span class="print-value" id="pvQuoteShippingMethod"></span></div>
 </div></div></div>
 <div class="actions no-print"><button type="button" id="btnAgregarProducto">+ Agregar producto</button><button type="button" class="secondary" id="btnGuardarCotizacion">Guardar cotización</button><button type="button" class="secondary" id="btnPDF">Vista previa / guardar PDF</button><button type="button" class="ghost" id="btnNuevaCotizacion">Nueva cotización</button><span id="lineStatus" class="mini" style="align-self:center"></span></div><div id="saveStatus" class="save-status no-print"><div><strong id="saveStatusTitle">Cotización guardada</strong><span id="saveStatusText"></span></div><div class="save-status-actions"><button type="button" id="btnOpenSaved">Abrir</button><button type="button" class="secondary" id="btnPdfSaved">Ver / guardar PDF</button><button type="button" class="ghost" id="btnHidePreview">Cerrar</button></div></div>
@@ -434,25 +463,6 @@ body[data-role="seller"] #marginAlert{display:none!important}
 <div class="quote-footer"><div class="card"><label>Condiciones de pago</label><textarea id="quotePayment">Transferencia bancaria. Valores expresados en pesos chilenos.</textarea><div class="print-value" id="pvQuotePayment"></div></div><div class="card"><label>Observaciones</label><textarea id="quoteNotes">Cotización sujeta a disponibilidad de stock. Despacho se cobra según destino, salvo acuerdo comercial.</textarea><div class="print-value" id="pvQuoteNotes"></div></div></div>
 <div class="print-commercial"><div><strong>Ejecutivo comercial</strong><br><span id="pdfSellerContact">-</span></div><div><strong>Entrega y despacho</strong><br><span id="pdfDeliveryInfo">-</span></div></div><div class="quote-legal">Kaddu · RUT 78.373.775-2 · Antofagasta, Chile · Documento comercial generado por el Gestor Kaddu</div><div class="saved-quotes no-print"><div class="history-toolbar"><div><h3 style="margin:0 0 4px">Historial de cotizaciones</h3><div class="mini">Abre una cotización guardada o genera nuevamente su PDF.</div></div><div class="actions"><button type="button" class="ghost" id="btnExportQuotes">Exportar respaldo</button><button type="button" class="ghost" id="btnImportQuotes">Importar respaldo</button><input type="file" id="quoteBackupFile" accept="application/json" hidden></div></div><div class="storage-note"><span class="storage-dot"></span><div><strong>Guardado local:</strong> los datos quedan en este navegador mientras uses el mismo archivo/origen y no borres sus datos. No se guarda un PDF automáticamente; el PDF se crea cuando presionas “Ver / guardar PDF”. Para proteger el historial ante limpieza del navegador o cambio de computador, usa “Exportar respaldo”.</div></div><div class="table-wrap" id="savedQuotesList"></div></div>
 </div></section>
-<section id="vendedores" class="panel">
-<div class="commission-header"><div><h2>Plan y simulador de comisiones</h2><div class="mini">Define la política, prueba un período y revisa qué recibe el vendedor y qué conserva la empresa.</div></div><span class="status-pill good">Simulación · no afecta ventas reales</span></div>
-<div class="commission-steps"><div class="commission-step"><strong>1. Define la base</strong><span>Venta confirmada o efectivamente cobrada.</span></div><div class="commission-step"><strong>2. Elige el método</strong><span>Venta, meta o modelo mixto.</span></div><div class="commission-step"><strong>3. Aplica condiciones</strong><span>Margen mínimo, devoluciones, bonos y tope.</span></div><div class="commission-step"><strong>4. Revisa el resultado</strong><span>Comisión individual y costo total.</span></div></div>
-<div class="grid three">
-<div class="card"><h3>Vendedor y período</h3><label>Nombre del vendedor</label><input id="nombreVendedor" value="Vendedor 1"><label>Período</label><select id="periodoComision"><option>Mensual</option><option>Trimestral</option><option>Anual</option></select><label>Sueldo base</label><input id="sueldoVendedor" type="number" value="0"><label>Cargas (%)</label><input id="cargasVendedor" type="number" value="25"><label>Movilización</label><input id="movilizacion" type="number" value="0"><label>Número de vendedores</label><input id="cantidadVendedores" type="number" value="1" min="1"></div>
-<div class="card"><h3>Política de comisión</h3><label>Método</label><select id="metodoComision"><option value="venta">Por venta neta</option><option value="meta" selected>Por cumplimiento de meta</option><option value="mixto">Mixto: base + meta</option></select><label>Tipo de escala</label><select id="tipoEscala"><option value="retroactiva">Retroactiva: tasa sobre toda la base</option><option value="progresiva">Progresiva: tasa por tramo</option></select><label>Comisión base sobre venta (%)</label><input id="comisionVendedor" type="number" value="2" step="0.1"><label>Base de liberación</label><select id="condicionCobranza"><option value="si" selected>Solo ventas cobradas</option><option value="no">Ventas confirmadas</option></select><label>Tope de comisión por vendedor</label><input id="topeComision" type="number" value="0"><div class="mini">Ingresa 0 para no aplicar tope.</div></div>
-<div class="card"><h3>Resultado del período</h3><label>Meta de venta neta</label><input id="metaVenta" type="number" value="10000000"><label>Venta neta lograda</label><input id="ventaReal" type="number" value="8500000"><label>Porcentaje cobrado (%)</label><input id="porcentajeCobrado" type="number" value="100" min="0" max="100"><label>Margen real (%)</label><input id="margenMeta" type="number" value="35"><label>Margen mínimo para comisionar (%)</label><input id="margenMinimo" type="number" value="20"><label>Notas de crédito / devoluciones</label><input id="devolucionesComision" type="number" value="0"></div>
-</div>
-<div class="commission-rules-grid">
-<div class="card"><h3>Escala de comisión por cumplimiento de meta</h3><table class="commission-scale-table"><thead><tr><th>Cumplimiento mínimo</th><th>Comisión</th><th>Interpretación</th></tr></thead><tbody><tr><td>Desde 80%</td><td><input id="tasa80" type="number" value="1" step="0.1" aria-label="Comisión desde 80 por ciento"> %</td><td>80% a 99,99% de la meta</td></tr><tr><td>Desde 100%</td><td><input id="tasa100" type="number" value="2" step="0.1" aria-label="Comisión desde 100 por ciento"> %</td><td>100% a 109,99% de la meta</td></tr><tr><td>Desde 110%</td><td><input id="tasa110" type="number" value="3" step="0.1" aria-label="Comisión desde 110 por ciento"> %</td><td>110% a 119,99% de la meta</td></tr><tr><td>Desde 120%</td><td><input id="tasa120" type="number" value="4" step="0.1" aria-label="Comisión desde 120 por ciento"> %</td><td>120% o más de la meta</td></tr></tbody></table><div class="commission-scale-help" id="explicacionEscala"><strong>Cómo se lee:</strong> si el vendedor cumple 85% de la meta, se aplica 1% de comisión sobre la base comisionable.</div></div>
-<div class="card"><h3>Bonos complementarios</h3><div class="commission-bonus-grid"><div><label>Bono fijo por cliente nuevo</label><input id="bonoCliente" type="number" value="20000"></div><div><label>Cantidad de clientes nuevos</label><input id="clientesNuevos" type="number" value="0"></div><div><label>Bono adicional sobre la base (%)</label><input id="bonoMargen" type="number" value="0.5" step="0.1"></div><div><label>Activar desde margen real (%)</label><input id="umbralBonoMargen" type="number" value="35" step="0.1"></div></div></div>
-</div>
-<div class="commission-metrics"><div class="card"><label>Cumplimiento de la meta</label><div class="kpi" id="kpiCumplimiento">0%</div><div class="progress-track"><div class="progress-fill" id="barraCumplimiento"></div></div></div><div class="card"><label>Base comisionable</label><div class="kpi" id="kpiBaseComision">$0</div><div class="metric-caption">Monto sobre el cual se calculan comisión y bonos.</div></div><div class="card"><label>Comisión total sobre la base</label><div class="kpi" id="kpiTasaEfectiva">0%</div><div class="metric-caption">Incluye comisión por meta, comisión base y bonos porcentuales.</div></div><div class="card"><label>Bonos totales</label><div class="kpi" id="kpiBonosVendedor">$0</div><div class="metric-caption">Bonos por clientes nuevos y margen.</div></div><div class="card"><label>Comisión final</label><div class="kpi" id="kpiComisionFinal">$0</div><div class="metric-caption">Resultado después de bonos y tope configurado.</div></div></div>
-<div class="commission-summary"><div class="commission-result"><div class="mini">Resultado individual de <strong id="nombreResultado">Vendedor 1</strong></div><div class="amount" id="comisionResultadoGrande">$0</div><div class="rate" id="estadoComision">Pendiente de cálculo</div><div class="progress-track"><div class="progress-fill" id="barraResultado"></div></div></div><div class="card"><h3>Desglose individual</h3><div class="commission-breakdown" id="desgloseComision"></div></div></div>
-<div class="metric-row" style="margin-top:16px"><div class="card"><label>Costo fijo vendedor</label><div class="kpi" id="kpiCostoVendedor">$0</div></div><div class="card"><label>Comisión variable total</label><div class="kpi" id="kpiComisionVendedor">$0</div></div><div class="card"><label>Costo fuerza de venta</label><div class="kpi" id="kpiFuerzaVenta">$0</div></div><div class="card"><label>Contribución estimada</label><div class="kpi" id="kpiContribucion">$0</div></div><div class="card"><label>Resultado empresa</label><div class="kpi" id="kpiResultadoVendedor">$0</div></div></div>
-<div class="callout" id="recomendacionVendedor"></div><div class="card"><h3>Auditoría del cálculo</h3><div id="detalleComision" class="mini"></div></div>
-</section>
-
-
 <section id="crm" class="panel">
   <div class="callout"><strong>Conversión comercial:</strong> administra el seguimiento, vencimientos, probabilidad de cierre y conversión de cotizaciones en ventas. Este módulo no muestra costos, utilidades ni márgenes.</div>
   <div class="crm-grid">
@@ -471,8 +481,108 @@ body[data-role="seller"] #marginAlert{display:none!important}
 
 
 <section id="dealers" class="panel">
-  <div class="callout"><strong>Comerciales y comisiones:</strong> el canal define el precio. El tipo de venta define si corresponde comisión y cómo se calcula.</div>
-  <div class="grid two">
+  <div class="sales-cycle-head">
+    <div><h2>Gestor Comercial</h2><p>Define la relación comercial, asigna metas, revisa resultados operacionales y aprueba el incentivo del período.</p></div>
+    <div class="sales-cycle-status"><span class="status-pill good">Modelo comercial vigente</span><span id="scPeriodBadge" class="status-pill">Julio 2026</span></div>
+  </div>
+  <div class="sales-cycle-flow" aria-label="Flujo de gestión comercial">
+    <div><b>1</b><strong>Relación</strong><span>Quién vende</span></div><i>→</i><div><b>2</b><strong>Plan</strong><span>Qué debe lograr</span></div><i>→</i><div><b>3</b><strong>Resultado</strong><span>Qué obtuvo</span></div><i>→</i><div><b>4</b><strong>Incentivo</strong><span>Qué se generó</span></div><i>→</i><div><b>5</b><strong>Historial</strong><span>Qué quedó cerrado</span></div>
+  </div>
+  <div class="sales-cycle-tabs no-print">
+    <button class="sales-cycle-tab active" data-sc-view="equipo">Relación comercial</button>
+    <button class="sales-cycle-tab" data-sc-view="plan">Plan comercial</button>
+    <button class="sales-cycle-tab" data-sc-view="evaluacion">Evaluación</button>
+    <button class="sales-cycle-tab" data-sc-view="liquidacion">Incentivo</button>
+    <button class="sales-cycle-tab" data-sc-view="historial">Historial</button>
+  </div>
+
+  <div id="scViewEquipo" class="sales-cycle-view active">
+    <div class="grid two">
+      <div class="card">
+        <div class="sc-card-head"><div><h3>Relación comercial</h3><p>Información laboral y comercial vigente del vendedor.</p></div><button type="button" id="scSaveSeller">Guardar relación</button></div>
+        <label>Vendedor</label><select id="scSeller"></select>
+        <div class="grid two sc-form">
+          <div><label>Cargo</label><select id="scRole"><option>Ejecutivo comercial</option><option>Ejecutivo comercial senior</option><option>Key Account Manager</option><option>Jefe comercial</option></select></div>
+          <div><label>Tipo de contrato</label><select id="scRelationship"><option>Contrato indefinido</option><option>Plazo fijo</option><option>Honorarios</option></select></div>
+          <div><label>Jefe responsable</label><input id="scManager"></div>
+          <div><label>Zona / equipo</label><input id="scZone"></div>
+          <div><label>Fecha de inicio</label><input id="scStart" type="date"></div>
+          <div><label>Estado</label><select id="scStatus"><option>Activo</option><option>Período de prueba</option><option>Inactivo</option></select></div>
+          <div><label>Sueldo base mensual</label><input id="scBaseSalary" type="text" inputmode="numeric"></div>
+          <div><label>Incentivo objetivo mensual</label><input id="scTargetVariable" type="text" inputmode="numeric"></div>
+        </div>
+        <div id="scSellerMessage" class="auth-message"></div>
+      </div>
+      <div class="card">
+        <h3>Resumen vigente</h3><div class="sc-profile" id="scProfileSummary"></div>
+        <div class="sc-alert"><strong>Control</strong><span>El sueldo base no depende de la evaluación. Solo el incentivo variable requiere cálculo y aprobación.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="scViewPlan" class="sales-cycle-view">
+    <div class="grid two">
+      <div class="card">
+        <div class="sc-card-head"><div><h3>Datos del plan</h3><p>Plan asignado al vendedor seleccionado.</p></div><button type="button" id="scSavePlan">Guardar plan</button></div>
+        <label>Nombre del plan</label><input id="scPlanName">
+        <div class="grid two sc-form">
+          <div><label>Vigente desde</label><input id="scPlanStart" type="date"></div>
+          <div><label>Vigente hasta</label><input id="scPlanEnd" type="date"></div>
+          <div><label>Umbral mínimo para pagar</label><input id="scPayThreshold" type="number" min="0" max="100"><small>% de cumplimiento total</small></div>
+          <div><label>Tope máximo pagable</label><input id="scCap" type="number" min="100" max="200"><small>% del incentivo objetivo</small></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Regla de venta</h3>
+        <label>Evento operacional que hace válida una venta</label><select id="scSalesEvent"><option value="confirmed">Venta confirmada</option><option value="invoiced">Factura emitida</option><option value="delivered">Pedido entregado</option><option value="paid">Pago recibido</option></select>
+        <label>Tratamiento de anulaciones y devoluciones</label><select id="scReversalRule"><option value="subtract">Descontar del período en que se registra</option><option value="next">Descontar del período siguiente</option><option value="review">Enviar a revisión del gerente</option></select>
+        <p class="note">Estas reglas se aplican al resultado operacional. El gerente no escribe ni modifica ventas manualmente.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sc-card-head"><div><h3>Metas del plan</h3><p>Agrega solo lo que realmente controla el vendedor. Los pesos deben sumar 100,00 %.</p></div><button type="button" id="scAddGoal">Agregar meta</button></div>
+      <div class="table-wrap"><table class="sc-table"><thead><tr><th>Qué se mide</th><th>Origen</th><th>Meta</th><th>Importancia</th><th></th></tr></thead><tbody id="scPlanRows"></tbody><tfoot><tr><td colspan="3"><strong>Total</strong></td><td><strong id="scWeightTotal">0,00 %</strong></td><td id="scWeightStatus"></td></tr></tfoot></table></div>
+    </div>
+  </div>
+
+  <div id="scViewEvaluacion" class="sales-cycle-view">
+    <div class="sc-period-bar card"><div><label>Período</label><input id="scPeriod" type="month"></div><div><label>Vendedor</label><select id="scEvalSeller"></select></div><div><button type="button" id="scCalculate">Actualizar evaluación</button></div></div>
+    <div class="sc-kpis">
+      <div class="card"><span>Cumplimiento ponderado</span><strong id="scScore">0,00 %</strong><small id="scScoreLabel">Sin calcular</small></div>
+      <div class="card"><span>Incentivo objetivo</span><strong id="scVariableTarget">$ 0</strong><small>Según relación comercial</small></div>
+      <div class="card"><span>Incentivo generado</span><strong id="scVariableAccrued">$ 0</strong><small>Antes de aprobación</small></div>
+      <div class="card"><span>Estado</span><strong id="scEvaluationState">Abierta</strong><small id="scEvaluationHint">Resultados automáticos</small></div>
+    </div>
+    <div class="card">
+      <div class="sc-card-head"><div><h3>Resultados del período</h3><p>Los resultados vienen de los sistemas operacionales y son de solo lectura.</p></div></div>
+      <div class="table-wrap"><table class="sc-table"><thead><tr><th>Meta</th><th>Objetivo</th><th>Resultado</th><th>Origen</th><th>Cumplimiento</th><th>Importancia</th><th>Aporte</th></tr></thead><tbody id="scEvaluationRows"></tbody></table></div>
+    </div>
+    <div class="grid two">
+      <div class="card"><h3>Lectura de desempeño</h3><div id="scPerformanceReading" class="sc-reading"></div></div>
+      <div class="card"><h3>Observaciones del responsable</h3><textarea id="scManagerNotes" rows="6" placeholder="Registre una observación solo cuando sea necesaria."></textarea><div class="actions"><button type="button" class="ghost" id="scSaveDraft">Guardar borrador</button><button type="button" id="scSendApproval">Enviar a aprobación</button></div></div>
+    </div>
+  </div>
+
+  <div id="scViewLiquidacion" class="sales-cycle-view">
+    <div class="grid two">
+      <div class="card"><h3>Incentivo del período</h3><div class="sc-liquidation-lines" id="scLiquidationLines"></div><div class="sc-liquidation-total"><span>Incentivo a pagar</span><strong id="scTotalPay">$ 0</strong></div><p class="note">El sueldo base se muestra como referencia contractual, pero no forma parte del incentivo.</p></div>
+      <div class="card"><h3>Control y aprobación</h3><div class="sc-approval"><div><span>Evaluación</span><strong id="scApprovalEvaluation">Pendiente</strong></div><div><span>Responsable</span><strong id="scApprovalManager">Gerencia comercial</strong></div><div><span>Incentivo</span><strong id="scApprovalPayment">No aprobado</strong></div></div><label>Comentario de aprobación</label><textarea id="scApprovalComment" rows="4" placeholder="Deje constancia solo si corresponde."></textarea><div class="actions"><button type="button" class="ghost" id="scReject">Devolver</button><button type="button" id="scApprove">Aprobar incentivo</button></div><div id="scApprovalMessage" class="auth-message"></div></div>
+    </div>
+    <div class="card"><h3>Explicación del cálculo</h3><div class="sc-audit" id="scAudit"></div></div>
+  </div>
+
+  <div id="scViewHistorial" class="sales-cycle-view">
+    <div class="card"><div class="sc-card-head"><div><h3>Historial cerrado</h3><p>Los períodos aprobados quedan congelados y no se recalculan.</p></div><button type="button" class="ghost" id="scExportHistory">Exportar CSV</button></div><div class="table-wrap"><table class="sc-table"><thead><tr><th>Período</th><th>Vendedor</th><th>Plan</th><th>Cumplimiento</th><th>Incentivo</th><th>Aprobado por</th><th>Estado</th></tr></thead><tbody id="scHistoryRows"></tbody></table></div></div>
+  </div>
+
+  <details class="legacy-commercial-engine" hidden><summary>Compatibilidad del motor anterior</summary>
+  <div class="commission-header"><div><h2>Centro de gestión comercial</h2><div class="mini">Configura comisiones por venta, metas, cobranza, margen y bonos sin guardar un porcentaje fijo en la ficha del usuario.</div></div><span class="status-pill good">v0.9.5 · Operativo</span></div>
+  <div class="commercial-subtabs no-print">
+    <button type="button" class="commercial-subtab active" data-commercial-view="venta">Comisión por operación</button>
+    <button type="button" class="commercial-subtab" data-commercial-view="incentivos">Metas e incentivos</button>
+  </div>
+  <div id="commercialViewVenta" class="commercial-view active">
+<div class="grid two">
     <div class="card"><h3>Configuración de la venta</h3>
       <label>Tipo de venta</label>
       <select id="commercialType">
@@ -511,6 +621,28 @@ body[data-role="seller"] #marginAlert{display:none!important}
       <div class="commission-line total"><span>Comisión aplicada a la proyección</span><strong id="dealerComisionProyectada">$0</strong></div>
     </div><p class="note">La comisión se descuenta de la utilidad. No modifica el costo importado ni el precio definido por el canal.</p></div>
   </div>
+  </div>
+
+  <div id="commercialViewIncentivos" class="commercial-view">
+
+<div class="commission-header"><div><h2>Plan y simulador de comisiones</h2><div class="mini">Define la política, prueba un período y revisa qué recibe el vendedor y qué conserva la empresa.</div></div><span class="status-pill good">Simulación · no afecta ventas reales</span></div>
+<div class="commission-steps"><div class="commission-step"><strong>1. Define la base</strong><span>Venta confirmada o efectivamente cobrada.</span></div><div class="commission-step"><strong>2. Elige el método</strong><span>Venta, meta o modelo mixto.</span></div><div class="commission-step"><strong>3. Aplica condiciones</strong><span>Margen mínimo, devoluciones, bonos y tope.</span></div><div class="commission-step"><strong>4. Revisa el resultado</strong><span>Comisión individual y costo total.</span></div></div>
+<div class="grid three">
+<div class="card"><h3>Vendedor y período</h3><label>Nombre del vendedor</label><input id="nombreVendedor" value="Vendedor 1"><label>Período</label><select id="periodoComision"><option>Mensual</option><option>Trimestral</option><option>Anual</option></select><label>Sueldo base</label><input id="sueldoVendedor" type="number" value="0"><label>Cargas (%)</label><input id="cargasVendedor" type="number" value="25"><label>Movilización</label><input id="movilizacion" type="number" value="0"><label>Número de vendedores</label><input id="cantidadVendedores" type="number" value="1" min="1"></div>
+<div class="card"><h3>Política de comisión</h3><label>Método</label><select id="metodoComision"><option value="venta">Por venta neta</option><option value="meta" selected>Por cumplimiento de meta</option><option value="mixto">Mixto: base + meta</option></select><label>Tipo de escala</label><select id="tipoEscala"><option value="retroactiva">Retroactiva: tasa sobre toda la base</option><option value="progresiva">Progresiva: tasa por tramo</option></select><label>Comisión base sobre venta (%)</label><input id="comisionVendedor" type="number" value="2" step="0.1"><label>Base de liberación</label><select id="condicionCobranza"><option value="si" selected>Solo ventas cobradas</option><option value="no">Ventas confirmadas</option></select><label>Tope de comisión por vendedor</label><input id="topeComision" type="number" value="0"><div class="mini">Ingresa 0 para no aplicar tope.</div></div>
+<div class="card"><h3>Resultado del período</h3><label>Meta de venta neta</label><input id="metaVenta" type="number" value="10000000"><label>Venta neta lograda</label><input id="ventaReal" type="number" value="8500000"><label>Porcentaje cobrado (%)</label><input id="porcentajeCobrado" type="number" value="100" min="0" max="100"><label>Margen real (%)</label><input id="margenMeta" type="number" value="35"><label>Margen mínimo para comisionar (%)</label><input id="margenMinimo" type="number" value="20"><label>Notas de crédito / devoluciones</label><input id="devolucionesComision" type="number" value="0"></div>
+</div>
+<div class="commission-rules-grid">
+<div class="card"><h3>Escala de comisión por cumplimiento de meta</h3><table class="commission-scale-table"><thead><tr><th>Cumplimiento mínimo</th><th>Comisión</th><th>Interpretación</th></tr></thead><tbody><tr><td>Desde 80%</td><td><input id="tasa80" type="number" value="1" step="0.1" aria-label="Comisión desde 80 por ciento"> %</td><td>80% a 99,99% de la meta</td></tr><tr><td>Desde 100%</td><td><input id="tasa100" type="number" value="2" step="0.1" aria-label="Comisión desde 100 por ciento"> %</td><td>100% a 109,99% de la meta</td></tr><tr><td>Desde 110%</td><td><input id="tasa110" type="number" value="3" step="0.1" aria-label="Comisión desde 110 por ciento"> %</td><td>110% a 119,99% de la meta</td></tr><tr><td>Desde 120%</td><td><input id="tasa120" type="number" value="4" step="0.1" aria-label="Comisión desde 120 por ciento"> %</td><td>120% o más de la meta</td></tr></tbody></table><div class="commission-scale-help" id="explicacionEscala"><strong>Cómo se lee:</strong> si el vendedor cumple 85% de la meta, se aplica 1% de comisión sobre la base comisionable.</div></div>
+<div class="card"><h3>Bonos complementarios</h3><div class="commission-bonus-grid"><div><label>Bono fijo por cliente nuevo</label><input id="bonoCliente" type="number" value="20000"></div><div><label>Cantidad de clientes nuevos</label><input id="clientesNuevos" type="number" value="0"></div><div><label>Bono adicional sobre la base (%)</label><input id="bonoMargen" type="number" value="0.5" step="0.1"></div><div><label>Activar desde margen real (%)</label><input id="umbralBonoMargen" type="number" value="35" step="0.1"></div></div></div>
+</div>
+<div class="commission-metrics"><div class="card"><label>Cumplimiento de la meta</label><div class="kpi" id="kpiCumplimiento">0%</div><div class="progress-track"><div class="progress-fill" id="barraCumplimiento"></div></div></div><div class="card"><label>Base comisionable</label><div class="kpi" id="kpiBaseComision">$0</div><div class="metric-caption">Monto sobre el cual se calculan comisión y bonos.</div></div><div class="card"><label>Comisión total sobre la base</label><div class="kpi" id="kpiTasaEfectiva">0%</div><div class="metric-caption">Incluye comisión por meta, comisión base y bonos porcentuales.</div></div><div class="card"><label>Bonos totales</label><div class="kpi" id="kpiBonosVendedor">$0</div><div class="metric-caption">Bonos por clientes nuevos y margen.</div></div><div class="card"><label>Comisión final</label><div class="kpi" id="kpiComisionFinal">$0</div><div class="metric-caption">Resultado después de bonos y tope configurado.</div></div></div>
+<div class="commission-summary"><div class="commission-result"><div class="mini">Resultado individual de <strong id="nombreResultado">Vendedor 1</strong></div><div class="amount" id="comisionResultadoGrande">$0</div><div class="rate" id="estadoComision">Pendiente de cálculo</div><div class="progress-track"><div class="progress-fill" id="barraResultado"></div></div></div><div class="card"><h3>Desglose individual</h3><div class="commission-breakdown" id="desgloseComision"></div></div></div>
+<div class="metric-row" style="margin-top:16px"><div class="card"><label>Costo fijo vendedor</label><div class="kpi" id="kpiCostoVendedor">$0</div></div><div class="card"><label>Comisión variable total</label><div class="kpi" id="kpiComisionVendedor">$0</div></div><div class="card"><label>Costo fuerza de venta</label><div class="kpi" id="kpiFuerzaVenta">$0</div></div><div class="card"><label>Contribución estimada</label><div class="kpi" id="kpiContribucion">$0</div></div><div class="card"><label>Resultado empresa</label><div class="kpi" id="kpiResultadoVendedor">$0</div></div></div>
+<div class="callout" id="recomendacionVendedor"></div><div class="card"><h3>Auditoría del cálculo</h3><div id="detalleComision" class="mini"></div></div>
+
+  </div>
+</details>
 </section>
 <section id="proyeccion" class="panel">
   <div class="callout"><strong>Utilidad proyectada:</strong> calcula cuánto venderías y ganarías si comercializas el volumen cargado de cada producto con su margen objetivo, el ajuste del canal y la comisión del comercial.</div>
@@ -685,6 +817,8 @@ function imprimirListaPrecios(){
 
 
 <div class="footer-app no-print">Kaddu · Gestor Comercial · Versión 1.0 · © 2026 Kaddu</div>
+
+
 
 </body></html>`;
  const w=window.open('','_blank');
@@ -1357,7 +1491,7 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
 (function(){
   'use strict';
   const USERS_TABLE='usuarios';
-  const PERMISSIONS={admin:['config','costeo','productosAdmin','cotizacion','crm','listaPrecios','dealers','proyeccion','usuarios'],supervisor:['cotizacion','crm','listaPrecios','dealers'],seller:['cotizacion','crm','listaPrecios']};
+  const PERMISSIONS={admin:['config','costeo','productosAdmin','cotizacion','crm','listaPrecios','dealers','proyeccion','usuarios','configuracion'],supervisor:['cotizacion','crm','listaPrecios','dealers'],seller:['cotizacion','crm','listaPrecios']};
   let currentUser=null;
   const byId=id=>document.getElementById(id);
   const clean=v=>String(v||'').trim();
@@ -1377,6 +1511,7 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
       zone:clean(row?.zona),
       phone:clean(row?.telefono),
       commission:Number(row?.comision)||0,
+      sellerType:clean(row?.tipo_vendedor||localStorage.getItem('kddUserSellerType:'+String(row?.id||user?.id||''))),
       createdAt:row?.created_at||''
     };
   }
@@ -1386,6 +1521,7 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('active',el.dataset.panel===panel));
     document.querySelectorAll('.panel').forEach(el=>el.classList.toggle('active',el.id===panel));
     if(panel==='usuarios') renderUsers();
+    if(panel==='configuracion'&&window.kadduRenderCatalogs)window.kadduRenderCatalogs();
     if(panel==='crm'&&typeof window.renderCRM==='function') window.renderCRM();
   }
   function showMessage(id,text,good=false){const el=byId(id);if(!el)return;el.textContent=text;el.className='auth-message show '+(good?'good':'bad')}
@@ -1472,23 +1608,31 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   async function createUser(){
     hideMessage('userAdminMessage');
     const sb=supabaseClient();if(!sb){showMessage('userAdminMessage','Supabase no está disponible.');return}
+    if(currentUser?.role!=='admin'){showMessage('userAdminMessage','Solo un administrador puede crear usuarios.');return}
     const name=clean(byId('newUserName').value),email=userKey(byId('newUsername').value),password=byId('newUserPassword').value,role=byId('newUserRole').value;
-    const zone=clean(byId('newUserZone').value),phone=clean(byId('newUserPhone').value),commission=Math.max(0,Number(byId('newUserCommission').value)||0),active=byId('newUserActive').value==='true';
+    const zone=clean(byId('newUserZone').value),sellerType=clean(byId('newUserSellerType').value),phone=clean(byId('newUserPhone').value),active=byId('newUserActive').value==='true';
     if(!name||!email||!password){showMessage('userAdminMessage','Completa nombre, correo y contraseña.');return}
     if(!validEmail(email)){showMessage('userAdminMessage','Ingresa un correo electrónico válido.');return}
     if(password.length<8){showMessage('userAdminMessage','La contraseña debe tener al menos 8 caracteres.');return}
-    const button=byId('btnCreateUser');if(button)button.disabled=true;
+    if(!['admin','supervisor','seller'].includes(role)){showMessage('userAdminMessage','Selecciona un rol válido.');return}
+    const button=byId('btnCreateUser');if(button){button.disabled=true;button.textContent='Creando usuario…'}
     try{
+      const existing=await sb.from(USERS_TABLE).select('id,email').eq('email',email).maybeSingle();
+      if(existing.error)throw existing.error;
+      if(existing.data)throw new Error('Ya existe un usuario registrado con ese correo.');
       const temp=window.supabase.createClient(window.KADDU_SUPABASE.url,window.KADDU_SUPABASE.publishableKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
-      const emailRedirectTo='https://fmalebrana-eng.github.io/RMC/';
-      const {data,error}=await temp.auth.signUp({email,password,options:{data:{name},emailRedirectTo}});
+      const redirect=new URL(location.href);redirect.search='';redirect.hash='';
+      const {data,error}=await temp.auth.signUp({email,password,options:{data:{name,role},emailRedirectTo:redirect.toString()}});
       if(error)throw error;
-      if(!data.user)throw new Error('No fue posible crear la cuenta en Supabase Auth.');
-      const {error:profileError}=await sb.from(USERS_TABLE).upsert({id:data.user.id,nombre:name,email,rol:role,activo:active,zona:zone||null,telefono:phone||null,comision:commission,updated_at:new Date().toISOString()},{onConflict:'id'});
-      if(profileError)throw profileError;
-      ['newUserName','newUsername','newUserPassword','newUserZone','newUserPhone'].forEach(id=>byId(id).value='');byId('newUserCommission').value='0';byId('newUserActive').value='true';
-      showMessage('userAdminMessage',data.session?'Usuario creado correctamente.':'Usuario creado. Supabase puede solicitar confirmación del correo.',true);await renderUsers();
-    }catch(error){showMessage('userAdminMessage',error.message||'No fue posible crear el usuario.')}finally{if(button)button.disabled=false}
+      if(!data.user)throw new Error('Supabase Auth no devolvió el usuario creado.');
+      const profile={id:data.user.id,nombre:name,email,rol:role,activo:active,zona:zone||null,tipo_vendedor:sellerType||null,telefono:phone||null,updated_at:new Date().toISOString()};
+      let {error:profileError}=await sb.from(USERS_TABLE).upsert(profile,{onConflict:'id'});
+      if(profileError&&/tipo_vendedor/i.test(profileError.message||'')){delete profile.tipo_vendedor;({error:profileError}=await sb.from(USERS_TABLE).upsert(profile,{onConflict:'id'}));localStorage.setItem('kddUserSellerType:'+data.user.id,sellerType||'')}
+      if(profileError)throw new Error('La cuenta fue creada en Auth, pero no se pudo guardar su perfil: '+profileError.message);
+      ['newUserName','newUsername','newUserPassword','newUserZone','newUserPhone'].forEach(id=>{if(byId(id))byId(id).value=''});byId('newUserActive').value='true';byId('newUserRole').value='seller';byId('newUserSellerType').value='';
+      showMessage('userAdminMessage',data.session?'Usuario creado y activado correctamente.':'Usuario creado. Se envió el correo de confirmación.',true);
+      await renderUsers();
+    }catch(error){showMessage('userAdminMessage',error.message||'No fue posible crear el usuario.')}finally{if(button){button.disabled=false;button.textContent='Crear usuario'}}
   }
   function commercialCounts(u){
     let clients=0,quotes=0;const name=clean(u.name).toLowerCase();
@@ -1506,7 +1650,7 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     body.innerHTML='<tr><td colspan="8">Cargando usuarios…</td></tr>';
     try{
       const users=await getUsers();
-      body.innerHTML=users.map(u=>{const c=commercialCounts(u);return `<tr><td><strong>${esc(u.name)}</strong><br><small>${esc(u.phone||'')}</small></td><td>${esc(u.email)}</td><td>${roleLabel(u.role)}</td><td><span class="user-status ${u.active?'active':'inactive'}">${u.active?'Activo':'Inactivo'}</span></td><td>${esc(u.zone||'-')}</td><td>${c.clients}</td><td>${c.quotes}</td><td><div class="account-actions"><button type="button" data-edit="${esc(u.id)}">Editar</button><button type="button" class="ghost" data-reset="${esc(u.email)}">Enviar recuperación</button><button type="button" class="${u.active?'danger':''}" data-toggle="${esc(u.id)}" ${u.id===currentUser?.id?'disabled':''}>${u.active?'Desactivar':'Activar'}</button></div></td></tr>`}).join('')||'<tr><td colspan="8">No hay usuarios.</td></tr>';
+      body.innerHTML=users.map(u=>{const c=commercialCounts(u);return `<tr><td><strong>${esc(u.name)}</strong><br><small>${esc(u.phone||'')}</small></td><td>${esc(u.email)}</td><td>${roleLabel(u.role)}${u.sellerType?`<br><small>${esc(window.kadduCatalogLabel?.('tipo_vendedor',u.sellerType)||u.sellerType)}</small>`:''}</td><td><span class="user-status ${u.active?'active':'inactive'}">${u.active?'Activo':'Inactivo'}</span></td><td>${esc(u.zone||'-')}</td><td>${c.clients}</td><td>${c.quotes}</td><td><div class="account-actions"><button type="button" data-edit="${esc(u.id)}">Editar</button><button type="button" class="ghost" data-reset="${esc(u.email)}">Enviar recuperación</button><button type="button" class="${u.active?'danger':''}" data-toggle="${esc(u.id)}" ${u.id===currentUser?.id?'disabled':''}>${u.active?'Desactivar':'Activar'}</button></div></td></tr>`}).join('')||'<tr><td colspan="8">No hay usuarios.</td></tr>';
       body.querySelectorAll('[data-edit]').forEach(btn=>btn.addEventListener('click',()=>openUserEditor(btn.dataset.edit)));
       body.querySelectorAll('[data-toggle]').forEach(btn=>btn.addEventListener('click',()=>toggleUser(btn.dataset.toggle)));
       body.querySelectorAll('[data-reset]').forEach(btn=>btn.addEventListener('click',()=>resetPassword(btn.dataset.reset)));
@@ -1514,20 +1658,30 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   }
   async function openUserEditor(id){
     const users=await getUsers(),u=users.find(x=>x.id===id);if(!u)return;
-    byId('editUserOriginal').value=u.id;byId('editUserName').value=u.name||'';byId('editUserEmail').value=u.email||'';byId('editUserEmail').disabled=true;byId('editUserRole').value=u.role||'seller';byId('editUserActive').value=String(u.active);byId('editUserZone').value=u.zone||'';byId('editUserPhone').value=u.phone||'';byId('editUserCommission').value=Number(u.commission)||0;hideMessage('userEditMessage');byId('userEditModal').classList.add('open');byId('userEditModal').setAttribute('aria-hidden','false');
+    byId('editUserOriginal').value=u.id;byId('editUserName').value=u.name||'';byId('editUserEmail').value=u.email||'';byId('editUserEmail').disabled=true;byId('editUserRole').value=u.role||'seller';byId('editUserSellerType').value=u.sellerType||'';byId('editUserActive').value=String(u.active);byId('editUserZone').value=u.zone||'';byId('editUserPhone').value=u.phone||'';hideMessage('userEditMessage');byId('userEditModal').classList.add('open');byId('userEditModal').setAttribute('aria-hidden','false');
   }
   function closeUserEditor(){byId('userEditModal')?.classList.remove('open');byId('userEditModal')?.setAttribute('aria-hidden','true')}
   async function saveUserEdit(){
     hideMessage('userEditMessage');const sb=supabaseClient(),id=byId('editUserOriginal').value;
-    const payload={nombre:clean(byId('editUserName').value),rol:byId('editUserRole').value,activo:byId('editUserActive').value==='true',zona:clean(byId('editUserZone').value)||null,telefono:clean(byId('editUserPhone').value)||null,comision:Math.max(0,Number(byId('editUserCommission').value)||0),updated_at:new Date().toISOString()};
+    if(currentUser?.role!=='admin'){showMessage('userEditMessage','Solo un administrador puede editar usuarios.');return}
+    const payload={nombre:clean(byId('editUserName').value),rol:byId('editUserRole').value,tipo_vendedor:clean(byId('editUserSellerType').value)||null,activo:byId('editUserActive').value==='true',zona:clean(byId('editUserZone').value)||null,telefono:clean(byId('editUserPhone').value)||null,updated_at:new Date().toISOString()};
     if(!payload.nombre){showMessage('userEditMessage','Completa el nombre.');return}
-    const {error}=await sb.from(USERS_TABLE).update(payload).eq('id',id);if(error){showMessage('userEditMessage',error.message);return}
-    if(currentUser?.id===id){currentUser={...currentUser,...mapProfile({...payload,id,email:currentUser.email})};applyPermissions()}
-    closeUserEditor();await renderUsers();
+    if(!['admin','supervisor','seller'].includes(payload.rol)){showMessage('userEditMessage','Selecciona un rol válido.');return}
+    if(id===currentUser?.id&&!payload.activo){showMessage('userEditMessage','No puedes desactivar tu propia cuenta.');return}
+    const button=byId('btnSaveUserEdit');if(button){button.disabled=true;button.textContent='Guardando…'}
+    try{
+      let {error}=await sb.from(USERS_TABLE).update(payload).eq('id',id);if(error&&/tipo_vendedor/i.test(error.message||'')){localStorage.setItem('kddUserSellerType:'+id,payload.tipo_vendedor||'');const fallback={...payload};delete fallback.tipo_vendedor;({error}=await sb.from(USERS_TABLE).update(fallback).eq('id',id));}if(error)throw error;
+      if(currentUser?.id===id){currentUser={...currentUser,...mapProfile({...payload,id,email:currentUser.email})};applyPermissions()}
+      closeUserEditor();await renderUsers();
+    }catch(error){showMessage('userEditMessage',error.message||'No fue posible guardar los cambios.')}finally{if(button){button.disabled=false;button.textContent='Guardar cambios'}}
   }
   async function toggleUser(id){
-    if(id===currentUser?.id)return;const sb=supabaseClient();const {data,error}=await sb.from(USERS_TABLE).select('activo').eq('id',id).single();if(error)return alert(error.message);
-    const result=await sb.from(USERS_TABLE).update({activo:data.activo===false,updated_at:new Date().toISOString()}).eq('id',id);if(result.error)return alert(result.error.message);await renderUsers();
+    if(currentUser?.role!=='admin')return alert('Solo un administrador puede cambiar el estado de usuarios.');
+    if(id===currentUser?.id)return alert('No puedes desactivar tu propia cuenta.');
+    const sb=supabaseClient();const {data,error}=await sb.from(USERS_TABLE).select('nombre,activo').eq('id',id).single();if(error)return alert(error.message);
+    const next=data.activo===false,action=next?'activar':'desactivar';
+    if(!confirm(`¿Confirmas que deseas ${action} a ${data.nombre||'este usuario'}?`))return;
+    const result=await sb.from(USERS_TABLE).update({activo:next,updated_at:new Date().toISOString()}).eq('id',id);if(result.error)return alert(result.error.message);await renderUsers();
   }
   async function resetPassword(email){
     const sb=supabaseClient();const redirectTo=new URL(location.href);redirectTo.search='';redirectTo.hash='';
@@ -1555,7 +1709,9 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     const fecha=new Date().toLocaleDateString('es-CL');
     const html=`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Lista de precios Kaddu</title><style>@page{size:A4;margin:14mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#17202a;margin:0}header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #102a43;padding-bottom:12px;margin-bottom:18px}h1{font-size:24px;margin:0;color:#102a43}.brand{font-size:18px;font-weight:800;color:#102a43}.meta{font-size:11px;text-align:right;color:#475467}.notice{font-size:11px;color:#667085;margin:0 0 12px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#102a43;color:#fff;text-align:right;padding:8px 7px}td{padding:7px;border-bottom:1px solid #d8dee9;text-align:right}th:first-child,td:first-child{text-align:left}tbody tr:nth-child(even){background:#f8fafc}footer{margin-top:18px;padding-top:9px;border-top:1px solid #d8dee9;font-size:10px;color:#667085}.actions{margin-bottom:14px;text-align:right}.actions button{border:0;border-radius:8px;padding:9px 13px;background:#2367d1;color:#fff;font-weight:700;cursor:pointer}@media print{.actions{display:none}}</style>
 
-</head><body><div class="actions"><button onclick="window.print()">Imprimir / Guardar PDF</button></div><header><div><div class="brand">Kaddu</div><h1>Lista de precios – ${labels[channel]}</h1></div><div class="meta">Fecha: ${fecha}<br>Valores expresados en pesos chilenos</div></header><p class="notice">Documento comercial. Precios sujetos a vigencia y condiciones comerciales.</p><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${headers.length}">No hay productos.</td></tr>`}</tbody></table><footer>Kaddu · Documento comercial</footer></body></html>`;
+</head><body><div class="actions"><button onclick="window.print()">Imprimir / Guardar PDF</button></div><header><div><div class="brand">Kaddu</div><h1>Lista de precios – ${labels[channel]}</h1></div><div class="meta">Fecha: ${fecha}<br>Valores expresados en pesos chilenos</div></header><p class="notice">Documento comercial. Precios sujetos a vigencia y condiciones comerciales.</p><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${headers.length}">No hay productos.</td></tr>`}</tbody></table><footer>Kaddu · Documento comercial</footer>
+
+</body></html>`;
     const w=window.open('','_blank');if(!w){alert('El navegador bloqueó la ventana de impresión. Autoriza las ventanas emergentes para continuar.');return}w.document.open();w.document.write(html);w.document.close();w.focus();
   }
   async function init(){
@@ -1651,4 +1807,250 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   });
 })();
 </script>
-</body></html>
+
+
+<script>
+(function(){
+  function switchCommercialView(view){
+    document.querySelectorAll('.commercial-subtab').forEach(function(btn){btn.classList.toggle('active',btn.dataset.commercialView===view)});
+    var venta=document.getElementById('commercialViewVenta');
+    var incentivos=document.getElementById('commercialViewIncentivos');
+    if(venta) venta.classList.toggle('active',view==='venta');
+    if(incentivos) incentivos.classList.toggle('active',view==='incentivos');
+    if(view==='incentivos' && typeof calcularVendedores==='function') calcularVendedores();
+  }
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest('.commercial-subtab');
+    if(btn) switchCommercialView(btn.dataset.commercialView);
+  });
+})();
+</script>
+
+<script id="kaddu-catalogos-v094">
+(function(){
+  'use strict';
+  const TABLE='catalogos';
+  const STORAGE_KEY='kaddu.catalogos.v1';
+  const GROUPS=[
+    {id:'ciudad',label:'Ciudades',description:'Ciudades disponibles en la ficha de clientes.'},
+    {id:'zona',label:'Zonas / equipos',description:'Zonas o equipos asignables a usuarios.'},
+    {id:'tipo_vendedor',label:'Tipos de vendedor',description:'Clasificación comercial: ejecutivo, senior, dealer o sin comisión.'},
+    {id:'tipo_cliente',label:'Tipos de cliente',description:'Segmentos utilizados en clientes y oportunidades.'},
+    {id:'canal_venta',label:'Canales de venta',description:'Canales y listas comerciales aplicables.'},
+    {id:'cargo',label:'Cargos',description:'Cargos internos disponibles para usuarios.'},
+    {id:'forma_pago',label:'Formas de pago',description:'Condiciones de pago disponibles en cotizaciones.'},
+    {id:'motivo_perdida',label:'Motivos de pérdida',description:'Razones para cerrar una cotización como perdida.'},
+    {id:'marca',label:'Marcas',description:'Marcas utilizadas en el catálogo de productos.'},
+    {id:'categoria_producto',label:'Categorías de producto',description:'Categorías disponibles para productos.'}
+  ];
+  const SEEDS=[
+    ['ciudad','antofagasta','Antofagasta',10,true],['ciudad','calama','Calama',20,false],['ciudad','santiago','Santiago',30,false],
+    ['zona','norte','Norte',10,true],['zona','centro','Centro',20,false],['zona','sur','Sur',30,false],
+    ['tipo_vendedor','sin_comision','Sin comisión',10,true],['tipo_vendedor','ejecutivo','Ejecutivo comercial',20,false],['tipo_vendedor','senior','Ejecutivo senior',30,false],['tipo_vendedor','dealer','Dealer externo',40,false],['tipo_vendedor','gerente','Gerente comercial',50,false],
+    ['tipo_cliente','mayorista','Mayorista',10,true],['tipo_cliente','distribuidor','Distribuidor',20,false],['tipo_cliente','horeca','Horeca',30,false],['tipo_cliente','retail','Retail / cliente final',40,false],
+    ['canal_venta','mayorista','Mayorista',10,true],['canal_venta','distribuidor','Distribuidor',20,false],['canal_venta','horeca','Horeca',30,false],['canal_venta','retail','Retail',40,false],['canal_venta','directa','Venta directa',50,false]
+  ];
+  let currentGroup='ciudad', rows=[], initialized=false, usingLocal=false;
+  const $=id=>document.getElementById(id);
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const slug=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+  const groupInfo=()=>GROUPS.find(g=>g.id===currentGroup)||GROUPS[0];
+  function message(text,good=true){const el=$('catalogMessage');if(!el)return;el.textContent=text;el.className='auth-message show '+(good?'good':'bad');setTimeout(()=>el.classList.remove('show'),4500)}
+  function localRows(){try{const parsed=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');if(Array.isArray(parsed)&&parsed.length)return parsed}catch(e){}const seeded=SEEDS.map((x,i)=>({id:'local-'+i,grupo:x[0],codigo:x[1],nombre:x[2],orden:x[3],es_predeterminado:x[4],activo:true,descripcion:''}));localStorage.setItem(STORAGE_KEY,JSON.stringify(seeded));return seeded}
+  function saveLocal(){localStorage.setItem(STORAGE_KEY,JSON.stringify(rows))}
+  async function loadRows(){
+    const sb=window.kadduSupabase;
+    if(sb){
+      const {data,error}=await sb.from(TABLE).select('*').order('grupo').order('orden').order('nombre');
+      if(!error){rows=data||[];usingLocal=false;return}
+      console.warn('Catálogos: se utilizará respaldo local:',error.message);
+    }
+    rows=localRows();usingLocal=true;
+  }
+  function renderGroups(){
+    const host=$('catalogGroups');if(!host)return;
+    host.innerHTML=GROUPS.map(g=>`<button type="button" class="catalog-group-btn ${g.id===currentGroup?'active':''}" data-catalog-group="${g.id}">${esc(g.label)}</button>`).join('');
+  }
+  function renderTable(){
+    const info=groupInfo();$('catalogTitle').textContent=info.label;$('catalogDescription').textContent=info.description+(usingLocal?' · Modo local':' · Sincronizado con Supabase');
+    const list=rows.filter(r=>r.grupo===currentGroup).sort((a,b)=>(Number(a.orden)||0)-(Number(b.orden)||0)||String(a.nombre).localeCompare(String(b.nombre),'es'));
+    const body=$('catalogTableBody');if(!body)return;
+    body.innerHTML=list.length?list.map(r=>`<tr>
+      <td><strong>${esc(r.nombre)}</strong>${r.descripcion?`<div class="mini">${esc(r.descripcion)}</div>`:''}</td>
+      <td><code>${esc(r.codigo)}</code></td><td>${Number(r.orden)||0}</td>
+      <td>${r.es_predeterminado?'Sí':'—'}</td>
+      <td><span class="catalog-state ${r.activo!==false?'active':'inactive'}">${r.activo!==false?'Activo':'Inactivo'}</span></td>
+      <td><div class="compact-actions"><button type="button" class="ghost" data-catalog-edit="${esc(r.id)}">Editar</button><button type="button" class="ghost" data-catalog-toggle="${esc(r.id)}">${r.activo!==false?'Desactivar':'Activar'}</button></div></td>
+    </tr>`).join(''):'<tr><td colspan="6" class="catalog-empty">No hay valores en esta lista. Presiona “Agregar valor”.</td></tr>';
+  }
+  function populateSelects(){
+    document.querySelectorAll('select[data-catalog-select]').forEach(select=>{
+      const group=select.dataset.catalogSelect,old=select.value;
+      const first=select.querySelector('option[value=""]')?.outerHTML||'<option value="">Seleccionar</option>';
+      const opts=rows.filter(r=>r.grupo===group&&r.activo!==false).sort((a,b)=>(Number(a.orden)||0)-(Number(b.orden)||0)).map(r=>`<option value="${esc(r.codigo)}" ${r.es_predeterminado?'data-default="true"':''}>${esc(r.nombre)}</option>`).join('');
+      select.innerHTML=first+opts;
+      if([...select.options].some(o=>o.value===old))select.value=old;else{const d=[...select.options].find(o=>o.dataset.default==='true');if(d)select.value=d.value}
+    });
+  }
+  async function render(){try{await loadRows();renderGroups();renderTable();populateSelects()}catch(e){console.error(e);message('No fue posible cargar los catálogos: '+(e.message||e),false)}}
+  function openModal(row){
+    $('catalogModalTitle').textContent=row?'Editar valor':'Nuevo valor';$('catalogItemId').value=row?.id||'';$('catalogItemName').value=row?.nombre||'';$('catalogItemCode').value=row?.codigo||'';$('catalogItemOrder').value=Number(row?.orden)||10;$('catalogItemActive').value=String(row?.activo!==false);$('catalogItemDefault').value=String(Boolean(row?.es_predeterminado));$('catalogItemDescription').value=row?.descripcion||'';
+    $('catalogModal').classList.add('open');$('catalogModal').setAttribute('aria-hidden','false');setTimeout(()=>$('catalogItemName').focus(),0);
+  }
+  function closeModal(){$('catalogModal').classList.remove('open');$('catalogModal').setAttribute('aria-hidden','true')}
+  async function save(){
+    const id=$('catalogItemId').value,name=$('catalogItemName').value.trim(),code=slug($('catalogItemCode').value||name),order=Number($('catalogItemOrder').value)||0,active=$('catalogItemActive').value==='true',isDefault=$('catalogItemDefault').value==='true',description=$('catalogItemDescription').value.trim();
+    if(!name||!code){message('Completa el nombre y el código.',false);return}
+    if(rows.some(r=>r.grupo===currentGroup&&r.codigo===code&&String(r.id)!==String(id))){message('Ese código ya existe en la lista.',false);return}
+    const payload={grupo:currentGroup,codigo:code,nombre:name,descripcion:description||null,orden:order,activo:active,es_predeterminado:isDefault,updated_at:new Date().toISOString()};
+    const btn=$('btnSaveCatalogItem');btn.disabled=true;btn.textContent='Guardando…';
+    try{
+      if(usingLocal||!window.kadduSupabase){
+        if(isDefault)rows.forEach(r=>{if(r.grupo===currentGroup)r.es_predeterminado=false});
+        if(id){const i=rows.findIndex(r=>String(r.id)===String(id));rows[i]={...rows[i],...payload}}else rows.push({...payload,id:'local-'+Date.now(),created_at:new Date().toISOString()});
+        saveLocal();
+      }else{
+        const sb=window.kadduSupabase;
+        if(isDefault){const {error:e0}=await sb.from(TABLE).update({es_predeterminado:false}).eq('grupo',currentGroup);if(e0)throw e0}
+        const query=id?sb.from(TABLE).update(payload).eq('id',id):sb.from(TABLE).insert(payload);
+        const {error}=await query;if(error)throw error;
+      }
+      closeModal();await render();message(id?'Valor actualizado.':'Valor agregado.');
+    }catch(e){message('No fue posible guardar: '+(e.message||e),false)}finally{btn.disabled=false;btn.textContent='Guardar'}
+  }
+  async function toggle(id){
+    const row=rows.find(r=>String(r.id)===String(id));if(!row)return;
+    const active=row.activo===false;
+    try{
+      if(usingLocal||!window.kadduSupabase){row.activo=active;saveLocal()}else{const {error}=await window.kadduSupabase.from(TABLE).update({activo:active,updated_at:new Date().toISOString()}).eq('id',id);if(error)throw error}
+      await render();message(active?'Valor activado.':'Valor desactivado.');
+    }catch(e){message('No fue posible cambiar el estado: '+(e.message||e),false)}
+  }
+  function bind(){if(initialized)return;initialized=true;
+    $('btnNewCatalogItem')?.addEventListener('click',()=>openModal(null));$('btnCloseCatalogModal')?.addEventListener('click',closeModal);$('btnCancelCatalogItem')?.addEventListener('click',closeModal);$('btnSaveCatalogItem')?.addEventListener('click',save);
+    $('catalogItemName')?.addEventListener('input',()=>{if(!$('catalogItemId').value&&!$('catalogItemCode').dataset.manual)$('catalogItemCode').value=slug($('catalogItemName').value)});$('catalogItemCode')?.addEventListener('input',()=>{$('catalogItemCode').dataset.manual='1'});
+    document.addEventListener('click',e=>{const gb=e.target.closest('[data-catalog-group]');if(gb){currentGroup=gb.dataset.catalogGroup;renderGroups();renderTable();return}const eb=e.target.closest('[data-catalog-edit]');if(eb){openModal(rows.find(r=>String(r.id)===String(eb.dataset.catalogEdit)));return}const tb=e.target.closest('[data-catalog-toggle]');if(tb)toggle(tb.dataset.catalogToggle)});
+    $('catalogModal')?.addEventListener('click',e=>{if(e.target===$('catalogModal'))closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('catalogModal')?.classList.contains('open'))closeModal()});
+  }
+  window.kadduRenderCatalogs=async function(){bind();await render()};
+  document.addEventListener('DOMContentLoaded',()=>{bind();loadRows().then(()=>populateSelects()).catch(console.warn)});
+})();
+</script>
+
+
+<script id="sales-cycle-v3-script">
+(()=>{
+  const $=id=>document.getElementById(id);
+  if(!$('scSeller')) return;
+  const TABLE='gestor_comercial_estado';
+  const ROW_ID='kaddu';
+  const clone=x=>JSON.parse(JSON.stringify(x));
+  const catalog={
+    sales:{name:'Ventas válidas',unit:'money',source:'Cotizaciones cerradas / ventas confirmadas'},
+    newClients:{name:'Clientes nuevos',unit:'number',source:'Primera venta confirmada en CRM'},
+    activity:{name:'Actividad comercial',unit:'number',source:'Gestiones completadas en CRM'},
+    collection:{name:'Cobranza',unit:'percent',source:'Pagos recibidos / facturación vencida'},
+    strategic:{name:'Productos estratégicos',unit:'number',source:'Unidades confirmadas de productos definidos'}
+  };
+  const seed={
+    sellers:[{id:'v1',name:'María González',role:'Ejecutivo comercial',relationship:'Contrato indefinido',manager:'Gerencia comercial',zone:'Norte',start:'2026-07-01',status:'Activo',baseSalary:1300000,targetVariable:450000,planId:'p1'}],
+    plans:[{id:'p1',name:'Ejecutivo comercial 2026',start:'2026-07-01',end:'2026-12-31',threshold:80,cap:120,salesEvent:'confirmed',reversalRule:'subtract',goals:[{id:'g1',type:'sales',goal:80000000,weight:70},{id:'g2',type:'newClients',goal:5,weight:20},{id:'g3',type:'activity',goal:40,weight:10}]}],
+    operational:{'2026-07':{sales:76500000,newClients:4,activity:45,collection:93,strategic:0}},
+    evaluation:{period:'2026-07',sellerId:'v1',notes:'',status:'open',approved:false,score:0,incentive:0,rows:[]},history:[]
+  };
+  let state=clone(seed), saveTimer=null, ready=false;
+  async function sb(){
+    for(let i=0;i<100&&!window.kadduSupabase;i++) await new Promise(r=>setTimeout(r,100));
+    if(!window.kadduSupabase) throw new Error('Supabase no está disponible.');
+    return window.kadduSupabase;
+  }
+  async function loadUsers(){
+    const client=await sb();
+    const {data,error}=await client.from('usuarios').select('id,nombre,email,rol,zona,telefono,activo').order('nombre');
+    if(error) throw error;
+    return (data||[]).filter(u=>u.activo!==false && ['seller','supervisor','admin'].includes(u.rol));
+  }
+  function mergeUsers(users){
+    if(!users.length)return;
+    const prior=new Map((state.sellers||[]).map(s=>[String(s.id),s]));
+    state.sellers=users.map(u=>{
+      const p=prior.get(String(u.id))||{};
+      return {id:String(u.id),name:u.nombre||u.email,role:p.role||(u.rol==='seller'?'Ejecutivo comercial':u.rol==='supervisor'?'Jefe comercial':'Jefe comercial'),relationship:p.relationship||'Contrato indefinido',manager:p.manager||'Gerencia comercial',zone:p.zone||u.zona||'',start:p.start||new Date().toISOString().slice(0,10),status:p.status||'Activo',baseSalary:Number(p.baseSalary||0),targetVariable:Number(p.targetVariable||0),planId:p.planId||('p-'+u.id)};
+    });
+    for(const s of state.sellers){
+      if(!state.plans.some(p=>p.id===s.planId)) state.plans.push({id:s.planId,name:'Plan comercial '+s.name,start:new Date().getFullYear()+'-01-01',end:new Date().getFullYear()+'-12-31',threshold:80,cap:120,salesEvent:'confirmed',reversalRule:'subtract',goals:[{id:'g-'+s.id+'-1',type:'sales',goal:0,weight:70},{id:'g-'+s.id+'-2',type:'newClients',goal:0,weight:20},{id:'g-'+s.id+'-3',type:'activity',goal:0,weight:10}]});
+    }
+    if(!state.sellers.some(s=>s.id===state.evaluation.sellerId)) state.evaluation.sellerId=state.sellers[0]?.id||'';
+  }
+  async function loadState(){
+    const client=await sb();
+    const {data,error}=await client.from(TABLE).select('estado').eq('id',ROW_ID).maybeSingle();
+    if(error) throw error;
+    state=data?.estado&&typeof data.estado==='object'?data.estado:clone(seed);
+    mergeUsers(await loadUsers());
+    ready=true;
+    await persist();
+  }
+  async function persist(){
+    if(!ready)return;
+    const client=await sb();
+    const {error}=await client.from(TABLE).upsert({id:ROW_ID,estado:state,updated_at:new Date().toISOString()},{onConflict:'id'});
+    if(error){console.error('Gestor Comercial:',error);throw error;}
+  }
+  const save=()=>{clearTimeout(saveTimer);saveTimer=setTimeout(()=>persist().catch(e=>console.error(e)),250)};
+  const parseCL=v=>Number(String(v??'').replace(/[^0-9-]/g,''))||0;
+  const num=(v,d=0)=>new Intl.NumberFormat('es-CL',{minimumFractionDigits:d,maximumFractionDigits:d}).format(Number(v)||0);
+  const money=v=>'$ '+num(Math.round(Number(v)||0));
+  const pct=v=>num(v,2)+' %';
+  const dateCL=v=>{if(!v)return '—';const [y,m,d]=v.split('-');return `${d}/${m}/${y}`};
+  const seller=()=>state.sellers.find(x=>x.id===$('scSeller').value)||state.sellers[0];
+  const evalSeller=()=>state.sellers.find(x=>x.id===state.evaluation.sellerId)||state.sellers[0];
+  const plan=()=>state.plans.find(x=>x.id===evalSeller().planId)||state.plans[0];
+  const metric=t=>catalog[t]||catalog.sales;
+  const goalText=g=>metric(g.type).unit==='money'?money(g.goal):metric(g.type).unit==='percent'?pct(g.goal):num(g.goal);
+  const actualText=(g,v)=>metric(g.type).unit==='money'?money(v):metric(g.type).unit==='percent'?pct(v):num(v);
+  const monthLabel=p=>{const [y,m]=p.split('-');return ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'][Number(m)-1]+' '+y};
+  function bindMoney(el){if(!el||el.dataset.bound)return;el.dataset.bound='1';el.addEventListener('focus',()=>el.value=String(parseCL(el.value)||''));el.addEventListener('blur',()=>el.value=num(parseCL(el.value)))}
+  function message(id,text,ok=true){const e=$(id);if(!e)return;e.textContent=text;e.className='auth-message show '+(ok?'good':'bad');setTimeout(()=>e.classList.remove('show'),2200)}
+  function populate(){const opts=state.sellers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');$('scSeller').innerHTML=opts;$('scEvalSeller').innerHTML=opts;$('scSeller').value=state.evaluation.sellerId;$('scEvalSeller').value=state.evaluation.sellerId}
+  function loadSeller(){const s=seller();$('scRole').value=s.role;$('scRelationship').value=s.relationship;$('scManager').value=s.manager;$('scZone').value=s.zone;$('scStart').value=s.start;$('scStatus').value=s.status;$('scBaseSalary').value=num(s.baseSalary);$('scTargetVariable').value=num(s.targetVariable);renderProfile();loadPlan()}
+  function renderProfile(){const s=seller(),p=state.plans.find(x=>x.id===s.planId);$('scProfileSummary').innerHTML=`<div><span>Vendedor</span><strong>${s.name}</strong></div><div><span>Cargo</span><strong>${s.role}</strong></div><div><span>Sueldo base</span><strong>${money(s.baseSalary)}</strong></div><div><span>Incentivo objetivo</span><strong>${money(s.targetVariable)}</strong></div><div><span>Plan asignado</span><strong>${p?.name||'Sin plan'}</strong></div><div><span>Vigencia</span><strong>${p?dateCL(p.start)+' a '+dateCL(p.end):'—'}</strong></div>`}
+  function loadPlan(){const p=plan();$('scPlanName').value=p.name;$('scPlanStart').value=p.start;$('scPlanEnd').value=p.end;$('scPayThreshold').value=p.threshold;$('scCap').value=p.cap;$('scSalesEvent').value=p.salesEvent;$('scReversalRule').value=p.reversalRule;renderPlanRows()}
+  function renderPlanRows(){const p=plan();$('scPlanRows').innerHTML=p.goals.map(g=>{const m=metric(g.type);return `<tr data-goal-row="${g.id}"><td><select data-goal-type="${g.id}">${Object.entries(catalog).map(([k,v])=>`<option value="${k}" ${k===g.type?'selected':''}>${v.name}</option>`).join('')}</select></td><td><small>${m.source}</small></td><td><input data-goal-value="${g.id}" data-unit="${m.unit}" type="${m.unit==='money'?'text':'number'}" value="${m.unit==='money'?num(g.goal):g.goal}"></td><td><input data-goal-weight="${g.id}" type="number" min="0" max="100" value="${g.weight}"> %</td><td><button type="button" class="ghost" data-remove-goal="${g.id}">Quitar</button></td></tr>`}).join('');document.querySelectorAll('[data-unit="money"]').forEach(bindMoney);validateWeights()}
+  function validateWeights(){const total=plan().goals.reduce((a,g)=>a+Number(g.weight||0),0);$('scWeightTotal').textContent=pct(total);$('scWeightStatus').textContent=total===100?'Plan válido':'Debe sumar 100,00 %';$('scWeightStatus').className=total===100?'sc-score-good':'sc-score-critical';return total===100}
+  function calculate(){const p=plan(),s=evalSeller(),op=state.operational[state.evaluation.period]||{};const rows=p.goals.map(g=>{const actual=Number(op[g.type]||0);const compliance=g.goal>0?Math.min(actual/g.goal*100,p.cap):0;return {...g,name:metric(g.type).name,source:metric(g.type).source,unit:metric(g.type).unit,actual,compliance,contribution:compliance*g.weight/100}});const score=rows.reduce((a,r)=>a+r.contribution,0);const factor=score<p.threshold?0:Math.min(score,p.cap)/100;state.evaluation.rows=rows;state.evaluation.score=score;state.evaluation.incentive=Math.round(s.targetVariable*factor);if(state.evaluation.status==='open')state.evaluation.status='calculated';save();renderEvaluation();renderIncentive()}
+  function classify(v){return v<80?['Bajo cumplimiento','sc-score-critical']:v<100?['En desarrollo','sc-score-warning']:v<120?['Meta cumplida','sc-score-good']:['Sobrecumplimiento','sc-score-excellent']}
+  function renderEvaluation(){const e=state.evaluation,s=evalSeller(),rows=e.rows.length?e.rows:plan().goals.map(g=>({...g,name:metric(g.type).name,source:metric(g.type).source,unit:metric(g.type).unit,actual:0,compliance:0,contribution:0}));const [label,cls]=classify(e.score);$('scScore').textContent=pct(e.score);$('scScore').className=cls;$('scScoreLabel').textContent=label;$('scVariableTarget').textContent=money(s.targetVariable);$('scVariableAccrued').textContent=money(e.incentive);$('scEvaluationState').textContent=e.approved?'Aprobada':e.status==='approval'?'En aprobación':e.status==='calculated'?'Calculada':'Abierta';$('scEvaluationHint').textContent='Datos de origen, no editables';$('scEvaluationRows').innerHTML=rows.map(r=>`<tr><td><strong>${r.name}</strong></td><td>${goalText(r)}</td><td><strong>${actualText(r,r.actual)}</strong></td><td><span class="status-pill">${r.source}</span></td><td>${pct(r.compliance)}</td><td>${pct(r.weight)}</td><td><strong>${pct(r.contribution)}</strong></td></tr>`).join('');$('scManagerNotes').value=e.notes||'';$('scPerformanceReading').innerHTML=`<div><strong>${label}</strong><span>El cumplimiento ponderado del período es ${pct(e.score)}.</span></div>`+rows.map(r=>`<div><strong>${r.name}: ${pct(r.compliance)}</strong><span>${r.actual===0?'No hay información operacional para este indicador.':r.compliance>=100?'Meta cumplida o superada.':'Falta '+pct(100-r.compliance)+' para cumplir la meta.'}</span></div>`).join('');$('scPeriodBadge').textContent=monthLabel(e.period);$('scPeriod').value=e.period}
+  function renderIncentive(){const e=state.evaluation,s=evalSeller(),p=plan();$('scLiquidationLines').innerHTML=`<div><span>Sueldo base (referencia)</span><strong>${money(s.baseSalary)}</strong></div><div><span>Incentivo objetivo</span><strong>${money(s.targetVariable)}</strong></div><div><span>Cumplimiento ponderado</span><strong>${pct(e.score)}</strong></div><div><span>Umbral de pago</span><strong>${pct(p.threshold)}</strong></div><div><span>Incentivo generado</span><strong>${money(e.incentive)}</strong></div>`;$('scTotalPay').textContent=money(e.incentive);$('scApprovalManager').textContent=s.manager;$('scApprovalEvaluation').textContent=e.status==='approval'||e.approved?'Presentada':'Pendiente';$('scApprovalPayment').textContent=e.approved?'Aprobado':'No aprobado';$('scAudit').innerHTML=[`Incentivo objetivo: ${money(s.targetVariable)}.`,`Cumplimiento ponderado: ${pct(e.score)}.`,`Umbral mínimo: ${pct(p.threshold)}.`,`Tope máximo: ${pct(p.cap)}.`,e.score<p.threshold?'El período no alcanza el umbral; no genera incentivo.':`Incentivo calculado: ${money(e.incentive)}.`].map(x=>`<div>${x}</div>`).join('')}
+  function renderHistory(){$('scHistoryRows').innerHTML=state.history.length?state.history.slice().reverse().map(h=>`<tr><td>${monthLabel(h.period)}</td><td>${h.seller}</td><td>${h.plan}</td><td>${pct(h.score)}</td><td>${money(h.incentive)}</td><td>${h.approvedBy}</td><td><span class="status-pill good">Cerrado</span></td></tr>`).join(''):'<tr><td colspan="7" class="catalog-empty">Aún no existen períodos cerrados.</td></tr>'}
+  document.querySelectorAll('.sales-cycle-tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.sales-cycle-tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.sales-cycle-view').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('scView'+b.dataset.scView[0].toUpperCase()+b.dataset.scView.slice(1)).classList.add('active')}));
+  $('scSeller').addEventListener('change',e=>{state.evaluation.sellerId=e.target.value;$('scEvalSeller').value=e.target.value;save();loadSeller();calculate()});
+  $('scEvalSeller').addEventListener('change',e=>{state.evaluation.sellerId=e.target.value;$('scSeller').value=e.target.value;save();loadSeller();calculate()});
+  $('scSaveSeller').addEventListener('click',()=>{const s=seller();Object.assign(s,{role:$('scRole').value,relationship:$('scRelationship').value,manager:$('scManager').value,zone:$('scZone').value,start:$('scStart').value,status:$('scStatus').value,baseSalary:parseCL($('scBaseSalary').value),targetVariable:parseCL($('scTargetVariable').value)});save();renderProfile();calculate();message('scSellerMessage','Relación comercial guardada.')});
+  $('scPlanRows').addEventListener('change',e=>{const p=plan(),g=p.goals.find(x=>x.id===(e.target.dataset.goalType||e.target.dataset.goalValue||e.target.dataset.goalWeight));if(!g)return;if(e.target.dataset.goalType){g.type=e.target.value;g.goal=metric(g.type).unit==='money'?80000000:metric(g.type).unit==='percent'?95:5;renderPlanRows()}else if(e.target.dataset.goalValue)g.goal=e.target.dataset.unit==='money'?parseCL(e.target.value):Number(e.target.value);else if(e.target.dataset.goalWeight)g.weight=Number(e.target.value);save();validateWeights()});
+  $('scPlanRows').addEventListener('click',e=>{if(!e.target.dataset.removeGoal)return;const p=plan();p.goals=p.goals.filter(g=>g.id!==e.target.dataset.removeGoal);save();renderPlanRows()});
+  $('scAddGoal').addEventListener('click',()=>{const p=plan();p.goals.push({id:'g'+Date.now(),type:'newClients',goal:5,weight:0});save();renderPlanRows()});
+  $('scSavePlan').addEventListener('click',()=>{const p=plan();Object.assign(p,{name:$('scPlanName').value,start:$('scPlanStart').value,end:$('scPlanEnd').value,threshold:Number($('scPayThreshold').value),cap:Number($('scCap').value),salesEvent:$('scSalesEvent').value,reversalRule:$('scReversalRule').value});document.querySelectorAll('[data-goal-value]').forEach(el=>{const g=p.goals.find(x=>x.id===el.dataset.goalValue);if(g)g.goal=el.dataset.unit==='money'?parseCL(el.value):Number(el.value)});document.querySelectorAll('[data-goal-weight]').forEach(el=>{const g=p.goals.find(x=>x.id===el.dataset.goalWeight);if(g)g.weight=Number(el.value)});if(!validateWeights())return alert('Las importancias deben sumar 100,00 %.');save();renderProfile();calculate();alert('Plan comercial guardado.')});
+  $('scPeriod').addEventListener('change',e=>{state.evaluation.period=e.target.value;state.evaluation.status='open';state.evaluation.approved=false;state.evaluation.rows=[];state.evaluation.score=0;state.evaluation.incentive=0;save();calculate()});
+  $('scCalculate').addEventListener('click',calculate);
+  $('scSaveDraft').addEventListener('click',()=>{state.evaluation.notes=$('scManagerNotes').value;save();message('scApprovalMessage','Borrador guardado.')});
+  $('scSendApproval').addEventListener('click',()=>{calculate();state.evaluation.notes=$('scManagerNotes').value;state.evaluation.status='approval';save();renderEvaluation();renderIncentive();document.querySelector('[data-sc-view="liquidacion"]').click()});
+  $('scApprove').addEventListener('click',()=>{if(state.evaluation.status!=='approval')return message('scApprovalMessage','Primero envía la evaluación a aprobación.',false);const s=evalSeller(),p=plan(),key=state.evaluation.period+'-'+s.id;state.evaluation.approved=true;state.evaluation.status='approved';state.history=state.history.filter(h=>h.key!==key);state.history.push({key,period:state.evaluation.period,seller:s.name,plan:p.name,score:state.evaluation.score,incentive:state.evaluation.incentive,approvedBy:s.manager});save();renderEvaluation();renderIncentive();renderHistory();message('scApprovalMessage','Incentivo aprobado y período cerrado.')});
+  $('scReject').addEventListener('click',()=>{state.evaluation.status='calculated';state.evaluation.approved=false;save();renderEvaluation();renderIncentive();message('scApprovalMessage','Evaluación devuelta.',false)});
+  $('scExportHistory').addEventListener('click',()=>{const rows=[['Periodo','Vendedor','Plan','Cumplimiento','Incentivo','Aprobado por'],...state.history.map(h=>[h.period,h.seller,h.plan,h.score,h.incentive,h.approvedBy])];const blob=new Blob([rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(';')).join('\n')],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='historial_gestor_comercial.csv';a.click();URL.revokeObjectURL(a.href)});
+  async function bootstrap(){
+    try{
+      await loadState();
+      bindMoney($('scBaseSalary'));bindMoney($('scTargetVariable'));
+      populate();
+      if(state.sellers.length){loadSeller();calculate();}
+      renderHistory();
+    }catch(e){
+      console.error(e);
+      alert('No fue posible cargar el Gestor Comercial desde Supabase: '+(e.message||e));
+    }
+  }
+  bootstrap();
+})();
+</script>
+</body>
