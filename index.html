@@ -1418,6 +1418,7 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
       if(byId('quoteSellerEmail'))byId('quoteSellerEmail').readOnly=false;
       if(byId('quoteSellerPhone'))byId('quoteSellerPhone').readOnly=false;
       activate('config');
+      renderUsers().catch(error=>console.error('No fue posible cargar usuarios:',error));
     }
   }
   async function loadCurrentProfile(user){
@@ -1558,7 +1559,12 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     const w=window.open('','_blank');if(!w){alert('El navegador bloqueó la ventana de impresión. Autoriza las ventanas emergentes para continuar.');return}w.document.open();w.document.write(html);w.document.close();w.focus();
   }
   async function init(){
-    document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',event=>{if(currentUser&&!allowed(tab.dataset.panel)){event.preventDefault();event.stopImmediatePropagation();activate(currentUser.role==='admin'?'config':'cotizacion')}},true));
+    document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',event=>{
+      if(!currentUser)return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      activate(allowed(tab.dataset.panel)?tab.dataset.panel:(currentUser.role==='admin'?'config':'cotizacion'));
+    },true));
     byId('loginForm')?.addEventListener('submit',async event=>{event.preventDefault();hideMessage('loginError');const button=event.submitter;if(button)button.disabled=true;try{await login(byId('loginUser').value,byId('loginPassword').value)}catch(error){showMessage('loginError',error.message||'Usuario o contraseña incorrectos.')}finally{if(button)button.disabled=false}});
     byId('btnShowSetup')?.addEventListener('click',()=>{hideMessage('loginError');byId('loginForm').classList.add('permission-hidden');byId('setupForm').classList.remove('permission-hidden');byId('authTitle').textContent='Configuración inicial';byId('authSubtitle').textContent='Crea la primera cuenta administradora';byId('btnBackToLogin')?.classList.remove('permission-hidden');byId('setupName')?.focus()});
     byId('btnBackToLogin')?.addEventListener('click',showLoginScreen);
