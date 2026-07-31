@@ -286,7 +286,7 @@ body[data-role="seller"] #marginAlert{display:none!important}
       <div id="loginError" class="auth-message bad">Usuario o contraseña incorrectos.</div>
     </form>
     <form id="setupForm" autocomplete="off" class="permission-hidden">
-      <div class="setup-note">Primera configuración: crea la cuenta administradora de este equipo.</div>
+      <div class="setup-note">Primera configuración: crea la cuenta administradora en Supabase Auth.</div>
       <label for="setupName">Nombre</label><input id="setupName" required autocomplete="name">
       <label for="setupUser">Correo del administrador</label><input id="setupUser" type="email" required autocomplete="username" placeholder="admin@empresa.cl">
       <label for="setupPassword">Contraseña</label><input id="setupPassword" type="password" required minlength="8" autocomplete="new-password">
@@ -308,7 +308,7 @@ body[data-role="seller"] #marginAlert{display:none!important}
 <div class="tabs no-print"><button class="tab active" data-panel="config">1. Costos</button><button class="tab" data-panel="costeo">2. Productos y márgenes</button><button class="tab" data-panel="productosAdmin">Administrar productos</button><button class="tab" data-panel="cotizacion">3. Cotización</button><button class="tab" data-panel="crm">Conversión y seguimiento</button><button class="tab" data-panel="listaPrecios">Lista de precios</button><button class="tab" data-panel="dealers">4. Comerciales</button><button class="tab" data-panel="proyeccion">5. Utilidad proyectada</button><button class="tab" data-panel="usuarios">Usuarios</button></div>
 <section id="usuarios" class="panel">
 <div class="users-layout">
-  <div class="card"><h3>Crear usuario</h3><p class="mini">Cada persona debe usar una cuenta individual. El correo será su acceso.</p><div class="setup-note" style="margin-bottom:12px">Configuración actual del archivo: las cuentas quedan guardadas en este navegador. Para acceso seguro desde varios equipos debe conectarse este módulo a Supabase Auth.</div>
+  <div class="card"><h3>Crear usuario</h3><p class="mini">Cada persona debe usar una cuenta individual. El correo será su acceso.</p><div class="setup-note" style="margin-bottom:12px">Las cuentas y sesiones se administran con Supabase Auth. Los roles y datos comerciales se guardan en la tabla <code>usuarios</code>.</div>
     <label>Nombre completo</label><input id="newUserName" autocomplete="name">
     <label>Correo electrónico</label><input id="newUsername" type="email" autocomplete="email" placeholder="vendedor@empresa.cl">
     <label>Contraseña temporal</label><input id="newUserPassword" type="password" minlength="8" autocomplete="new-password">
@@ -630,6 +630,7 @@ body[data-role="seller"] #marginAlert{display:none!important}
 
   window.KADDU_SUPABASE = Object.freeze({
     url: SUPABASE_URL,
+    publishableKey: SUPABASE_PUBLISHABLE_KEY,
     client: () => window.kadduSupabase || null
   });
 
@@ -1349,8 +1350,7 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
 <script>
 (function(){
   'use strict';
-  const USERS_KEY='kadduUsersV1';
-  const SESSION_KEY='kadduSessionV1';
+  const USERS_TABLE='usuarios';
   const PERMISSIONS={admin:['config','costeo','productosAdmin','cotizacion','crm','listaPrecios','dealers','proyeccion','usuarios'],supervisor:['cotizacion','crm','listaPrecios','dealers'],seller:['cotizacion','crm','listaPrecios']};
   let currentUser=null;
   const byId=id=>document.getElementById(id);
@@ -1359,13 +1359,21 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   const validEmail=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userKey(v));
   const roleLabel=r=>r==='admin'?'Administrador':r==='supervisor'?'Supervisor':'Vendedor';
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  async function hashPassword(password){
-    const bytes=new TextEncoder().encode(String(password));
-    const digest=await crypto.subtle.digest('SHA-256',bytes);
-    return Array.from(new Uint8Array(digest)).map(x=>x.toString(16).padStart(2,'0')).join('');
+  function supabaseClient(){return window.kadduSupabase||null}
+  function mapProfile(row,user){
+    return {
+      id:row?.id||user?.id||'',
+      username:userKey(row?.email||user?.email||''),
+      email:userKey(row?.email||user?.email||''),
+      name:clean(row?.nombre||user?.user_metadata?.name||user?.email||'Usuario'),
+      role:row?.rol||'seller',
+      active:row?.activo!==false,
+      zone:clean(row?.zona),
+      phone:clean(row?.telefono),
+      commission:Number(row?.comision)||0,
+      createdAt:row?.created_at||''
+    };
   }
-  function getUsers(){try{return JSON.parse(localStorage.getItem(USERS_KEY)||'{}')||{}}catch(e){return {}}}
-  function saveUsers(users){localStorage.setItem(USERS_KEY,JSON.stringify(users))}
   function allowed(panel){return Boolean(currentUser&&(PERMISSIONS[currentUser.role]||[]).includes(panel))}
   function activate(panel){
     if(!allowed(panel)) panel=currentUser?.role==='admin'?'config':'cotizacion';
@@ -1376,12 +1384,12 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   }
   function showMessage(id,text,good=false){const el=byId(id);if(!el)return;el.textContent=text;el.className='auth-message show '+(good?'good':'bad')}
   function hideMessage(id){const el=byId(id);if(el)el.classList.remove('show')}
-  function showInitialScreen(){
-    const hasUsers=Object.keys(getUsers()).length>0;
-    byId('loginForm').classList.toggle('permission-hidden',!hasUsers);
-    byId('setupForm').classList.toggle('permission-hidden',hasUsers);
-    byId('authTitle').textContent=hasUsers?'Gestor Comercial':'Configuración inicial';
-    byId('authSubtitle').textContent=hasUsers?'Acceso de usuarios autorizados':'Crea la primera cuenta administradora';
+  function showLoginScreen(){
+    byId('loginForm')?.classList.remove('permission-hidden');
+    byId('setupForm')?.classList.add('permission-hidden');
+    byId('authTitle').textContent='Gestor Comercial';
+    byId('authSubtitle').textContent='Acceso de usuarios autorizados';
+    byId('authOverlay')?.classList.remove('hidden');
   }
   function applyPermissions(){
     document.body.dataset.role=currentUser.role;
@@ -1401,39 +1409,70 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
       activate('config');
     }
   }
-  async function login(username,password){
-    const key=userKey(username), users=getUsers(), user=users[key];
-    if(!user||user.active===false||user.passwordHash!==await hashPassword(password))return false;
-    currentUser={username:key,...user};
-    sessionStorage.setItem(SESSION_KEY,JSON.stringify({username:key}));
+  async function loadCurrentProfile(user){
+    const sb=supabaseClient();if(!sb||!user)return null;
+    const {data,error}=await sb.from(USERS_TABLE).select('*').eq('id',user.id).maybeSingle();
+    if(error)throw error;
+    if(!data)return null;
+    const profile=mapProfile(data,user);
+    if(!profile.active)throw new Error('Tu cuenta está inactiva. Contacta al administrador.');
+    return profile;
+  }
+  async function enterApp(user){
+    currentUser=await loadCurrentProfile(user);
+    if(!currentUser){
+      const {error:bootstrapError}=await sb.rpc('bootstrap_admin',{p_name:clean(user.user_metadata?.name||user.email||'Administrador')});
+      if(bootstrapError)throw new Error('La cuenta existe en Auth, pero no tiene un perfil autorizado: '+bootstrapError.message);
+      currentUser=await loadCurrentProfile(user);
+    }
+    if(!currentUser)throw new Error('No fue posible cargar el perfil autorizado.');
     byId('authOverlay').classList.add('hidden');
     applyPermissions();
-    return true;
+  }
+  async function login(username,password){
+    const sb=supabaseClient();if(!sb)throw new Error('Supabase todavía no está disponible.');
+    const {data,error}=await sb.auth.signInWithPassword({email:userKey(username),password});
+    if(error)throw error;
+    try{await enterApp(data.user);return true}catch(err){await sb.auth.signOut();throw err}
   }
   async function setupAdmin(event){
     event.preventDefault();hideMessage('setupMessage');
-    const name=clean(byId('setupName').value), username=userKey(byId('setupUser').value), p1=byId('setupPassword').value, p2=byId('setupPassword2').value;
-    if(!name||!username){showMessage('setupMessage','Completa el nombre y el correo.');return}
-    if(!validEmail(username)){showMessage('setupMessage','Ingresa un correo electrónico válido.');return}
+    const sb=supabaseClient();if(!sb){showMessage('setupMessage','Supabase todavía no está disponible.');return}
+    const name=clean(byId('setupName').value),email=userKey(byId('setupUser').value),p1=byId('setupPassword').value,p2=byId('setupPassword2').value;
+    if(!name||!email){showMessage('setupMessage','Completa el nombre y el correo.');return}
+    if(!validEmail(email)){showMessage('setupMessage','Ingresa un correo electrónico válido.');return}
     if(p1.length<8){showMessage('setupMessage','La contraseña debe tener al menos 8 caracteres.');return}
     if(p1!==p2){showMessage('setupMessage','Las contraseñas no coinciden.');return}
-    const existing=getUsers();
-    if(Object.keys(existing).length&& !confirm('Ya existen usuarios guardados en este navegador. ¿Deseas reemplazarlos y crear un nuevo administrador inicial?'))return;
-    const users={};users[username]={name,email:username,role:'admin',active:true,passwordHash:await hashPassword(p1),createdAt:new Date().toISOString()};saveUsers(users);
-    await login(username,p1);
+    const button=event.submitter; if(button)button.disabled=true;
+    try{
+      const {data,error}=await sb.auth.signUp({email,password:p1,options:{data:{name}}});
+      if(error)throw error;
+      if(!data.user)throw new Error('Supabase no devolvió el usuario creado.');
+      if(!data.session){showMessage('setupMessage','Cuenta creada. Confirma el correo y luego ingresa.',true);showLoginScreen();return}
+      const {error:rpcError}=await sb.rpc('bootstrap_admin',{p_name:name});
+      if(rpcError)throw rpcError;
+      await enterApp(data.user);
+    }catch(error){showMessage('setupMessage',error.message||'No fue posible crear el administrador.')}finally{if(button)button.disabled=false}
   }
   async function createUser(){
     hideMessage('userAdminMessage');
-    const name=clean(byId('newUserName').value), username=userKey(byId('newUsername').value), password=byId('newUserPassword').value, role=byId('newUserRole').value;
+    const sb=supabaseClient();if(!sb){showMessage('userAdminMessage','Supabase no está disponible.');return}
+    const name=clean(byId('newUserName').value),email=userKey(byId('newUsername').value),password=byId('newUserPassword').value,role=byId('newUserRole').value;
     const zone=clean(byId('newUserZone').value),phone=clean(byId('newUserPhone').value),commission=Math.max(0,Number(byId('newUserCommission').value)||0),active=byId('newUserActive').value==='true';
-    const users=getUsers();
-    if(!name||!username||!password){showMessage('userAdminMessage','Completa nombre, correo y contraseña.');return}
-    if(!validEmail(username)){showMessage('userAdminMessage','Ingresa un correo electrónico válido.');return}
+    if(!name||!email||!password){showMessage('userAdminMessage','Completa nombre, correo y contraseña.');return}
+    if(!validEmail(email)){showMessage('userAdminMessage','Ingresa un correo electrónico válido.');return}
     if(password.length<8){showMessage('userAdminMessage','La contraseña debe tener al menos 8 caracteres.');return}
-    if(users[username]){showMessage('userAdminMessage','Ese correo ya está registrado.');return}
-    users[username]={name,email:username,role,active,zone,phone,commission,passwordHash:await hashPassword(password),createdAt:new Date().toISOString()};saveUsers(users);
-    ['newUserName','newUsername','newUserPassword','newUserZone','newUserPhone'].forEach(id=>byId(id).value='');byId('newUserCommission').value='0';byId('newUserActive').value='true';
-    showMessage('userAdminMessage','Usuario creado correctamente.',true);renderUsers();
+    const button=byId('btnCreateUser');if(button)button.disabled=true;
+    try{
+      const temp=window.supabase.createClient(window.KADDU_SUPABASE.url,window.KADDU_SUPABASE.publishableKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+      const {data,error}=await temp.auth.signUp({email,password,options:{data:{name}}});
+      if(error)throw error;
+      if(!data.user)throw new Error('No fue posible crear la cuenta en Supabase Auth.');
+      const {error:profileError}=await sb.from(USERS_TABLE).insert({id:data.user.id,nombre:name,email,rol:role,activo:active,zona:zone||null,telefono:phone||null,comision:commission});
+      if(profileError)throw profileError;
+      ['newUserName','newUsername','newUserPassword','newUserZone','newUserPhone'].forEach(id=>byId(id).value='');byId('newUserCommission').value='0';byId('newUserActive').value='true';
+      showMessage('userAdminMessage',data.session?'Usuario creado correctamente.':'Usuario creado. Supabase puede solicitar confirmación del correo.',true);await renderUsers();
+    }catch(error){showMessage('userAdminMessage',error.message||'No fue posible crear el usuario.')}finally{if(button)button.disabled=false}
   }
   function commercialCounts(u){
     let clients=0,quotes=0;const name=clean(u.name).toLowerCase();
@@ -1441,30 +1480,48 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     try{if(typeof window.getQuotes==='function')quotes=window.getQuotes().filter(q=>clean(q.seller).toLowerCase()===name).length;else quotes=JSON.parse(localStorage.getItem('kddSavedQuotes')||'[]').filter(q=>clean(q.seller).toLowerCase()===name).length}catch(e){}
     return {clients,quotes};
   }
-  function renderUsers(){
-    const body=byId('usersTableBody');if(!body)return;
-    const users=getUsers();
-    body.innerHTML=Object.entries(users).map(([username,u])=>{const c=commercialCounts(u);return `<tr><td><strong>${esc(u.name)}</strong><br><small>${esc(u.phone||'')}</small></td><td>${esc(u.email||username)}</td><td>${roleLabel(u.role)}</td><td><span class="user-status ${u.active===false?'inactive':'active'}">${u.active===false?'Inactivo':'Activo'}</span></td><td>${esc(u.zone||'-')}</td><td>${c.clients}</td><td>${c.quotes}</td><td><div class="account-actions"><button type="button" data-edit="${esc(username)}">Editar</button><button type="button" class="ghost" data-reset="${esc(username)}">Cambiar clave</button><button type="button" class="${u.active===false?'':'danger'}" data-toggle="${esc(username)}" ${username===currentUser?.username?'disabled':''}>${u.active===false?'Activar':'Desactivar'}</button></div></td></tr>`}).join('');
-    body.querySelectorAll('[data-edit]').forEach(btn=>btn.addEventListener('click',()=>openUserEditor(btn.dataset.edit)));
-    body.querySelectorAll('[data-toggle]').forEach(btn=>btn.addEventListener('click',()=>toggleUser(btn.dataset.toggle)));
-    body.querySelectorAll('[data-reset]').forEach(btn=>btn.addEventListener('click',()=>resetPassword(btn.dataset.reset)));
+  async function getUsers(){
+    const sb=supabaseClient();if(!sb)return [];
+    const {data,error}=await sb.from(USERS_TABLE).select('*').order('nombre');
+    if(error)throw error;return (data||[]).map(row=>mapProfile(row));
   }
-  function openUserEditor(username){const u=getUsers()[username];if(!u)return;byId('editUserOriginal').value=username;byId('editUserName').value=u.name||'';byId('editUserEmail').value=u.email||username;byId('editUserRole').value=u.role||'seller';byId('editUserActive').value=String(u.active!==false);byId('editUserZone').value=u.zone||'';byId('editUserPhone').value=u.phone||'';byId('editUserCommission').value=Number(u.commission)||0;hideMessage('userEditMessage');byId('userEditModal').classList.add('open');byId('userEditModal').setAttribute('aria-hidden','false')}
+  async function renderUsers(){
+    const body=byId('usersTableBody');if(!body)return;
+    body.innerHTML='<tr><td colspan="8">Cargando usuarios…</td></tr>';
+    try{
+      const users=await getUsers();
+      body.innerHTML=users.map(u=>{const c=commercialCounts(u);return `<tr><td><strong>${esc(u.name)}</strong><br><small>${esc(u.phone||'')}</small></td><td>${esc(u.email)}</td><td>${roleLabel(u.role)}</td><td><span class="user-status ${u.active?'active':'inactive'}">${u.active?'Activo':'Inactivo'}</span></td><td>${esc(u.zone||'-')}</td><td>${c.clients}</td><td>${c.quotes}</td><td><div class="account-actions"><button type="button" data-edit="${esc(u.id)}">Editar</button><button type="button" class="ghost" data-reset="${esc(u.email)}">Enviar recuperación</button><button type="button" class="${u.active?'danger':''}" data-toggle="${esc(u.id)}" ${u.id===currentUser?.id?'disabled':''}>${u.active?'Desactivar':'Activar'}</button></div></td></tr>`}).join('')||'<tr><td colspan="8">No hay usuarios.</td></tr>';
+      body.querySelectorAll('[data-edit]').forEach(btn=>btn.addEventListener('click',()=>openUserEditor(btn.dataset.edit)));
+      body.querySelectorAll('[data-toggle]').forEach(btn=>btn.addEventListener('click',()=>toggleUser(btn.dataset.toggle)));
+      body.querySelectorAll('[data-reset]').forEach(btn=>btn.addEventListener('click',()=>resetPassword(btn.dataset.reset)));
+    }catch(error){body.innerHTML=`<tr><td colspan="8">${esc(error.message)}</td></tr>`}
+  }
+  async function openUserEditor(id){
+    const users=await getUsers(),u=users.find(x=>x.id===id);if(!u)return;
+    byId('editUserOriginal').value=u.id;byId('editUserName').value=u.name||'';byId('editUserEmail').value=u.email||'';byId('editUserEmail').disabled=true;byId('editUserRole').value=u.role||'seller';byId('editUserActive').value=String(u.active);byId('editUserZone').value=u.zone||'';byId('editUserPhone').value=u.phone||'';byId('editUserCommission').value=Number(u.commission)||0;hideMessage('userEditMessage');byId('userEditModal').classList.add('open');byId('userEditModal').setAttribute('aria-hidden','false');
+  }
   function closeUserEditor(){byId('userEditModal')?.classList.remove('open');byId('userEditModal')?.setAttribute('aria-hidden','true')}
-  function saveUserEdit(){hideMessage('userEditMessage');const original=byId('editUserOriginal').value,email=userKey(byId('editUserEmail').value),users=getUsers(),u=users[original];if(!u)return;if(!clean(byId('editUserName').value)||!validEmail(email)){showMessage('userEditMessage','Completa el nombre y usa un correo válido.');return}if(email!==original&&users[email]){showMessage('userEditMessage','Ese correo ya pertenece a otro usuario.');return}const updated={...u,name:clean(byId('editUserName').value),email,role:byId('editUserRole').value,active:byId('editUserActive').value==='true',zone:clean(byId('editUserZone').value),phone:clean(byId('editUserPhone').value),commission:Math.max(0,Number(byId('editUserCommission').value)||0),updatedAt:new Date().toISOString()};delete users[original];users[email]=updated;saveUsers(users);if(currentUser?.username===original){currentUser={username:email,...updated};sessionStorage.setItem(SESSION_KEY,JSON.stringify({username:email}));applyPermissions()}closeUserEditor();renderUsers()}
-
-  function toggleUser(username){const users=getUsers();if(!users[username]||username===currentUser.username)return;users[username].active=users[username].active===false;saveUsers(users);renderUsers()}
-  async function resetPassword(username){
-    const password=prompt('Ingresa la nueva contraseña para '+username+' (mínimo 8 caracteres):');
-    if(password===null)return;if(password.length<8){alert('La contraseña debe tener al menos 8 caracteres.');return}
-    const users=getUsers();if(!users[username])return;users[username].passwordHash=await hashPassword(password);saveUsers(users);alert('Contraseña actualizada.');
+  async function saveUserEdit(){
+    hideMessage('userEditMessage');const sb=supabaseClient(),id=byId('editUserOriginal').value;
+    const payload={nombre:clean(byId('editUserName').value),rol:byId('editUserRole').value,activo:byId('editUserActive').value==='true',zona:clean(byId('editUserZone').value)||null,telefono:clean(byId('editUserPhone').value)||null,comision:Math.max(0,Number(byId('editUserCommission').value)||0),updated_at:new Date().toISOString()};
+    if(!payload.nombre){showMessage('userEditMessage','Completa el nombre.');return}
+    const {error}=await sb.from(USERS_TABLE).update(payload).eq('id',id);if(error){showMessage('userEditMessage',error.message);return}
+    if(currentUser?.id===id){currentUser={...currentUser,...mapProfile({...payload,id,email:currentUser.email})};applyPermissions()}
+    closeUserEditor();await renderUsers();
+  }
+  async function toggleUser(id){
+    if(id===currentUser?.id)return;const sb=supabaseClient();const {data,error}=await sb.from(USERS_TABLE).select('activo').eq('id',id).single();if(error)return alert(error.message);
+    const result=await sb.from(USERS_TABLE).update({activo:data.activo===false,updated_at:new Date().toISOString()}).eq('id',id);if(result.error)return alert(result.error.message);await renderUsers();
+  }
+  async function resetPassword(email){
+    const sb=supabaseClient();const redirectTo=new URL(location.href);redirectTo.search='';redirectTo.hash='';
+    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:redirectTo.toString()});
+    if(error)return alert(error.message);alert('Supabase envió un correo de recuperación a '+email+'.');
   }
   async function changeMyPassword(){
-    const current=prompt('Contraseña actual:');if(current===null)return;
-    const users=getUsers(), user=users[currentUser.username];if(!user||user.passwordHash!==await hashPassword(current)){alert('La contraseña actual no es correcta.');return}
     const next=prompt('Nueva contraseña (mínimo 8 caracteres):');if(next===null)return;if(next.length<8){alert('La contraseña debe tener al menos 8 caracteres.');return}
     const repeat=prompt('Repite la nueva contraseña:');if(next!==repeat){alert('Las contraseñas no coinciden.');return}
-    user.passwordHash=await hashPassword(next);saveUsers(users);alert('Contraseña actualizada.');
+    const {error}=await supabaseClient().auth.updateUser({password:next});if(error)return alert(error.message);alert('Contraseña actualizada en Supabase Auth.');
   }
   function renderSellerPriceList(){
     const channel=byId('sellerPriceChannel')?.value||'mayorista',term=(byId('sellerPriceSearch')?.value||'').toLowerCase().trim(),m=modelo();
@@ -1487,14 +1544,17 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   }
   async function init(){
     document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',event=>{if(currentUser&&!allowed(tab.dataset.panel)){event.preventDefault();event.stopImmediatePropagation();activate(currentUser.role==='admin'?'config':'cotizacion')}},true));
-    byId('loginForm')?.addEventListener('submit',async event=>{event.preventDefault();hideMessage('loginError');if(!await login(byId('loginUser').value,byId('loginPassword').value))showMessage('loginError','Usuario o contraseña incorrectos.')});
-    byId('btnShowSetup')?.addEventListener('click',()=>{hideMessage('loginError');byId('loginForm').classList.add('permission-hidden');byId('setupForm').classList.remove('permission-hidden');byId('authTitle').textContent='Configuración inicial';byId('authSubtitle').textContent='Crea la cuenta administradora';byId('btnBackToLogin')?.classList.remove('permission-hidden');byId('setupName')?.focus()});
-    byId('btnBackToLogin')?.addEventListener('click',()=>{hideMessage('setupMessage');byId('setupForm').classList.add('permission-hidden');byId('loginForm').classList.remove('permission-hidden');byId('authTitle').textContent='Gestor Comercial';byId('authSubtitle').textContent='Acceso de usuarios autorizados';byId('loginUser')?.focus()});
+    byId('loginForm')?.addEventListener('submit',async event=>{event.preventDefault();hideMessage('loginError');const button=event.submitter;if(button)button.disabled=true;try{await login(byId('loginUser').value,byId('loginPassword').value)}catch(error){showMessage('loginError',error.message||'Usuario o contraseña incorrectos.')}finally{if(button)button.disabled=false}});
+    byId('btnShowSetup')?.addEventListener('click',()=>{hideMessage('loginError');byId('loginForm').classList.add('permission-hidden');byId('setupForm').classList.remove('permission-hidden');byId('authTitle').textContent='Configuración inicial';byId('authSubtitle').textContent='Crea la primera cuenta administradora';byId('btnBackToLogin')?.classList.remove('permission-hidden');byId('setupName')?.focus()});
+    byId('btnBackToLogin')?.addEventListener('click',showLoginScreen);
     byId('setupForm')?.addEventListener('submit',setupAdmin);byId('btnCreateUser')?.addEventListener('click',createUser);byId('btnMyPassword')?.addEventListener('click',changeMyPassword);byId('btnSaveUserEdit')?.addEventListener('click',saveUserEdit);byId('btnCloseUserEdit')?.addEventListener('click',closeUserEditor);byId('btnCancelUserEdit')?.addEventListener('click',closeUserEditor);byId('userEditModal')?.addEventListener('click',e=>{if(e.target===byId('userEditModal'))closeUserEditor()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeUserEditor()});
     byId('sellerPriceChannel')?.addEventListener('change',renderSellerPriceList);byId('sellerPriceSearch')?.addEventListener('input',renderSellerPriceList);byId('btnSellerPrintPriceList')?.addEventListener('click',printSellerPriceList);renderSellerPriceList();
-    byId('btnLogout')?.addEventListener('click',()=>{sessionStorage.removeItem(SESSION_KEY);location.reload()});
-    showInitialScreen();
-    try{const saved=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null'),users=getUsers();if(saved?.username&&users[saved.username]&&users[saved.username].active!==false){currentUser={username:saved.username,...users[saved.username]};byId('authOverlay').classList.add('hidden');applyPermissions()}}catch(e){sessionStorage.removeItem(SESSION_KEY)}
+    byId('btnLogout')?.addEventListener('click',async()=>{await supabaseClient()?.auth.signOut();currentUser=null;location.reload()});
+    showLoginScreen();
+    const waitForSupabase=async()=>{for(let i=0;i<80&&!supabaseClient();i++)await new Promise(r=>setTimeout(r,100));return supabaseClient()};
+    const sb=await waitForSupabase();if(!sb){showMessage('loginError','No fue posible conectar con Supabase.');return}
+    sb.auth.onAuthStateChange(async(event,session)=>{if(event==='PASSWORD_RECOVERY'&&session?.user){const password=prompt('Ingresa tu nueva contraseña (mínimo 8 caracteres):');if(password&&password.length>=8){const {error}=await sb.auth.updateUser({password});alert(error?error.message:'Contraseña actualizada.')}}});
+    const {data}=await sb.auth.getSession();if(data.session?.user){try{await enterApp(data.session.user)}catch(error){await sb.auth.signOut();showMessage('loginError',error.message)}}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
