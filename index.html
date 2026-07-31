@@ -186,6 +186,15 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
 
 .auth-overlay{background:radial-gradient(circle at top left,#1f5c88 0,#102a43 48%,#091c2d 100%)}
 .auth-card{width:min(460px,100%);padding:32px}.auth-brand{justify-content:center;text-align:center;flex-direction:column}.auth-brand .kdd-logo{color:#102a43}.auth-brand .kdd-logo svg{width:58px;height:68px}.auth-brand .kdd-logo span{font-size:24px}.auth-subtitle{text-align:center;color:#667085;margin:-4px 0 20px}.setup-note{padding:11px 12px;border-radius:9px;background:#eef4ff;color:#344054;font-size:12px;line-height:1.5;margin-bottom:14px}.auth-switch{margin-top:14px;text-align:center;font-size:12px;color:#667085}.auth-switch button{padding:0;background:none;color:#2367d1}.users-layout{display:grid;grid-template-columns:minmax(300px,.75fr) minmax(480px,1.25fr);gap:16px}.user-table{min-width:700px}.user-status{font-weight:700}.user-status.active{color:#18794e}.user-status.inactive{color:#b42318}.account-actions{display:flex;gap:8px;flex-wrap:wrap}.footer-app{text-align:center;color:#667085;font-size:11px;padding:18px 10px 28px}.auth-message{display:none;margin-top:12px;padding:10px;border-radius:8px;font-size:12px}.auth-message.show{display:block}.auth-message.good{background:#ecfdf3;color:#14532d}.auth-message.bad{background:#fef3f2;color:#b42318}@media(max-width:850px){.users-layout{grid-template-columns:1fr}}
+
+/* Administración de productos */
+.product-admin-grid{display:grid;grid-template-columns:minmax(280px,.75fr) minmax(520px,1.7fr);gap:16px;align-items:start}
+.product-admin-table input,.product-admin-table select{min-width:90px}
+.product-state{display:inline-flex;padding:4px 9px;border-radius:999px;font-size:12px;font-weight:800}
+.product-state.active{background:#dcfce7;color:#166534}.product-state.inactive{background:#fee2e2;color:#991b1b}
+.compact-actions{display:flex;gap:6px;flex-wrap:wrap}.compact-actions button{padding:7px 9px;font-size:12px}
+@media(max-width:1000px){.product-admin-grid{grid-template-columns:1fr}}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -229,7 +238,7 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
 </div>
 
 <main>
-<div class="tabs no-print"><button class="tab active" data-panel="config">1. Costos</button><button class="tab" data-panel="costeo">2. Productos y márgenes</button><button class="tab" data-panel="cotizacion">3. Cotización</button><button class="tab" data-panel="listaPrecios">Lista de precios</button><button class="tab" data-panel="dealers">4. Comerciales</button><button class="tab" data-panel="proyeccion">5. Utilidad proyectada</button><button class="tab" data-panel="usuarios">Usuarios</button></div>
+<div class="tabs no-print"><button class="tab active" data-panel="config">1. Costos</button><button class="tab" data-panel="costeo">2. Productos y márgenes</button><button class="tab" data-panel="productosAdmin">Administrar productos</button><button class="tab" data-panel="cotizacion">3. Cotización</button><button class="tab" data-panel="listaPrecios">Lista de precios</button><button class="tab" data-panel="dealers">4. Comerciales</button><button class="tab" data-panel="proyeccion">5. Utilidad proyectada</button><button class="tab" data-panel="usuarios">Usuarios</button></div>
 <section id="usuarios" class="panel">
 <div class="users-layout">
   <div class="card"><h3>Crear usuario</h3><p class="mini">Cada persona debe usar una cuenta individual.</p>
@@ -279,6 +288,29 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
 <div class="table-wrap"><table><thead id="sellerPriceHead"></thead><tbody id="sellerPriceBody"></tbody></table></div>
 <p class="note">Esta vista está diseñada para vendedores y solo muestra valores comerciales autorizados.</p>
 </section>
+<section id="productosAdmin" class="panel">
+  <div class="panel-head"><div><h2>Administración de productos</h2><p class="mini">Crea, edita y activa o desactiva productos. Los cambios se guardan en Supabase y se aplican al costeo, listas y cotizaciones.</p></div></div>
+  <div class="product-admin-grid">
+    <div class="card">
+      <h3 id="productFormTitle">Nuevo producto</h3>
+      <input id="productEditId" type="hidden">
+      <label>Nombre del producto</label><input id="productName" placeholder="Ej.: Lavalozas Limón 5L">
+      <div class="grid two">
+        <div><label>Unidades importadas</label><input id="productQuantity" type="number" min="0" step="1" value="0"></div>
+        <div><label>Costo unitario (R$)</label><input id="productBrl" type="number" min="0" step="0.01" value="0"></div>
+        <div><label>Peso unitario (kg)</label><input id="productWeight" type="number" min="0" step="0.01" value="1"></div>
+        <div><label>Estado</label><select id="productActive"><option value="true">Activo</option><option value="false">Inactivo</option></select></div>
+      </div>
+      <div class="actions"><button type="button" id="btnSaveProduct">Guardar producto</button><button type="button" class="ghost" id="btnCancelProductEdit">Limpiar</button></div>
+      <div id="productAdminMessage" class="auth-message"></div>
+    </div>
+    <div class="card">
+      <div class="cost-toolbar"><div class="control"><label>Buscar producto</label><input id="productAdminSearch" placeholder="Nombre del producto"></div></div>
+      <div class="table-wrap"><table class="product-admin-table"><thead><tr><th>Producto</th><th>Unidades</th><th>R$ unitario</th><th>Peso</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="productAdminRows"></tbody></table></div>
+    </div>
+  </div>
+</section>
+
 <section id="cotizacion" class="panel">
 <div class="quote-shell">
 <div class="quote-company"><div class="company-copy"><div class="quote-doc-title">Documento comercial</div><h1>COTIZACIÓN</h1><div class="brand-text"><strong>Kaddu</strong> · Importación y comercialización<br>RUT 78.373.775-2 · Calle Baquedano N° 50<br>Antofagasta, Chile</div><div class="quote-number-badge">Cotización <span id="quoteHeaderNumber">Kaddu-000001</span></div></div><div class="kdd-logo" aria-label="Logo Kaddu"><svg version="1.0" x="0" y="0" width="2400" height="2793.0949860251158" viewBox="144.105779876709 94.86455368041992 51.78848602294922 60.27090026855469" preserveAspectRatio="xMidYMid meet" color-interpolation-filters="sRGB"><g><defs><linearGradient id="92" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#fa71cd"></stop> <stop offset="100%" stop-color="#9b59b6"></stop></linearGradient><linearGradient id="93" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f9d423"></stop> <stop offset="100%" stop-color="#f83600"></stop></linearGradient><linearGradient id="94" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#0064d2"></stop> <stop offset="100%" stop-color="#1cb0f6"></stop></linearGradient><linearGradient id="95" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f00978"></stop> <stop offset="100%" stop-color="#3f51b1"></stop></linearGradient><linearGradient id="96" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7873f5"></stop> <stop offset="100%" stop-color="#ec77ab"></stop></linearGradient><linearGradient id="97" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f9d423"></stop> <stop offset="100%" stop-color="#e14fad"></stop></linearGradient><linearGradient id="98" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#009efd"></stop> <stop offset="100%" stop-color="#2af598"></stop></linearGradient><linearGradient id="99" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ffcc00"></stop> <stop offset="100%" stop-color="#00b140"></stop></linearGradient><linearGradient id="100" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#d51007"></stop> <stop offset="100%" stop-color="#ff8177"></stop></linearGradient><linearGradient id="102" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#a2b6df"></stop> <stop offset="100%" stop-color="#0c3483"></stop></linearGradient><linearGradient id="103" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7ac5d8"></stop> <stop offset="100%" stop-color="#eea2a2"></stop></linearGradient><linearGradient id="104" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00ecbc"></stop> <stop offset="100%" stop-color="#007adf"></stop></linearGradient><linearGradient id="105" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#b88746"></stop> <stop offset="100%" stop-color="#fdf5a6"></stop></linearGradient></defs><g class="imagesvg isNoFont" transform="translate(144.61348724365234,95.37228012128664)"><g><rect fill="#333" fill-opacity="0" stroke-width="2" x="0" y="0" width="50.77302427493719" height="59.25544059629713" class="image-rect"></rect> <svg x="0" y="0" width="50.77302427493719" height="59.25544059629713" filtersec="colorsb9811093766" class="image-svg-svg primary" style="overflow: visible;"><svg viewBox="-0.02117646485567093 -0.013836823403835297 108.19795989990234 126.27413940429688"><path d="M34 75.71v46.14c0 4.3-.65 4.65-4.83 3.92-9.49-1.66-17.29-6.08-22.94-13.9C2.62 106.87.06 101.31.05 95Q-.06 49.55 0 4.09C0 .14.24 0 4.29.45 19.33 2 30.09 12.71 33.63 26.6a14.28 14.28 0 0 1 .29 3.52v45.59zM50.19 67.89c0-7.74.08-15.47 0-23.2a12.59 12.59 0 0 1 2-6.94Q62.76 20.14 73.32 2.48A4.56 4.56 0 0 1 77.74 0c9.1.05 18.19 0 27.26 0 3.32 0 3.9.85 2.2 3.73-6.3 10.74-12.79 21.36-19.2 32.04q-12 20-23.87 40c-3.63 6.08-7.32 12.13-11 18.17-.46.74-1 1.82-2 1.57-1.27-.31-.91-1.62-.91-2.56-.04-8.33-.03-16.69-.03-25.06z" fill="#FFA908"></path><path d="M84.78 126.23H64.87c-1.23 0-2.7.32-3.4-1.12s.11-2.62.83-3.8q10.41-17.11 20.77-34.25c1.08-1.78 2.05-1.79 3.35-.34 1.91 2.14 3 4.78 4.41 7.2 5.38 9 10.78 18.1 16 27.24 2.38 4.16 1.74 5.06-3 5.07z" fill="#2C729E"></path></svg></svg> </g></g><defs v-gra="od"></defs></g></svg><span>Kaddu</span></div></div>
@@ -495,37 +527,6 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
 </script>
 <script>
 let productos=[["Lava Ropas Multiacción 5L",500,26],["Lava Ropas Lavanda 5L",500,24],["Lava Ropas Coco 5L",444,29],["Lava Ropa 5L",252,22],["Lava Ropas Especial 5L",120,23.5],["Lava Ropas con Glicerina 5L",120,23],["Lavalozas Limón 5L",316,22],["Lavalozas Neutro 5L",280,19.5],["Multiuso Bicarbonato + Alcohol Refil 3L",744,14.5],["Multiuso Bicarbonato + Alcohol 500 ml",600,7.2],["Suavizante de Ropa 5L",168,15.5],["Limpiador Concentrado Lavanda 140 ml",504,7],["Limpiador Concentrado Hierba Limón 140 ml",504,7],["Aromatizante Floral 2L",144,7.75],["Aromatizante Lavanda 2L",120,8.99],["Lava Ropas Multiacción 3L",702,15.39],["Lava Ropas Lavanda 3L",504,17.59],["Lava Ropas Coco 3L",450,17],["Lavalozas Limón 2L",498,9.59],["Lavalozas Neutro 2L",384,9.59]].map((p,i)=>{const n=p[0].toLowerCase(),peso=n.includes('5l')?5:n.includes('3l')?3:n.includes('2l')?2:n.includes('500 ml')?.5:n.includes('140 ml')?.14:1;return{id:i,nombre:p[0],cantidad:p[1],brl:p[2],peso}});
-
-const PRODUCTOS_INICIALES=productos.map(p=>({...p}));
-function productoToRow(p){return{id:Number(p.id),nombre:String(p.nombre||'').trim(),cantidad:Number(p.cantidad)||0,brl:Number(p.brl)||0,peso:Number(p.peso)||0,updated_at:new Date().toISOString()}}
-function productoFromRow(row,anterior={}){return{...anterior,id:Number(row.id),nombre:row.nombre,cantidad:Number(row.cantidad)||0,brl:Number(row.brl)||0,peso:Number(row.peso)||0}}
-async function sembrarProductosSupabase(){
- const sb=window.kadduSupabase;if(!sb)throw new Error('Supabase todavía no está disponible');
- const {error}=await sb.from('productos').upsert(PRODUCTOS_INICIALES.map(productoToRow),{onConflict:'id'});
- if(error)throw error;
-}
-async function cargarProductosSupabase(){
- const sb=window.kadduSupabase;if(!sb)return;
- let {data,error}=await sb.from('productos').select('*').order('id',{ascending:true});
- if(error)throw error;
- if(!data||!data.length){await sembrarProductosSupabase();({data,error}=await sb.from('productos').select('*').order('id',{ascending:true}));if(error)throw error;}
- const anteriores=new Map(productos.map(x=>[Number(x.id),x]));
- productos=(data||[]).map(row=>productoFromRow(row,anteriores.get(Number(row.id))||{}));
- if(typeof recalcular==='function')recalcular();
- if(typeof renderLineas==='function')renderLineas();
- if(typeof renderSellerPriceList==='function')renderSellerPriceList();
- console.info('[Kaddu] Catálogo de productos cargado desde Supabase:',productos.length);
-}
-async function guardarProductosSupabase(){
- const sb=window.kadduSupabase;if(!sb)throw new Error('Supabase todavía no está disponible');
- const {error}=await sb.from('productos').upsert(productos.map(productoToRow),{onConflict:'id'});
- if(error)throw error;
- return productos.length;
-}
-window.guardarProductosSupabase=guardarProductosSupabase;
-window.addEventListener('kaddu:supabase-ready',()=>cargarProductosSupabase().catch(err=>console.warn('[Kaddu] No fue posible cargar productos desde Supabase:',err)));
-setTimeout(()=>{if(window.kadduSupabase)cargarProductosSupabase().catch(err=>console.warn('[Kaddu] No fue posible cargar productos desde Supabase:',err));},1400);
-
 const ids=['tc','flete','agencia','ivaImport','ivaVenta','kilosMes','almacenajeKg','distribucionAntofagasta','distribucionCalama','mixAntofagasta','mixCalama','comisionPago','marketing','merma','margenDistribuidor','margenMayorista','margenRetail','margenHoreca','margenDirecta','nombreVendedor','sueldoVendedor','cargasVendedor','movilizacion','periodoComision','metodoComision','tipoEscala','comisionVendedor','condicionCobranza','bonoCliente','clientesNuevos','metaVenta','ventaReal','porcentajeCobrado','margenMeta','devolucionesComision','margenMinimo','topeComision','bonoMargen','umbralBonoMargen','tasa80','tasa100','tasa110','tasa120','cantidadVendedores'];
 const fmt=n=>new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(Number.isFinite(n)?n:0),parseNumber=v=>Number(String(v).replace(/\./g,'').replace(',','.').replace(/[^0-9.-]/g,''))||0,num=id=>parseNumber(document.getElementById(id).value);const moneyIds=['flete','agencia','ivaImport','sueldoVendedor','movilizacion','bonoCliente','metaVenta','topeComision','quoteShipping'];function formatMoneyInput(el){if(!el)return;el.value=new Intl.NumberFormat('es-CL',{maximumFractionDigits:0}).format(parseNumber(el.value));el.classList.add('money-input')}function unformatMoneyInput(el){if(!el)return;el.value=String(parseNumber(el.value)||'')}moneyIds.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.type='text';el.inputMode='numeric';formatMoneyInput(el);el.addEventListener('focus',()=>unformatMoneyInput(el));el.addEventListener('blur',()=>{formatMoneyInput(el);recalcular()})});
 function modelo(){const tc=num('tc'),flete=num('flete'),agencia=num('agencia'),ivaVenta=num('ivaVenta')/100,totalBRL=productos.reduce((s,p)=>s+p.cantidad*p.brl,0),facturaCLP=totalBRL*tc,unidades=productos.reduce((s,p)=>s+p.cantidad,0),kilosMes=Math.max(num('kilosMes'),1),almacenajeKg=Math.max(num('almacenajeKg'),0),mixA=Math.max(num('mixAntofagasta'),0),mixC=Math.max(num('mixCalama'),0),mixTotal=Math.max(mixA+mixC,1),distribucionKg=(num('distribucionAntofagasta')*mixA+num('distribucionCalama')*mixC)/mixTotal,logisticaKg=almacenajeKg+distribucionKg,almacenajeMes=kilosMes*almacenajeKg,distribucionMes=kilosMes*distribucionKg,operacionMes=kilosMes*logisticaKg,costosPct=(num('comisionPago')+num('marketing')+num('merma'))/100;return{tc,flete,agencia,ivaVenta,totalBRL,facturaCLP,unidades,kilosMes,almacenajeKg,distribucionKg,logisticaKg,almacenajeMes,distribucionMes,operacionMes,costosPct}}
@@ -1118,9 +1119,95 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
 <script>
 (function(){
   'use strict';
+  let client=null;
+  let allProducts=[];
+  const $=id=>document.getElementById(id);
+  const clean=v=>String(v??'').trim();
+  const numeric=v=>{const n=Number(String(v??'').replace(',','.'));return Number.isFinite(n)?n:0};
+  const normalize=row=>({
+    id:Number(row.id), nombre:clean(row.nombre), cantidad:numeric(row.cantidad),
+    brl:numeric(row.brl), peso:numeric(row.peso), activo:row.activo!==false
+  });
+  function show(text,ok=true){const el=$('productAdminMessage');if(!el)return;el.textContent=text;el.className='auth-message show '+(ok?'good':'bad')}
+  function clear(){
+    $('productEditId').value='';$('productName').value='';$('productQuantity').value='0';$('productBrl').value='0';$('productWeight').value='1';$('productActive').value='true';
+    $('productFormTitle').textContent='Nuevo producto';const m=$('productAdminMessage');if(m)m.className='auth-message';
+  }
+  function applyCatalog(){
+    productos=allProducts.filter(p=>p.activo!==false).map(p=>({...p}));
+    try{loadProductMargins()}catch(e){console.warn(e)}
+    if(Array.isArray(lineas)){
+      const valid=new Set(productos.map(p=>Number(p.id)));
+      lineas=lineas.filter(l=>valid.has(Number(l.productId)));
+      if(!lineas.length&&productos.length)lineas=[{productId:productos[0].id,qty:1,discount:0}];
+    }
+    try{renderCosteo()}catch(e){console.error(e)}
+    try{renderLineas()}catch(e){console.error(e)}
+    try{renderProjection()}catch(e){console.error(e)}
+    try{renderSellerPriceList()}catch(e){console.error(e)}
+    try{renderSimuladores()}catch(e){console.error(e)}
+    try{recalcularCotizacion()}catch(e){console.error(e)}
+  }
+  function render(){
+    const body=$('productAdminRows');if(!body)return;
+    const term=clean($('productAdminSearch')?.value).toLowerCase();
+    const rows=allProducts.filter(p=>!term||p.nombre.toLowerCase().includes(term));
+    body.innerHTML=rows.length?rows.map(p=>`<tr><td><strong>${p.nombre}</strong></td><td>${p.cantidad.toLocaleString('es-CL')}</td><td>${p.brl.toLocaleString('es-CL',{maximumFractionDigits:2})}</td><td>${p.peso.toLocaleString('es-CL',{maximumFractionDigits:2})} kg</td><td><span class="product-state ${p.activo?'active':'inactive'}">${p.activo?'Activo':'Inactivo'}</span></td><td><div class="compact-actions"><button type="button" data-edit-product="${p.id}">Editar</button><button type="button" class="${p.activo?'danger':''}" data-toggle-product="${p.id}">${p.activo?'Desactivar':'Activar'}</button></div></td></tr>`).join(''):'<tr><td colspan="6">No hay productos.</td></tr>';
+    body.querySelectorAll('[data-edit-product]').forEach(b=>b.addEventListener('click',()=>edit(Number(b.dataset.editProduct))));
+    body.querySelectorAll('[data-toggle-product]').forEach(b=>b.addEventListener('click',()=>toggle(Number(b.dataset.toggleProduct))));
+  }
+  function edit(id){
+    const p=allProducts.find(x=>x.id===id);if(!p)return;
+    $('productEditId').value=String(p.id);$('productName').value=p.nombre;$('productQuantity').value=String(p.cantidad);$('productBrl').value=String(p.brl);$('productWeight').value=String(p.peso);$('productActive').value=String(p.activo);
+    $('productFormTitle').textContent='Editar producto';$('productName').focus();
+  }
+  async function save(){
+    if(!client){show('Supabase no está disponible. Revisa la conexión.',false);return}
+    const idText=$('productEditId').value;
+    const record={nombre:clean($('productName').value),cantidad:numeric($('productQuantity').value),brl:numeric($('productBrl').value),peso:numeric($('productWeight').value),activo:$('productActive').value==='true',updated_at:new Date().toISOString()};
+    if(!record.nombre){show('Escribe el nombre del producto.',false);return}
+    let result;
+    if(idText){result=await client.from('productos').update(record).eq('id',Number(idText)).select().single()}
+    else{const nextId=allProducts.reduce((max,p)=>Math.max(max,p.id),-1)+1;result=await client.from('productos').insert({...record,id:nextId}).select().single()}
+    if(result.error){console.error(result.error);show('No se pudo guardar: '+result.error.message,false);return}
+    const saved=normalize(result.data);const idx=allProducts.findIndex(p=>p.id===saved.id);if(idx>=0)allProducts[idx]=saved;else allProducts.push(saved);allProducts.sort((a,b)=>a.id-b.id);
+    clear();render();applyCatalog();show('Producto guardado en Supabase correctamente.');
+  }
+  async function toggle(id){
+    if(!client){show('Supabase no está disponible.',false);return}
+    const p=allProducts.find(x=>x.id===id);if(!p)return;
+    const activo=!p.activo;
+    const {error}=await client.from('productos').update({activo,updated_at:new Date().toISOString()}).eq('id',id);
+    if(error){console.error(error);show('No se pudo cambiar el estado: '+error.message,false);return}
+    p.activo=activo;render();applyCatalog();show(activo?'Producto activado.':'Producto desactivado.');
+  }
+  async function load(sb){
+    if(client===sb&&allProducts.length)return;
+    client=sb;
+    const {data,error}=await sb.from('productos').select('*').order('id');
+    if(error){console.error(error);show('No se pudo cargar productos: '+error.message,false);return}
+    if(data?.length){allProducts=data.map(normalize)}
+    else{
+      const seed=productos.map(p=>({id:p.id,nombre:p.nombre,cantidad:p.cantidad,brl:p.brl,peso:p.peso,activo:true}));
+      const inserted=await sb.from('productos').insert(seed).select();
+      if(inserted.error){console.error(inserted.error);show('No se pudo cargar el catálogo inicial: '+inserted.error.message,false);return}
+      allProducts=inserted.data.map(normalize);
+    }
+    render();applyCatalog();
+  }
+  window.addEventListener('kaddu:supabase-ready',event=>load(event.detail.client));
+  document.addEventListener('DOMContentLoaded',()=>{
+    $('btnSaveProduct')?.addEventListener('click',save);$('btnCancelProductEdit')?.addEventListener('click',clear);$('productAdminSearch')?.addEventListener('input',render);
+    const existing=window.kadduSupabase;if(existing)load(existing);
+  });
+})();
+</script>
+<script>
+(function(){
+  'use strict';
   const USERS_KEY='kadduUsersV1';
   const SESSION_KEY='kadduSessionV1';
-  const PERMISSIONS={admin:['config','costeo','cotizacion','listaPrecios','dealers','proyeccion','usuarios'],seller:['cotizacion','listaPrecios']};
+  const PERMISSIONS={admin:['config','costeo','productosAdmin','cotizacion','listaPrecios','dealers','proyeccion','usuarios'],seller:['cotizacion','listaPrecios']};
   let currentUser=null;
   const byId=id=>document.getElementById(id);
   const clean=v=>String(v||'').trim();
