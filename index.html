@@ -1419,6 +1419,8 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     return profile;
   }
   async function enterApp(user){
+    const sb=supabaseClient();
+    if(!sb)throw new Error('Supabase todavía no está disponible.');
     currentUser=await loadCurrentProfile(user);
     if(!currentUser){
       const {error:bootstrapError}=await sb.rpc('bootstrap_admin',{p_name:clean(user.user_metadata?.name||user.email||'Administrador')});
@@ -1445,7 +1447,8 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     if(p1!==p2){showMessage('setupMessage','Las contraseñas no coinciden.');return}
     const button=event.submitter; if(button)button.disabled=true;
     try{
-      const {data,error}=await sb.auth.signUp({email,password:p1,options:{data:{name}}});
+      const emailRedirectTo='https://fmalebrana-eng.github.io/RMC/';
+      const {data,error}=await sb.auth.signUp({email,password:p1,options:{data:{name},emailRedirectTo}});
       if(error)throw error;
       if(!data.user)throw new Error('Supabase no devolvió el usuario creado.');
       if(!data.session){showMessage('setupMessage','Cuenta creada. Confirma el correo y luego ingresa.',true);showLoginScreen();return}
@@ -1465,7 +1468,8 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     const button=byId('btnCreateUser');if(button)button.disabled=true;
     try{
       const temp=window.supabase.createClient(window.KADDU_SUPABASE.url,window.KADDU_SUPABASE.publishableKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
-      const {data,error}=await temp.auth.signUp({email,password,options:{data:{name}}});
+      const emailRedirectTo='https://fmalebrana-eng.github.io/RMC/';
+      const {data,error}=await temp.auth.signUp({email,password,options:{data:{name},emailRedirectTo}});
       if(error)throw error;
       if(!data.user)throw new Error('No fue posible crear la cuenta en Supabase Auth.');
       const {error:profileError}=await sb.from(USERS_TABLE).insert({id:data.user.id,nombre:name,email,rol:role,activo:active,zona:zone||null,telefono:phone||null,comision:commission});
