@@ -742,7 +742,7 @@ body.pdf-preview-mode .quote-total .grand{background:var(--brand-charcoal)!impor
 <label for="loginUser">Correo electrónico</label><input autocomplete="username" id="loginUser" placeholder="nombre@empresa.cl" required="" type="email"/>
 <label for="loginPassword">Contraseña</label><input autocomplete="current-password" id="loginPassword" required="" type="password"/>
 <button style="width:100%;margin-top:18px" type="submit">Ingresar</button>
-<button class="ghost" id="btnShowSetup" style="width:100%;margin-top:10px" type="button">Primera vez: crear administrador</button>
+<button class="ghost" hidden="" id="btnShowSetup" style="width:100%;margin-top:10px" type="button">Primera vez: crear administrador</button>
 <div class="auth-message bad" id="loginError">Usuario o contraseña incorrectos.</div>
 </form>
 <form autocomplete="off" class="permission-hidden" id="setupForm">
@@ -2122,9 +2122,27 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     if(error)throw error;
     try{await enterApp(data.user);return true}catch(err){await sb.auth.signOut();throw err}
   }
+  async function adminSetupAvailable(){
+    const sb=supabaseClient();
+    if(!sb)return false;
+    try{
+      const {data,error}=await sb.rpc('admin_setup_available');
+      if(error){console.warn('No fue posible comprobar la configuración inicial:',error.message);return false}
+      return data===true;
+    }catch(error){console.warn(error);return false}
+  }
+  async function refreshAdminSetupAvailability(){
+    const button=byId('btnShowSetup');
+    if(!button)return false;
+    const available=await adminSetupAvailable();
+    button.hidden=!available;
+    if(!available && !byId('setupForm')?.classList.contains('permission-hidden'))showLoginScreen();
+    return available;
+  }
   async function setupAdmin(event){
     event.preventDefault();hideMessage('setupMessage');
     const sb=supabaseClient();if(!sb){showMessage('setupMessage','Supabase todavía no está disponible.');return}
+    if(!(await adminSetupAvailable())){showMessage('setupMessage','La configuración inicial ya fue completada. Ingresa con una cuenta autorizada.');await refreshAdminSetupAvailability();return}
     const name=clean(byId('setupName').value),email=userKey(byId('setupUser').value),p1=byId('setupPassword').value,p2=byId('setupPassword2').value;
     if(!name||!email){showMessage('setupMessage','Completa el nombre y el correo.');return}
     if(!validEmail(email)){showMessage('setupMessage','Ingresa un correo electrónico válido.');return}
@@ -2276,6 +2294,7 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     showLoginScreen();
     const waitForSupabase=async()=>{for(let i=0;i<80&&!supabaseClient();i++)await new Promise(r=>setTimeout(r,100));return supabaseClient()};
     const sb=await waitForSupabase();if(!sb){showMessage('loginError','No fue posible conectar con Supabase.');return}
+    await refreshAdminSetupAvailability();
     sb.auth.onAuthStateChange(async(event,session)=>{if(event==='PASSWORD_RECOVERY'&&session?.user){const password=prompt('Ingresa tu nueva contraseña (mínimo 8 caracteres):');if(password&&password.length>=8){const {error}=await sb.auth.updateUser({password});alert(error?error.message:'Contraseña actualizada.')}}});
     const {data}=await sb.auth.getSession();if(data.session?.user){try{await enterApp(data.session.user)}catch(error){await sb.auth.signOut();showMessage('loginError',error.message)}}
   }
