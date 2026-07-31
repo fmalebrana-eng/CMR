@@ -494,7 +494,38 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
 })();
 </script>
 <script>
-const productos=[["Lava Ropas Multiacción 5L",500,26],["Lava Ropas Lavanda 5L",500,24],["Lava Ropas Coco 5L",444,29],["Lava Ropa 5L",252,22],["Lava Ropas Especial 5L",120,23.5],["Lava Ropas con Glicerina 5L",120,23],["Lavalozas Limón 5L",316,22],["Lavalozas Neutro 5L",280,19.5],["Multiuso Bicarbonato + Alcohol Refil 3L",744,14.5],["Multiuso Bicarbonato + Alcohol 500 ml",600,7.2],["Suavizante de Ropa 5L",168,15.5],["Limpiador Concentrado Lavanda 140 ml",504,7],["Limpiador Concentrado Hierba Limón 140 ml",504,7],["Aromatizante Floral 2L",144,7.75],["Aromatizante Lavanda 2L",120,8.99],["Lava Ropas Multiacción 3L",702,15.39],["Lava Ropas Lavanda 3L",504,17.59],["Lava Ropas Coco 3L",450,17],["Lavalozas Limón 2L",498,9.59],["Lavalozas Neutro 2L",384,9.59]].map((p,i)=>{const n=p[0].toLowerCase(),peso=n.includes('5l')?5:n.includes('3l')?3:n.includes('2l')?2:n.includes('500 ml')?.5:n.includes('140 ml')?.14:1;return{id:i,nombre:p[0],cantidad:p[1],brl:p[2],peso}});
+let productos=[["Lava Ropas Multiacción 5L",500,26],["Lava Ropas Lavanda 5L",500,24],["Lava Ropas Coco 5L",444,29],["Lava Ropa 5L",252,22],["Lava Ropas Especial 5L",120,23.5],["Lava Ropas con Glicerina 5L",120,23],["Lavalozas Limón 5L",316,22],["Lavalozas Neutro 5L",280,19.5],["Multiuso Bicarbonato + Alcohol Refil 3L",744,14.5],["Multiuso Bicarbonato + Alcohol 500 ml",600,7.2],["Suavizante de Ropa 5L",168,15.5],["Limpiador Concentrado Lavanda 140 ml",504,7],["Limpiador Concentrado Hierba Limón 140 ml",504,7],["Aromatizante Floral 2L",144,7.75],["Aromatizante Lavanda 2L",120,8.99],["Lava Ropas Multiacción 3L",702,15.39],["Lava Ropas Lavanda 3L",504,17.59],["Lava Ropas Coco 3L",450,17],["Lavalozas Limón 2L",498,9.59],["Lavalozas Neutro 2L",384,9.59]].map((p,i)=>{const n=p[0].toLowerCase(),peso=n.includes('5l')?5:n.includes('3l')?3:n.includes('2l')?2:n.includes('500 ml')?.5:n.includes('140 ml')?.14:1;return{id:i,nombre:p[0],cantidad:p[1],brl:p[2],peso}});
+
+const PRODUCTOS_INICIALES=productos.map(p=>({...p}));
+function productoToRow(p){return{id:Number(p.id),nombre:String(p.nombre||'').trim(),cantidad:Number(p.cantidad)||0,brl:Number(p.brl)||0,peso:Number(p.peso)||0,updated_at:new Date().toISOString()}}
+function productoFromRow(row,anterior={}){return{...anterior,id:Number(row.id),nombre:row.nombre,cantidad:Number(row.cantidad)||0,brl:Number(row.brl)||0,peso:Number(row.peso)||0}}
+async function sembrarProductosSupabase(){
+ const sb=window.kadduSupabase;if(!sb)throw new Error('Supabase todavía no está disponible');
+ const {error}=await sb.from('productos').upsert(PRODUCTOS_INICIALES.map(productoToRow),{onConflict:'id'});
+ if(error)throw error;
+}
+async function cargarProductosSupabase(){
+ const sb=window.kadduSupabase;if(!sb)return;
+ let {data,error}=await sb.from('productos').select('*').order('id',{ascending:true});
+ if(error)throw error;
+ if(!data||!data.length){await sembrarProductosSupabase();({data,error}=await sb.from('productos').select('*').order('id',{ascending:true}));if(error)throw error;}
+ const anteriores=new Map(productos.map(x=>[Number(x.id),x]));
+ productos=(data||[]).map(row=>productoFromRow(row,anteriores.get(Number(row.id))||{}));
+ if(typeof recalcular==='function')recalcular();
+ if(typeof renderLineas==='function')renderLineas();
+ if(typeof renderSellerPriceList==='function')renderSellerPriceList();
+ console.info('[Kaddu] Catálogo de productos cargado desde Supabase:',productos.length);
+}
+async function guardarProductosSupabase(){
+ const sb=window.kadduSupabase;if(!sb)throw new Error('Supabase todavía no está disponible');
+ const {error}=await sb.from('productos').upsert(productos.map(productoToRow),{onConflict:'id'});
+ if(error)throw error;
+ return productos.length;
+}
+window.guardarProductosSupabase=guardarProductosSupabase;
+window.addEventListener('kaddu:supabase-ready',()=>cargarProductosSupabase().catch(err=>console.warn('[Kaddu] No fue posible cargar productos desde Supabase:',err)));
+setTimeout(()=>{if(window.kadduSupabase)cargarProductosSupabase().catch(err=>console.warn('[Kaddu] No fue posible cargar productos desde Supabase:',err));},1400);
+
 const ids=['tc','flete','agencia','ivaImport','ivaVenta','kilosMes','almacenajeKg','distribucionAntofagasta','distribucionCalama','mixAntofagasta','mixCalama','comisionPago','marketing','merma','margenDistribuidor','margenMayorista','margenRetail','margenHoreca','margenDirecta','nombreVendedor','sueldoVendedor','cargasVendedor','movilizacion','periodoComision','metodoComision','tipoEscala','comisionVendedor','condicionCobranza','bonoCliente','clientesNuevos','metaVenta','ventaReal','porcentajeCobrado','margenMeta','devolucionesComision','margenMinimo','topeComision','bonoMargen','umbralBonoMargen','tasa80','tasa100','tasa110','tasa120','cantidadVendedores'];
 const fmt=n=>new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(Number.isFinite(n)?n:0),parseNumber=v=>Number(String(v).replace(/\./g,'').replace(',','.').replace(/[^0-9.-]/g,''))||0,num=id=>parseNumber(document.getElementById(id).value);const moneyIds=['flete','agencia','ivaImport','sueldoVendedor','movilizacion','bonoCliente','metaVenta','topeComision','quoteShipping'];function formatMoneyInput(el){if(!el)return;el.value=new Intl.NumberFormat('es-CL',{maximumFractionDigits:0}).format(parseNumber(el.value));el.classList.add('money-input')}function unformatMoneyInput(el){if(!el)return;el.value=String(parseNumber(el.value)||'')}moneyIds.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.type='text';el.inputMode='numeric';formatMoneyInput(el);el.addEventListener('focus',()=>unformatMoneyInput(el));el.addEventListener('blur',()=>{formatMoneyInput(el);recalcular()})});
 function modelo(){const tc=num('tc'),flete=num('flete'),agencia=num('agencia'),ivaVenta=num('ivaVenta')/100,totalBRL=productos.reduce((s,p)=>s+p.cantidad*p.brl,0),facturaCLP=totalBRL*tc,unidades=productos.reduce((s,p)=>s+p.cantidad,0),kilosMes=Math.max(num('kilosMes'),1),almacenajeKg=Math.max(num('almacenajeKg'),0),mixA=Math.max(num('mixAntofagasta'),0),mixC=Math.max(num('mixCalama'),0),mixTotal=Math.max(mixA+mixC,1),distribucionKg=(num('distribucionAntofagasta')*mixA+num('distribucionCalama')*mixC)/mixTotal,logisticaKg=almacenajeKg+distribucionKg,almacenajeMes=kilosMes*almacenajeKg,distribucionMes=kilosMes*distribucionKg,operacionMes=kilosMes*logisticaKg,costosPct=(num('comisionPago')+num('marketing')+num('merma'))/100;return{tc,flete,agencia,ivaVenta,totalBRL,facturaCLP,unidades,kilosMes,almacenajeKg,distribucionKg,logisticaKg,almacenajeMes,distribucionMes,operacionMes,costosPct}}
