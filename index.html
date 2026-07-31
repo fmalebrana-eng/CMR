@@ -1026,6 +1026,7 @@ ids.forEach(id=>{const el=document.getElementById(id);if(el){el.addEventListener
 const statusLabels={borrador:'Borrador',enviada:'Enviada',negociacion:'En negociación',aprobada:'Aprobada',rechazada:'Rechazada',vencida:'Vencida',vendida:'Convertida en venta'};
 function canAccessRecord(record){const u=window.kadduCurrentUser||{};if(!u.id||u.role==='admin'||u.role==='supervisor')return true;return String(record?.ownerId||'')===String(u.id)||(!record?.ownerId&&String(record?.seller||'').trim().toLowerCase()===String(u.name||'').trim().toLowerCase())}
 function getAllQuotes(){try{return JSON.parse(localStorage.getItem('kddSavedQuotes')||'[]')}catch(e){return[]}}
+window.getAllQuotes=getAllQuotes;
 function getQuotes(){return getAllQuotes().filter(canAccessRecord)}
 function setQuotes(qs){localStorage.setItem('kddSavedQuotes',JSON.stringify(qs.slice(0,500)));renderSavedQuotes();renderCRM();renderAnalisis();if(window.kadduSupabase)Promise.all(qs.map(q=>guardarCotizacionSupabase(q).catch(err=>console.warn('[Kaddu] Sincronización pendiente:',q.number,err))))}
 let clientCache=[];
@@ -1950,7 +1951,7 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     newClients:{name:'Clientes nuevos',unit:'number',source:'Primera venta confirmada en CRM'},
     activity:{name:'Actividad comercial',unit:'number',source:'Gestiones completadas en CRM'},
     collection:{name:'Cobranza',unit:'percent',source:'Pagos recibidos / facturación vencida'},
-    strategic:{name:'Productos estratégicos',unit:'number',source:'Unidades confirmadas de productos definidos'}
+    strategic:{name:'Productos estratégicos',unit:'number',source:'Unidades vendidas en operaciones confirmadas'}
   };
   const seed={
     sellers:[{id:'v1',name:'María González',role:'Ejecutivo comercial',relationship:'Contrato indefinido',manager:'Gerencia comercial',zone:'Norte',start:'2026-07-01',status:'Activo',baseSalary:1300000,targetVariable:450000,planId:'p1'}],
@@ -1975,7 +1976,7 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     const prior=new Map((state.sellers||[]).map(s=>[String(s.id),s]));
     state.sellers=users.map(u=>{
       const p=prior.get(String(u.id))||{};
-      return {id:String(u.id),name:u.nombre||u.email,role:p.role||(u.rol==='seller'?'Ejecutivo comercial':u.rol==='supervisor'?'Jefe comercial':'Jefe comercial'),relationship:p.relationship||'Contrato indefinido',manager:p.manager||'Gerencia comercial',zone:p.zone||u.zona||'',start:p.start||new Date().toISOString().slice(0,10),status:p.status||'Activo',baseSalary:Number(p.baseSalary||0),targetVariable:Number(p.targetVariable||0),planId:p.planId||('p-'+u.id)};
+      return {id:String(u.id),name:u.nombre||u.email,email:u.email||p.email||'',role:p.role||(u.rol==='seller'?'Ejecutivo comercial':u.rol==='supervisor'?'Jefe comercial':'Jefe comercial'),relationship:p.relationship||'Contrato indefinido',manager:p.manager||'Gerencia comercial',zone:p.zone||u.zona||'',start:p.start||new Date().toISOString().slice(0,10),status:p.status||'Activo',baseSalary:Number(p.baseSalary||0),targetVariable:Number(p.targetVariable||0),planId:p.planId||('p-'+u.id)};
     });
     for(const s of state.sellers){
       if(!state.plans.some(p=>p.id===s.planId)) state.plans.push({id:s.planId,name:'Plan comercial '+s.name,start:new Date().getFullYear()+'-01-01',end:new Date().getFullYear()+'-12-31',threshold:80,cap:120,salesEvent:'confirmed',reversalRule:'subtract',goals:[{id:'g-'+s.id+'-1',type:'sales',goal:0,weight:70},{id:'g-'+s.id+'-2',type:'newClients',goal:0,weight:20},{id:'g-'+s.id+'-3',type:'activity',goal:0,weight:10}]});
@@ -2018,7 +2019,65 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   function loadPlan(){const p=plan();$('scPlanName').value=p.name;$('scPlanStart').value=p.start;$('scPlanEnd').value=p.end;$('scPayThreshold').value=p.threshold;$('scCap').value=p.cap;$('scSalesEvent').value=p.salesEvent;$('scReversalRule').value=p.reversalRule;renderPlanRows()}
   function renderPlanRows(){const p=plan();$('scPlanRows').innerHTML=p.goals.map(g=>{const m=metric(g.type);return `<tr data-goal-row="${g.id}"><td><select data-goal-type="${g.id}">${Object.entries(catalog).map(([k,v])=>`<option value="${k}" ${k===g.type?'selected':''}>${v.name}</option>`).join('')}</select></td><td><small>${m.source}</small></td><td><input data-goal-value="${g.id}" data-unit="${m.unit}" type="${m.unit==='money'?'text':'number'}" value="${m.unit==='money'?num(g.goal):g.goal}"></td><td><input data-goal-weight="${g.id}" type="number" min="0" max="100" value="${g.weight}"> %</td><td><button type="button" class="ghost" data-remove-goal="${g.id}">Quitar</button></td></tr>`}).join('');document.querySelectorAll('[data-unit="money"]').forEach(bindMoney);validateWeights()}
   function validateWeights(){const total=plan().goals.reduce((a,g)=>a+Number(g.weight||0),0);$('scWeightTotal').textContent=pct(total);$('scWeightStatus').textContent=total===100?'Plan válido':'Debe sumar 100,00 %';$('scWeightStatus').className=total===100?'sc-score-good':'sc-score-critical';return total===100}
-  function calculate(){const p=plan(),s=evalSeller(),op=state.operational[state.evaluation.period]||{};const rows=p.goals.map(g=>{const actual=Number(op[g.type]||0);const compliance=g.goal>0?Math.min(actual/g.goal*100,p.cap):0;return {...g,name:metric(g.type).name,source:metric(g.type).source,unit:metric(g.type).unit,actual,compliance,contribution:compliance*g.weight/100}});const score=rows.reduce((a,r)=>a+r.contribution,0);const factor=score<p.threshold?0:Math.min(score,p.cap)/100;state.evaluation.rows=rows;state.evaluation.score=score;state.evaluation.incentive=Math.round(s.targetVariable*factor);if(state.evaluation.status==='open')state.evaluation.status='calculated';save();renderEvaluation();renderIncentive()}
+  const norm=v=>String(v||'').trim().toLowerCase();
+  const periodOf=v=>String(v||'').slice(0,7);
+  const operationalKey=(period,sellerId)=>period+'::'+sellerId;
+  function sellerOwnsQuote(q,s){
+    const owner=String(q?.ownerId||'');
+    const assigned=norm(q?.seller);
+    return (owner&&owner===String(s.id))||assigned===norm(s.name)||assigned===norm(s.email);
+  }
+  function quoteNet(q){
+    if(Number.isFinite(Number(q?.sale?.net)))return Number(q.sale.net)||0;
+    if(typeof window.quoteTotal==='function')return Number(window.quoteTotal(q)?.net)||0;
+    return (q?.lines||[]).reduce((sum,l)=>sum+(Number(l.qty)||0)*(Number(l.unitPrice)||0)*(1-(Number(l.discount)||0)/100),0)+(Number(q?.shipping)||0);
+  }
+  function paymentFactor(value){const v=norm(value);if(v.includes('pagado'))return 1;if(v.includes('parcial'))return .5;return 0}
+  async function refreshOperational(){
+    const s=evalSeller(),period=state.evaluation.period;
+    if(!s||!period)return {};
+    // Las cotizaciones se cargan desde Supabase al iniciar sesión y quedan en el cache local de la aplicación.
+    if(typeof window.cargarCotizacionesSupabase==='function'){
+      try{await window.cargarCotizacionesSupabase()}catch(e){console.warn('[Kaddu] No fue posible refrescar cotizaciones para la evaluación:',e)}
+    }
+    const all=typeof window.getAllQuotes==='function'?window.getAllQuotes():[];
+    const owned=all.filter(q=>sellerOwnsQuote(q,s));
+    const sold=owned.filter(q=>q.status==='vendida'&&periodOf(q.sale?.date||q.savedAt||q.date)===period);
+    const sales=sold.reduce((sum,q)=>sum+quoteNet(q),0);
+    const firstSaleByClient=new Map();
+    all.filter(q=>q.status==='vendida').forEach(q=>{
+      const client=norm(q.clientRut)||norm(q.clientName);
+      if(!client)return;
+      const date=String(q.sale?.date||q.savedAt||q.date||'');
+      if(!firstSaleByClient.has(client)||date<firstSaleByClient.get(client))firstSaleByClient.set(client,date);
+    });
+    const newClients=new Set(sold.filter(q=>{
+      const client=norm(q.clientRut)||norm(q.clientName);
+      return client&&periodOf(firstSaleByClient.get(client))===period;
+    }).map(q=>norm(q.clientRut)||norm(q.clientName))).size;
+    const activity=owned.filter(q=>periodOf(q.savedAt||q.date)===period||periodOf(q.nextContact)===period||periodOf(q.sale?.date)===period).length;
+    const invoiced=sold.reduce((sum,q)=>sum+quoteNet(q),0);
+    const collected=sold.reduce((sum,q)=>sum+quoteNet(q)*paymentFactor(q.sale?.payment),0);
+    const collection=invoiced?collected/invoiced*100:0;
+    const strategic=sold.reduce((sum,q)=>sum+(q.lines||[]).reduce((a,l)=>a+(Number(l.qty)||0),0),0);
+    const op={sales,newClients,activity,collection,strategic,quotes:sold.length,updatedAt:new Date().toISOString(),source:'CRM y cotizaciones Supabase'};
+    state.operational[operationalKey(period,s.id)]=op;
+    return op;
+  }
+  async function calculate(){
+    const button=$('scCalculate'),original=button?.textContent;
+    if(button){button.disabled=true;button.textContent='Actualizando…'}
+    try{
+      const p=plan(),s=evalSeller();
+      const op=await refreshOperational();
+      const rows=p.goals.map(g=>{const actual=Number(op[g.type]||0);const compliance=g.goal>0?Math.min(actual/g.goal*100,p.cap):0;return {...g,name:metric(g.type).name,source:metric(g.type).source,unit:metric(g.type).unit,actual,compliance,contribution:compliance*g.weight/100}});
+      const score=rows.reduce((a,r)=>a+r.contribution,0),factor=score<p.threshold?0:Math.min(score,p.cap)/100;
+      state.evaluation.rows=rows;state.evaluation.score=score;state.evaluation.incentive=Math.round(s.targetVariable*factor);state.evaluation.operational=op;
+      if(state.evaluation.status==='open')state.evaluation.status='calculated';
+      save();renderEvaluation();renderIncentive();
+    }catch(e){console.error(e);alert('No fue posible actualizar los resultados desde CRM: '+(e.message||e))}
+    finally{if(button){button.disabled=false;button.textContent=original||'Actualizar evaluación'}}
+  }
   function classify(v){return v<80?['Bajo cumplimiento','sc-score-critical']:v<100?['En desarrollo','sc-score-warning']:v<120?['Meta cumplida','sc-score-good']:['Sobrecumplimiento','sc-score-excellent']}
   function renderEvaluation(){const e=state.evaluation,s=evalSeller(),rows=e.rows.length?e.rows:plan().goals.map(g=>({...g,name:metric(g.type).name,source:metric(g.type).source,unit:metric(g.type).unit,actual:0,compliance:0,contribution:0}));const [label,cls]=classify(e.score);$('scScore').textContent=pct(e.score);$('scScore').className=cls;$('scScoreLabel').textContent=label;$('scVariableTarget').textContent=money(s.targetVariable);$('scVariableAccrued').textContent=money(e.incentive);$('scEvaluationState').textContent=e.approved?'Aprobada':e.status==='approval'?'En aprobación':e.status==='calculated'?'Calculada':'Abierta';$('scEvaluationHint').textContent='Datos de origen, no editables';$('scEvaluationRows').innerHTML=rows.map(r=>`<tr><td><strong>${r.name}</strong></td><td>${goalText(r)}</td><td><strong>${actualText(r,r.actual)}</strong></td><td><span class="status-pill">${r.source}</span></td><td>${pct(r.compliance)}</td><td>${pct(r.weight)}</td><td><strong>${pct(r.contribution)}</strong></td></tr>`).join('');$('scManagerNotes').value=e.notes||'';$('scPerformanceReading').innerHTML=`<div><strong>${label}</strong><span>El cumplimiento ponderado del período es ${pct(e.score)}.</span></div>`+rows.map(r=>`<div><strong>${r.name}: ${pct(r.compliance)}</strong><span>${r.actual===0?'No hay información operacional para este indicador.':r.compliance>=100?'Meta cumplida o superada.':'Falta '+pct(100-r.compliance)+' para cumplir la meta.'}</span></div>`).join('');$('scPeriodBadge').textContent=monthLabel(e.period);$('scPeriod').value=e.period}
   function renderIncentive(){const e=state.evaluation,s=evalSeller(),p=plan();$('scLiquidationLines').innerHTML=`<div><span>Sueldo base (referencia)</span><strong>${money(s.baseSalary)}</strong></div><div><span>Incentivo objetivo</span><strong>${money(s.targetVariable)}</strong></div><div><span>Cumplimiento ponderado</span><strong>${pct(e.score)}</strong></div><div><span>Umbral de pago</span><strong>${pct(p.threshold)}</strong></div><div><span>Incentivo generado</span><strong>${money(e.incentive)}</strong></div>`;$('scTotalPay').textContent=money(e.incentive);$('scApprovalManager').textContent=s.manager;$('scApprovalEvaluation').textContent=e.status==='approval'||e.approved?'Presentada':'Pendiente';$('scApprovalPayment').textContent=e.approved?'Aprobado':'No aprobado';$('scAudit').innerHTML=[`Incentivo objetivo: ${money(s.targetVariable)}.`,`Cumplimiento ponderado: ${pct(e.score)}.`,`Umbral mínimo: ${pct(p.threshold)}.`,`Tope máximo: ${pct(p.cap)}.`,e.score<p.threshold?'El período no alcanza el umbral; no genera incentivo.':`Incentivo calculado: ${money(e.incentive)}.`].map(x=>`<div>${x}</div>`).join('')}
