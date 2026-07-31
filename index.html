@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es-CL">
 <head>
-<meta charset="utf-8"><meta name="kaddu-build" content="productos-storage-v1"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="kaddu-build" content="conversion-seguimiento-v1"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gestor Comercial Kaddu</title>
 <style>
 :root{--bg:#f4f7fb;--card:#fff;--text:#17202a;--muted:#667085;--line:#d8dee9;--accent:#2367d1;--navy:#102a43;--good:#18794e;--bad:#b42318;--soft:#eef4ff}
@@ -128,7 +128,9 @@ body.pdf-preview-mode .quote-legal{margin-top:15px!important;padding-top:9px!imp
 
 /* CRM, clientes y seguimiento comercial */
 .crm-grid{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:12px;margin-bottom:16px}
-.crm-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-bottom:16px}
+.crm-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;margin-bottom:16px}
+.crm-layout>.card{min-width:0;width:100%}
+.crm-layout .table-wrap{max-width:100%;overflow-x:auto}
 .crm-table{min-width:1250px}.crm-table th,.crm-table td{font-size:12px;vertical-align:middle}.crm-table select,.crm-table input,.crm-table textarea{width:100%;padding:7px;border:1px solid var(--line);border-radius:7px;background:#fff}.crm-table textarea{min-height:52px;resize:vertical}
 .status-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:750;background:#eef2f6;color:#344054}.status-borrador{background:#f2f4f7}.status-enviada{background:#e8f1ff;color:#175cd3}.status-negociacion{background:#fff4e5;color:#b54708}.status-aprobada{background:#ecfdf3;color:#027a48}.status-rechazada{background:#fef3f2;color:#b42318}.status-vencida{background:#fef3f2;color:#912018}.status-vendida{background:#dcfae6;color:#05603a}
 .expiry-ok{color:#18794e;font-weight:700}.expiry-soon{color:#b54708;font-weight:700}.expiry-late{color:#b42318;font-weight:700}
@@ -176,7 +178,17 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
 @media(max-width:900px){.commission-rules-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.commission-bonus-grid,.commission-metrics{grid-template-columns:1fr}.commission-scale-table{font-size:11px}.commission-scale-table th,.commission-scale-table td{padding:7px 6px}}
 
-#vendedores,#crm,#analisis{display:none!important}.margin-input{min-width:76px;width:86px}.projection-positive{color:#08783e}.projection-negative{color:#b42318}
+#vendedores,#analisis{display:none!important}.margin-input{min-width:76px;width:86px}.projection-positive{color:#08783e}.projection-negative{color:#b42318}
+
+/* Ficha editable de clientes */
+.client-modal{position:fixed;inset:0;z-index:12000;background:rgba(9,28,45,.62);display:none;align-items:center;justify-content:center;padding:22px}
+.client-modal.open{display:flex}.client-modal-card{width:min(820px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.3);padding:20px}
+.client-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px}.client-modal-head h3{margin:0;color:var(--navy)}.client-close{width:38px;height:38px;border-radius:10px;padding:0;font-size:22px}
+.client-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px}.client-form-grid .wide{grid-column:1/-1}.client-form-grid input,.client-form-grid select,.client-form-grid textarea{width:100%}.client-form-grid textarea{min-height:90px;resize:vertical}
+.client-protected{background:#f2f4f7!important;color:#667085}.client-modal-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.client-history{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}.client-history-list{display:grid;gap:8px;max-height:190px;overflow:auto}.client-history-item{padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:#f8fafc;font-size:12px;color:#475467}.client-history-item strong{color:var(--navy)}
+@media(max-width:650px){.client-form-grid{grid-template-columns:1fr}.client-modal{padding:10px}.client-modal-card{padding:15px}}
+
 /* Control de acceso Kaddu */
 .auth-overlay{position:fixed;inset:0;z-index:10000;background:linear-gradient(135deg,#0f2942,#174d75);display:flex;align-items:center;justify-content:center;padding:24px}
 .auth-overlay.hidden{display:none}.auth-card{width:min(430px,100%);background:#fff;border-radius:18px;padding:28px;box-shadow:0 24px 70px rgba(0,0,0,.28)}
@@ -214,6 +226,25 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
 .product-image-row{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:start;margin-top:12px}.product-filter-control{min-width:150px}.product-admin-table th:nth-child(2),.product-admin-table td:nth-child(2){text-align:left}
 .product-upload-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}.product-upload-controls input[type=file]{position:absolute;inline-size:1px;block-size:1px;opacity:0;pointer-events:none}.product-upload-label{display:inline-flex;align-items:center;justify-content:center;border-radius:9px;padding:10px 14px;background:var(--accent);color:#fff;font-weight:650;cursor:pointer}.product-upload-label:hover{filter:brightness(.96)}.product-upload-status{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.45}.product-upload-status.good{color:var(--good)}.product-upload-status.bad{color:var(--bad)}
 @media(max-width:700px){.product-image-row{grid-template-columns:1fr}.product-image-preview{width:100%;height:180px}}
+
+/* Imágenes de producto en cotizaciones */
+.quote-product-cell{display:flex;align-items:center;gap:10px;min-width:300px;text-align:left}
+.quote-product-thumb{width:52px;height:52px;flex:0 0 52px;border:1px solid var(--line);border-radius:9px;object-fit:contain;background:#fff}
+.quote-product-placeholder{display:grid;place-items:center;color:#98a2b3;font-size:9px;background:#f8fafc}
+.quote-product-control{min-width:0;flex:1}.quote-product-control select{width:100%}
+.quote-product-print{display:none;align-items:center;gap:8px;text-align:left}.quote-product-print strong{line-height:1.25}
+@media(max-width:650px){.quote-product-cell{min-width:240px}.quote-product-thumb{width:44px;height:44px;flex-basis:44px}}
+@media print{.quote-product-cell{display:none!important}.quote-product-print{display:flex!important}.quote-product-print .quote-product-thumb{width:34px!important;height:34px!important;flex-basis:34px!important;border-radius:6px!important}.quote-product-print strong{font-size:9px!important}}
+body.pdf-preview-mode .quote-product-cell{display:none!important}
+body.pdf-preview-mode .quote-product-print{display:flex!important}
+body.pdf-preview-mode .quote-product-print .quote-product-thumb{width:34px!important;height:34px!important;flex-basis:34px!important;border-radius:6px!important}
+
+/* Privacidad comercial e imagenes en catalogos */
+body[data-role="seller"] #marginAlert{display:none!important}
+.catalog-product-cell{display:flex;align-items:center;gap:10px;min-width:250px;text-align:left}
+.catalog-product-thumb{width:48px;height:48px;flex:0 0 48px;object-fit:contain;border:1px solid var(--line);border-radius:9px;background:#fff}
+.catalog-product-placeholder{display:grid;place-items:center;color:#98a2b3;font-size:9px;background:#f8fafc}
+@media print{body[data-role="seller"] #marginAlert{display:none!important}.catalog-product-thumb{width:32px;height:32px;flex-basis:32px}.catalog-product-cell{min-width:0}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -224,6 +255,21 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
 #supabaseConnectionStatus.error .dot{background:#b42318}
 @media print{#supabaseConnectionStatus{display:none!important}}
 </style>
+
+<style id="product-image-viewer-global-style">
+.product-thumb,.quote-product-thumb,.catalog-product-thumb{cursor:zoom-in;transition:transform .16s ease,box-shadow .16s ease}
+.product-thumb:hover,.quote-product-thumb:hover,.catalog-product-thumb:hover{transform:scale(1.06);box-shadow:0 8px 20px rgba(16,42,67,.18)}
+.image-viewer[hidden]{display:none!important}
+.image-viewer{position:fixed;inset:0;z-index:12000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(5,18,31,.82);backdrop-filter:blur(4px)}
+.image-viewer-card{position:relative;width:min(920px,96vw);height:min(860px,92vh);background:#fff;border-radius:18px;padding:18px;box-shadow:0 28px 80px rgba(0,0,0,.38);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.image-viewer-stage{width:100%;min-height:0;flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:zoom-in}
+.image-viewer-stage.zoomed{cursor:grab}.image-viewer-stage.zoomed:active{cursor:grabbing}
+.image-viewer-image{display:block;max-width:100%;max-height:100%;object-fit:contain;border-radius:12px;background:#f8fafc;transform-origin:center center;transition:transform .16s ease;user-select:none;-webkit-user-drag:none}
+.image-viewer-title{margin-top:12px;font-weight:800;color:#102a43;text-align:center;min-height:1.2em}
+.image-viewer-close{position:absolute;right:12px;top:12px;z-index:2;width:40px;height:40px;border:0;border-radius:999px;padding:0;background:#102a43;color:#fff;font-size:24px;line-height:1;cursor:pointer}
+.image-viewer-help{font-size:11px;color:#667085;margin-top:5px;text-align:center}
+@media print{.image-viewer{display:none!important}}
+</style>
 </head>
 <body>
 <div id="supabaseConnectionStatus" title="Estado de conexión con Supabase"><span class="dot"></span><span class="label">Conectando a Supabase…</span></div>
@@ -233,18 +279,20 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
     <div class="auth-brand"><div class="kdd-logo" aria-label="Logo Kaddu"><svg version="1.0" x="0" y="0" width="2400" height="2793.0949860251158" viewBox="144.105779876709 94.86455368041992 51.78848602294922 60.27090026855469" preserveAspectRatio="xMidYMid meet" color-interpolation-filters="sRGB"><g><defs><linearGradient id="92" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#fa71cd"></stop> <stop offset="100%" stop-color="#9b59b6"></stop></linearGradient><linearGradient id="93" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f9d423"></stop> <stop offset="100%" stop-color="#f83600"></stop></linearGradient><linearGradient id="94" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#0064d2"></stop> <stop offset="100%" stop-color="#1cb0f6"></stop></linearGradient><linearGradient id="95" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f00978"></stop> <stop offset="100%" stop-color="#3f51b1"></stop></linearGradient><linearGradient id="96" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7873f5"></stop> <stop offset="100%" stop-color="#ec77ab"></stop></linearGradient><linearGradient id="97" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f9d423"></stop> <stop offset="100%" stop-color="#e14fad"></stop></linearGradient><linearGradient id="98" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#009efd"></stop> <stop offset="100%" stop-color="#2af598"></stop></linearGradient><linearGradient id="99" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ffcc00"></stop> <stop offset="100%" stop-color="#00b140"></stop></linearGradient><linearGradient id="100" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#d51007"></stop> <stop offset="100%" stop-color="#ff8177"></stop></linearGradient><linearGradient id="102" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#a2b6df"></stop> <stop offset="100%" stop-color="#0c3483"></stop></linearGradient><linearGradient id="103" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7ac5d8"></stop> <stop offset="100%" stop-color="#eea2a2"></stop></linearGradient><linearGradient id="104" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00ecbc"></stop> <stop offset="100%" stop-color="#007adf"></stop></linearGradient><linearGradient id="105" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#b88746"></stop> <stop offset="100%" stop-color="#fdf5a6"></stop></linearGradient></defs><g class="imagesvg isNoFont" transform="translate(144.61348724365234,95.37228012128664)"><g><rect fill="#333" fill-opacity="0" stroke-width="2" x="0" y="0" width="50.77302427493719" height="59.25544059629713" class="image-rect"></rect> <svg x="0" y="0" width="50.77302427493719" height="59.25544059629713" filtersec="colorsb9811093766" class="image-svg-svg primary" style="overflow: visible;"><svg viewBox="-0.02117646485567093 -0.013836823403835297 108.19795989990234 126.27413940429688"><path d="M34 75.71v46.14c0 4.3-.65 4.65-4.83 3.92-9.49-1.66-17.29-6.08-22.94-13.9C2.62 106.87.06 101.31.05 95Q-.06 49.55 0 4.09C0 .14.24 0 4.29.45 19.33 2 30.09 12.71 33.63 26.6a14.28 14.28 0 0 1 .29 3.52v45.59zM50.19 67.89c0-7.74.08-15.47 0-23.2a12.59 12.59 0 0 1 2-6.94Q62.76 20.14 73.32 2.48A4.56 4.56 0 0 1 77.74 0c9.1.05 18.19 0 27.26 0 3.32 0 3.9.85 2.2 3.73-6.3 10.74-12.79 21.36-19.2 32.04q-12 20-23.87 40c-3.63 6.08-7.32 12.13-11 18.17-.46.74-1 1.82-2 1.57-1.27-.31-.91-1.62-.91-2.56-.04-8.33-.03-16.69-.03-25.06z" fill="#FFA908"></path><path d="M84.78 126.23H64.87c-1.23 0-2.7.32-3.4-1.12s.11-2.62.83-3.8q10.41-17.11 20.77-34.25c1.08-1.78 2.05-1.79 3.35-.34 1.91 2.14 3 4.78 4.41 7.2 5.38 9 10.78 18.1 16 27.24 2.38 4.16 1.74 5.06-3 5.07z" fill="#2C729E"></path></svg><span>KADDU</span></div><div><h2 id="authTitle">Gestor Comercial</h2></div></div>
     <p class="auth-subtitle" id="authSubtitle">Acceso de usuarios autorizados</p>
     <form id="loginForm" autocomplete="off">
-      <label for="loginUser">Usuario</label><input id="loginUser" required autocomplete="username">
+      <label for="loginUser">Correo electrónico</label><input id="loginUser" type="email" required autocomplete="username" placeholder="nombre@empresa.cl">
       <label for="loginPassword">Contraseña</label><input id="loginPassword" type="password" required autocomplete="current-password">
       <button type="submit" style="width:100%;margin-top:18px">Ingresar</button>
+      <button type="button" id="btnShowSetup" class="ghost" style="width:100%;margin-top:10px">Primera vez: crear administrador</button>
       <div id="loginError" class="auth-message bad">Usuario o contraseña incorrectos.</div>
     </form>
     <form id="setupForm" autocomplete="off" class="permission-hidden">
       <div class="setup-note">Primera configuración: crea la cuenta administradora de este equipo.</div>
       <label for="setupName">Nombre</label><input id="setupName" required autocomplete="name">
-      <label for="setupUser">Usuario administrador</label><input id="setupUser" required autocomplete="username">
+      <label for="setupUser">Correo del administrador</label><input id="setupUser" type="email" required autocomplete="username" placeholder="admin@empresa.cl">
       <label for="setupPassword">Contraseña</label><input id="setupPassword" type="password" required minlength="8" autocomplete="new-password">
       <label for="setupPassword2">Repetir contraseña</label><input id="setupPassword2" type="password" required minlength="8" autocomplete="new-password">
       <button type="submit" style="width:100%;margin-top:18px">Crear cuenta y continuar</button>
+      <button type="button" id="btnBackToLogin" class="ghost" style="width:100%;margin-top:10px">Volver al ingreso</button>
       <div id="setupMessage" class="auth-message bad"></div>
     </form>
   </div>
@@ -257,20 +305,31 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
 </div>
 
 <main>
-<div class="tabs no-print"><button class="tab active" data-panel="config">1. Costos</button><button class="tab" data-panel="costeo">2. Productos y márgenes</button><button class="tab" data-panel="productosAdmin">Administrar productos</button><button class="tab" data-panel="cotizacion">3. Cotización</button><button class="tab" data-panel="listaPrecios">Lista de precios</button><button class="tab" data-panel="dealers">4. Comerciales</button><button class="tab" data-panel="proyeccion">5. Utilidad proyectada</button><button class="tab" data-panel="usuarios">Usuarios</button></div>
+<div class="tabs no-print"><button class="tab active" data-panel="config">1. Costos</button><button class="tab" data-panel="costeo">2. Productos y márgenes</button><button class="tab" data-panel="productosAdmin">Administrar productos</button><button class="tab" data-panel="cotizacion">3. Cotización</button><button class="tab" data-panel="crm">Conversión y seguimiento</button><button class="tab" data-panel="listaPrecios">Lista de precios</button><button class="tab" data-panel="dealers">4. Comerciales</button><button class="tab" data-panel="proyeccion">5. Utilidad proyectada</button><button class="tab" data-panel="usuarios">Usuarios</button></div>
 <section id="usuarios" class="panel">
 <div class="users-layout">
-  <div class="card"><h3>Crear usuario</h3><p class="mini">Cada persona debe usar una cuenta individual.</p>
-    <label>Nombre completo</label><input id="newUserName" autocomplete="off">
-    <label>Usuario</label><input id="newUsername" autocomplete="off">
+  <div class="card"><h3>Crear usuario</h3><p class="mini">Cada persona debe usar una cuenta individual. El correo será su acceso.</p><div class="setup-note" style="margin-bottom:12px">Configuración actual del archivo: las cuentas quedan guardadas en este navegador. Para acceso seguro desde varios equipos debe conectarse este módulo a Supabase Auth.</div>
+    <label>Nombre completo</label><input id="newUserName" autocomplete="name">
+    <label>Correo electrónico</label><input id="newUsername" type="email" autocomplete="email" placeholder="vendedor@empresa.cl">
     <label>Contraseña temporal</label><input id="newUserPassword" type="password" minlength="8" autocomplete="new-password">
-    <label>Perfil</label><select id="newUserRole"><option value="seller">Vendedor</option><option value="admin">Administrador</option></select>
+    <label>Rol</label><select id="newUserRole"><option value="seller">Vendedor</option><option value="supervisor">Supervisor</option><option value="admin">Administrador</option></select>
+    <div class="grid two" style="margin-top:10px;margin-bottom:0"><div><label>Zona / equipo</label><input id="newUserZone" placeholder="Ej.: Antofagasta"></div><div><label>Teléfono</label><input id="newUserPhone" type="tel" placeholder="+56 9..."></div></div>
+    <div class="grid two" style="margin-bottom:0"><div><label>Comisión (%)</label><input id="newUserCommission" type="number" min="0" max="100" step="0.1" value="0"></div><div><label>Estado</label><select id="newUserActive"><option value="true">Activo</option><option value="false">Inactivo</option></select></div></div>
     <button type="button" id="btnCreateUser" style="margin-top:14px;width:100%">Crear usuario</button>
     <div id="userAdminMessage" class="auth-message"></div>
   </div>
-  <div class="card"><h3>Usuarios autorizados</h3><div class="table-wrap"><table class="user-table"><thead><tr><th>Nombre</th><th>Usuario</th><th>Perfil</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="usersTableBody"></tbody></table></div></div>
+  <div class="card"><div class="history-toolbar"><div><h3 style="margin:0">Usuarios autorizados</h3><div class="mini">Administra accesos, roles y responsables comerciales.</div></div></div><div class="table-wrap"><table class="user-table"><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Zona</th><th>Clientes</th><th>Cotizaciones</th><th>Acciones</th></tr></thead><tbody id="usersTableBody"></tbody></table></div></div>
 </div>
 </section>
+<div id="userEditModal" class="product-modal" aria-hidden="true">
+  <div class="product-modal-card" role="dialog" aria-modal="true" aria-labelledby="userEditTitle">
+    <div class="modal-head"><div><h3 id="userEditTitle">Editar usuario</h3><div class="mini">El correo identifica la cuenta y no puede quedar duplicado.</div></div><button type="button" class="ghost" id="btnCloseUserEdit">Cerrar</button></div>
+    <input id="editUserOriginal" type="hidden">
+    <div class="grid two"><div><label>Nombre completo</label><input id="editUserName"></div><div><label>Correo electrónico</label><input id="editUserEmail" type="email"></div><div><label>Rol</label><select id="editUserRole"><option value="seller">Vendedor</option><option value="supervisor">Supervisor</option><option value="admin">Administrador</option></select></div><div><label>Estado</label><select id="editUserActive"><option value="true">Activo</option><option value="false">Inactivo</option></select></div><div><label>Zona / equipo</label><input id="editUserZone"></div><div><label>Teléfono</label><input id="editUserPhone" type="tel"></div><div><label>Comisión (%)</label><input id="editUserCommission" type="number" min="0" max="100" step="0.1"></div></div>
+    <div class="actions"><button type="button" id="btnSaveUserEdit">Guardar cambios</button><button type="button" class="ghost" id="btnCancelUserEdit">Cancelar</button></div>
+    <div id="userEditMessage" class="auth-message"></div>
+  </div>
+</div>
 <section id="config" class="panel active">
 <div class="callout"><strong>Modelo Kaddu:</strong> el costo se construye desde la importación, luego se agrega logística por peso. El escenario operativo usa una bodega propia en Antofagasta, 70% de distribución local y 30% hacia Calama.</div>
 <div class="grid four">
@@ -395,7 +454,7 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
 
 
 <section id="crm" class="panel">
-  <div class="callout"><strong>CRM comercial Kaddu:</strong> administra clientes, seguimiento, vencimientos, probabilidad de cierre y conversión de cotizaciones en ventas. Toda la información queda en el respaldo integral.</div>
+  <div class="callout"><strong>Conversión comercial:</strong> administra el seguimiento, vencimientos, probabilidad de cierre y conversión de cotizaciones en ventas. Este módulo no muestra costos, utilidades ni márgenes.</div>
   <div class="crm-grid">
     <div class="card"><label>Cotizaciones abiertas</label><div class="kpi" id="crmOpen">0</div><div class="mini">Borrador, enviada o negociación</div></div>
     <div class="card"><label>Valor ponderado</label><div class="kpi" id="crmWeighted">$0</div><div class="mini">Monto neto × probabilidad</div></div>
@@ -406,7 +465,7 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
   <div class="card" style="margin-bottom:16px"><h3>Embudo comercial</h3><div class="funnel" id="crmFunnel"></div></div>
   <div class="crm-layout">
     <div class="card"><div class="history-toolbar"><div><h3 style="margin:0">Seguimiento de cotizaciones</h3><div class="mini">Actualiza estado, próximo contacto, probabilidad y responsable.</div></div><div><input id="crmSearch" placeholder="Buscar cliente, número o ciudad"></div></div><div class="table-wrap"><table class="crm-table"><thead><tr><th>Cotización</th><th>Cliente / destino</th><th>Estado</th><th>Prob. %</th><th>Próximo contacto</th><th>Vencimiento</th><th>Vendedor</th><th>Seguimiento</th><th>Acciones</th></tr></thead><tbody id="crmQuoteRows"></tbody></table></div></div>
-    <div class="card client-base-card"><h3>Base de clientes</h3><div class="mini" style="margin-bottom:10px">Los clientes guardados se pueden cargar directamente en una nueva cotización.</div><div class="table-wrap"><table class="client-table"><thead><tr><th>Cliente</th><th>RUT</th><th>Ciudad</th><th>Canal</th><th>Acciones</th></tr></thead><tbody id="crmClientRows"></tbody></table></div></div>
+    <div class="card client-base-card"><div class="history-toolbar"><div><h3 style="margin:0">Base de clientes</h3><div class="mini">Abre una ficha para actualizar datos y reutilizar el cliente en una cotización.</div></div></div><div class="table-wrap"><table class="client-table"><thead><tr><th>Cliente</th><th>RUT</th><th>Ciudad</th><th>Canal</th><th>Acciones</th></tr></thead><tbody id="crmClientRows"></tbody></table></div></div>
   </div>
 </section>
 
@@ -495,6 +554,27 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
   </details>
 </section>
 </main>
+
+
+<div id="clientEditModal" class="client-modal" aria-hidden="true">
+  <div class="client-modal-card" role="dialog" aria-modal="true" aria-labelledby="clientEditTitle">
+    <div class="client-modal-head"><div><h3 id="clientEditTitle">Ficha del cliente</h3><div class="mini" id="clientEditHelp">Actualiza la información comercial autorizada.</div></div><button type="button" class="secondary client-close" id="clientEditClose" aria-label="Cerrar">×</button></div>
+    <input type="hidden" id="editClientId">
+    <div class="client-form-grid">
+      <div class="wide"><label>Razón social / nombre</label><input id="editClientName"></div>
+      <div><label>RUT</label><input id="editClientRut"></div>
+      <div><label>Contacto principal</label><input id="editClientContact" placeholder="Correo o teléfono"></div>
+      <div class="wide"><label>Dirección</label><input id="editClientAddress"></div>
+      <div><label>Ciudad</label><input id="editClientCity"></div>
+      <div><label>Zona</label><select id="editClientZone"><option value="norte">Norte</option><option value="centro">Centro</option><option value="sur">Sur</option><option value="zofri">ZOFRI</option><option value="otro">Otra</option></select></div>
+      <div><label>Tipo de cliente</label><select id="editClientType"><option value="distribuidor">Distribuidor</option><option value="mayorista">Mayorista</option><option value="horeca">Horeca</option><option value="retail">Retail</option><option value="directa">Venta directa</option></select></div>
+      <div><label>Canal / lista de precios</label><select id="editClientChannel"><option value="distribuidor">Distribuidor</option><option value="mayorista">Mayorista</option><option value="horeca">Horeca</option><option value="retail">Retail</option><option value="directa">Venta directa</option></select></div>
+      <div class="wide"><label>Notas internas</label><textarea id="editClientNotes" placeholder="Observaciones comerciales internas"></textarea></div>
+    </div>
+    <div class="client-history"><h4 style="margin:0 0 9px">Historial de cambios</h4><div id="clientHistoryList" class="client-history-list"></div></div>
+    <div class="client-modal-actions"><button type="button" class="secondary" id="clientEditCancel">Cancelar</button><button type="button" id="clientEditUse">Usar en cotización</button><button type="button" id="clientEditSave">Guardar cambios</button></div>
+  </div>
+</div>
 
 <script id="supabase-bootstrap">
 (() => {
@@ -603,7 +683,9 @@ function imprimirListaPrecios(){
  #vendedores,#crm,#analisis{display:none!important}.margin-input{min-width:76px;width:86px}.projection-positive{color:#08783e}.projection-negative{color:#b42318}</style></head><body><div class="actions"><button onclick="window.print()">Imprimir / Guardar PDF</button></div><header><div><div class="brand">Kaddu</div><h1>Lista de precios – ${labels[view]}</h1></div><div class="meta">Fecha: ${fecha}<br>Valores expresados en pesos chilenos</div></header><p class="notice">Documento comercial. No incluye costos internos, utilidades, márgenes ni análisis de gestión.</p><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${headers.length}">No hay productos que coincidan con la búsqueda.</td></tr>`}</tbody></table><footer>Precios sujetos a vigencia y condiciones comerciales de Kaddu.</footer>
 
 
-<div class="footer-app no-print">Kaddu · Gestor Comercial · Versión 1.0 · © 2026 Kaddu</div></body></html>`;
+<div class="footer-app no-print">Kaddu · Gestor Comercial · Versión 1.0 · © 2026 Kaddu</div>
+
+</body></html>`;
  const w=window.open('','_blank');
  if(!w){alert('El navegador bloqueó la ventana de impresión. Habilita las ventanas emergentes para este archivo.');return}
  w.document.open();w.document.write(html);w.document.close();w.focus();
@@ -627,14 +709,16 @@ function renderLineas(nuevaIndex=-1){
     l.productId=p.id;
     const price=precioLinea(l,p),total=l.qty*price*(1-l.discount/100),tr=document.createElement('tr');
     if(i===nuevaIndex)tr.classList.add('new-line');
-    tr.innerHTML=`<td><select data-action="product" data-index="${i}">${productos.map(x=>`<option value="${x.id}" ${x.id===l.productId?'selected':''}>${x.nombre}</option>`).join('')}</select><span class="print-value">${p.nombre}</span></td><td><input data-action="qty" data-index="${i}" type="number" min="1" value="${l.qty}"><span class="print-value">${l.qty}</span></td><td>${fmt(price)}</td><td><input data-action="discount" data-index="${i}" type="number" min="0" max="100" value="${l.discount}"><span class="print-value">${l.discount}%</span></td><td>${fmt(total)}</td><td class="print-hide"><button type="button" class="danger" data-action="remove" data-index="${i}">Eliminar</button></td>`;
+    const imageUrl=String(p.imagen_url||'').trim();
+    const imageHtml=imageUrl?`<img class="quote-product-thumb" src="${imageUrl.replace(/"/g,'&quot;')}" alt="${String(p.nombre||'Producto').replace(/"/g,'&quot;')}" onerror="this.outerHTML='<span class=&quot;quote-product-thumb quote-product-placeholder&quot;>Sin foto</span>'">`:`<span class="quote-product-thumb quote-product-placeholder">Sin foto</span>`;
+    tr.innerHTML=`<td><div class="quote-product-cell">${imageHtml}<div class="quote-product-control"><select data-action="product" data-index="${i}">${productos.filter(x=>x.activo!==false).map(x=>`<option value="${x.id}" ${x.id===l.productId?'selected':''}>${x.nombre}</option>`).join('')}</select></div></div><div class="quote-product-print">${imageHtml}<strong>${p.nombre}</strong></div></td><td><input data-action="qty" data-index="${i}" type="number" min="1" value="${l.qty}"><span class="print-value">${l.qty}</span></td><td>${fmt(price)}</td><td><input data-action="discount" data-index="${i}" type="number" min="0" max="100" value="${l.discount}"><span class="print-value">${l.discount}%</span></td><td>${fmt(total)}</td><td class="print-hide"><button type="button" class="danger" data-action="remove" data-index="${i}">Eliminar</button></td>`;
     tb.appendChild(tr);
   });
   document.getElementById('lineStatus').textContent=`${lineas.length} producto${lineas.length===1?'':'s'} en la cotización`;
   recalcularCotizacion();
   if(nuevaIndex>=0){const rows=tb.querySelectorAll('tr');rows[nuevaIndex]?.scrollIntoView({behavior:'smooth',block:'nearest'});}
 }
-function recalcularCotizacion(){let sub=0,cost=0;lineas.forEach(l=>{const p=productos.find(x=>x.id===Number(l.productId))||productos[0],qty=Number(l.qty)||0;sub+=qty*precioLinea(l,p)*(1-(Number(l.discount)||0)/100);cost+=qty*datosProducto(p).base});const ship=num('quoteShipping'),ivaRate=activeQuoteIvaRate===null?num('ivaVenta'):activeQuoteIvaRate,iva=(sub+ship)*ivaRate/100,total=sub+ship+iva,margin=sub?((sub-cost)/sub*100):0;document.getElementById('quoteSubtotal').textContent=fmt(sub);document.getElementById('quoteIVA').textContent=fmt(iva);document.getElementById('quoteGrand').textContent=fmt(total);document.getElementById('pvQuoteShipping').textContent=fmt(ship);const a=document.getElementById('marginAlert');if(a){a.className='margin-alert show '+(margin<0?'danger':margin<20?'warn':'good');a.textContent=margin<0?'Alerta: la cotización queda bajo costo. Revisa precios y descuentos.':margin<20?'Atención: margen estimado '+margin.toLocaleString('es-CL',{maximumFractionDigits:1})+'%, bajo el mínimo recomendado de 20%.':'Margen estimado '+margin.toLocaleString('es-CL',{maximumFractionDigits:1})+'%.'}syncPrintValues()}
+function recalcularCotizacion(){let sub=0,cost=0;lineas.forEach(l=>{const p=productos.find(x=>x.id===Number(l.productId))||productos[0],qty=Number(l.qty)||0;sub+=qty*precioLinea(l,p)*(1-(Number(l.discount)||0)/100);cost+=qty*datosProducto(p).base});const ship=num('quoteShipping'),ivaRate=activeQuoteIvaRate===null?num('ivaVenta'):activeQuoteIvaRate,iva=(sub+ship)*ivaRate/100,total=sub+ship+iva,margin=sub?((sub-cost)/sub*100):0;document.getElementById('quoteSubtotal').textContent=fmt(sub);document.getElementById('quoteIVA').textContent=fmt(iva);document.getElementById('quoteGrand').textContent=fmt(total);document.getElementById('pvQuoteShipping').textContent=fmt(ship);const a=document.getElementById('marginAlert');if(a){const role=document.body.dataset.role||'';if(role!=='admin'){a.className='margin-alert';a.textContent='';a.hidden=true;}else{a.hidden=false;a.className='margin-alert show '+(margin<0?'danger':margin<20?'warn':'good');a.textContent=margin<0?'Alerta: la cotización queda bajo costo. Revisa precios y descuentos.':margin<20?'Atención: margen estimado '+margin.toLocaleString('es-CL',{maximumFractionDigits:1})+'%, bajo el mínimo recomendado de 20%.':'Margen estimado '+margin.toLocaleString('es-CL',{maximumFractionDigits:1})+'%.'}}syncPrintValues()}
 function correlativoActual(){let n=Number(localStorage.getItem('kddQuoteSeq')||1);return 'Kaddu-'+String(n).padStart(6,'0')}
 function nuevaCotizacion(){if(!confirm('¿Crear una nueva cotización y avanzar el correlativo?'))return;let n=Number(localStorage.getItem('kddQuoteSeq')||1)+1;localStorage.setItem('kddQuoteSeq',n);
 // --- Modelo Kaddu: margen general por canal + excepciones producto/canal ---
@@ -789,6 +873,7 @@ function recalcularVendedor(){
 
 const typeToChannel={mayorista:'mayorista',distribuidor:'distribuidor',horeca:'horeca',retail:'directa',institucional:'horeca'};
 document.getElementById('clientType').addEventListener('change',()=>{document.getElementById('quoteChannel').value=typeToChannel[document.getElementById('clientType').value]||'mayorista';lineas.forEach(l=>delete l.unitPrice);renderLineas();});
+document.getElementById('clientEditClose')?.addEventListener('click',closeClientEditor);document.getElementById('clientEditCancel')?.addEventListener('click',closeClientEditor);document.getElementById('clientEditSave')?.addEventListener('click',guardarFichaCliente);document.getElementById('clientEditUse')?.addEventListener('click',usarClienteDesdeFicha);document.getElementById('clientEditModal')?.addEventListener('click',e=>{if(e.target.id==='clientEditModal')closeClientEditor()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('clientEditModal')?.classList.contains('open'))closeClientEditor()});
 document.getElementById('btnAgregarProducto').addEventListener('click',agregarLinea);
 document.getElementById('btnSaveClient').addEventListener('click',guardarClienteActual);document.getElementById('btnLoadClient').addEventListener('click',()=>cargarCliente(document.getElementById('savedClientSelect').value));document.getElementById('savedClientSelect').addEventListener('change',e=>{if(e.target.value)cargarCliente(e.target.value)});document.getElementById('crmSearch')?.addEventListener('input',renderCRM);
 document.getElementById('btnGuardarCotizacion').addEventListener('click',guardarCotizacion);document.getElementById('btnPDF').addEventListener('click',descargarPDF);
@@ -807,14 +892,22 @@ try{clientCache=JSON.parse(localStorage.getItem('kddClients')||'[]')||[]}catch(e
 function getClients(){return clientCache}
 function setClients(cs){clientCache=(cs||[]).slice(0,500);localStorage.setItem('kddClients',JSON.stringify(clientCache));refreshClientSelect();renderClients()}
 function clientKey(rut,name){return (rut||'').replace(/\W/g,'').toLowerCase()||String(name||'').trim().toLowerCase()}
-function clientFromRow(row){let meta={};try{meta=JSON.parse(row.notas||'{}')||{}}catch(e){}return{id:row.id,name:row.nombre||'',rut:row.rut||'',address:row.direccion||'',zone:meta.zone||'norte',city:row.ciudad||'',contact:row.email||row.telefono||meta.contact||'',type:meta.type||'mayorista',channel:meta.channel||typeToChannel[meta.type]||'mayorista',updatedAt:row.updated_at||row.created_at||''}}
-function clientToRow(c){return{nombre:c.name,empresa:'Kaddu CRM',rut:c.rut||null,telefono:null,email:c.contact||null,direccion:c.address||null,ciudad:c.city||null,notas:JSON.stringify({zone:c.zone||'norte',type:c.type||'mayorista',channel:c.channel||'mayorista',contact:c.contact||''}),updated_at:new Date().toISOString()}}
+function clientFromRow(row){let meta={};try{meta=JSON.parse(row.notas||'{}')||{}}catch(e){}return{id:row.id,name:row.nombre||'',rut:row.rut||'',address:row.direccion||'',zone:meta.zone||'norte',city:row.ciudad||'',contact:row.email||row.telefono||meta.contact||'',type:meta.type||'mayorista',channel:meta.channel||typeToChannel[meta.type]||'mayorista',notes:meta.notes||'',history:Array.isArray(meta.history)?meta.history:[],updatedAt:row.updated_at||row.created_at||''}}
+function clientToRow(c){return{nombre:c.name,empresa:'Kaddu CRM',rut:c.rut||null,telefono:null,email:c.contact||null,direccion:c.address||null,ciudad:c.city||null,notas:JSON.stringify({zone:c.zone||'norte',type:c.type||'mayorista',channel:c.channel||'mayorista',contact:c.contact||'',notes:c.notes||'',history:Array.isArray(c.history)?c.history.slice(0,30):[]}),updated_at:new Date().toISOString()}}
 async function cargarClientesSupabase(){const sb=window.kadduSupabase;if(!sb)return;const{data,error}=await sb.from('clientes').select('*').order('updated_at',{ascending:false});if(error){console.error('[Kaddu] No fue posible cargar clientes:',error);return}const cloud=(data||[]).map(clientFromRow),local=getClients(),merged=[...cloud];local.forEach(c=>{if(!merged.some(x=>(c.rut&&x.rut===c.rut)||(!c.rut&&x.name.toLowerCase()===String(c.name||'').toLowerCase())))merged.push(c)});setClients(merged)}
 async function guardarClienteActual(){const name=document.getElementById('clientName').value.trim();if(!name)return alert('Ingresa el nombre o razón social del cliente.');const c={id:'',name,rut:document.getElementById('clientRut').value.trim(),address:document.getElementById('clientAddress').value,zone:document.getElementById('clientZone').value,city:document.getElementById('clientCity').value,contact:document.getElementById('clientContact').value,type:document.getElementById('clientType').value,channel:document.getElementById('quoteChannel').value,updatedAt:new Date().toISOString()};const sb=window.kadduSupabase;if(!sb){c.id=clientKey(c.rut,c.name);setClients([c,...getClients().filter(x=>x.id!==c.id)]);return alert('Cliente guardado localmente. Supabase no está disponible.')}let query=sb.from('clientes').select('id').limit(1);query=c.rut?query.eq('rut',c.rut):query.eq('nombre',c.name);const found=await query.maybeSingle();if(found.error){console.error(found.error);return alert('No fue posible buscar el cliente en Supabase.')}let result;if(found.data?.id)result=await sb.from('clientes').update(clientToRow(c)).eq('id',found.data.id).select().single();else result=await sb.from('clientes').insert(clientToRow(c)).select().single();if(result.error){console.error(result.error);return alert('No fue posible guardar el cliente en Supabase: '+result.error.message)}const saved=clientFromRow(result.data);setClients([saved,...getClients().filter(x=>x.id!==saved.id&&!(saved.rut&&x.rut===saved.rut))]);document.getElementById('savedClientSelect').value=saved.id;alert('Cliente guardado en Supabase correctamente.')}
 function cargarCliente(id){const c=getClients().find(x=>x.id===id);if(!c)return;document.getElementById('clientName').value=c.name||'';document.getElementById('clientRut').value=c.rut||'';document.getElementById('clientAddress').value=c.address||'';document.getElementById('clientZone').value=c.zone||'norte';document.getElementById('clientCity').value=c.city||'';document.getElementById('clientContact').value=c.contact||'';document.getElementById('clientType').value=c.type||'mayorista';document.getElementById('quoteChannel').value=c.channel||typeToChannel[c.type]||'mayorista';lineas.forEach(l=>delete l.unitPrice);renderLineas();recalcularCotizacion()}
 async function eliminarCliente(id){if(!confirm('¿Eliminar este cliente de la base?'))return;const c=getClients().find(x=>x.id===id),sb=window.kadduSupabase;if(sb&&c&&/^[0-9a-f-]{36}$/i.test(id)){const{error}=await sb.from('clientes').delete().eq('id',id);if(error){console.error(error);return alert('No fue posible eliminar el cliente de Supabase: '+error.message)}}setClients(getClients().filter(c=>c.id!==id))}
 function refreshClientSelect(){const el=document.getElementById('savedClientSelect');if(!el)return;const current=el.value;el.innerHTML='<option value="">Seleccionar cliente...</option>'+getClients().sort((a,b)=>a.name.localeCompare(b.name,'es')).map(c=>`<option value="${c.id}">${c.name}${c.city?' · '+c.city:''}</option>`).join('');el.value=current}
-function renderClients(){const tb=document.getElementById('crmClientRows');if(!tb)return;const cs=getClients();tb.innerHTML=cs.length?cs.map(c=>`<tr><td><strong>${c.name}</strong><br><small>${c.contact||''}</small></td><td>${c.rut||'-'}</td><td>${c.city||'-'}</td><td>${channelLabel(c.channel||'mayorista')}</td><td><div class="compact-actions"><button onclick="cargarClienteDesdeCRM('${c.id}')">Usar</button><button class="danger" onclick="eliminarCliente('${c.id}')">Eliminar</button></div></td></tr>`).join(''):'<tr><td colspan="5">No hay clientes guardados.</td></tr>'}
+function renderClients(){const tb=document.getElementById('crmClientRows');if(!tb)return;const cs=getClients(),role=document.body.dataset.role||'admin';tb.innerHTML=cs.length?cs.map(c=>`<tr><td><strong>${c.name}</strong><br><small>${c.contact||''}</small></td><td>${c.rut||'-'}</td><td>${c.city||'-'}</td><td>${channelLabel(c.channel||'mayorista')}</td><td><div class="compact-actions"><button onclick="abrirFichaCliente('${c.id}')">Editar</button><button class="secondary" onclick="cargarClienteDesdeCRM('${c.id}')">Usar</button>${role==='admin'?`<button class="danger" onclick="eliminarCliente('${c.id}')">Eliminar</button>`:''}</div></td></tr>`).join(''):'<tr><td colspan="5">No hay clientes guardados.</td></tr>'}
+function clientCurrentUser(){return(document.getElementById('currentUserName')?.textContent||'Usuario').trim()||'Usuario'}
+function closeClientEditor(){const modal=document.getElementById('clientEditModal');if(!modal)return;modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.getElementById('editClientId').value=''}
+function renderClientHistory(c){const box=document.getElementById('clientHistoryList'),items=Array.isArray(c?.history)?c.history:[];box.innerHTML=items.length?items.map(h=>`<div class="client-history-item"><strong>${h.date||'-'} · ${h.user||'Usuario'}</strong><br>${h.detail||'Actualización de ficha'}</div>`).join(''):'<div class="mini">Todavía no hay cambios registrados.</div>'}
+function abrirFichaCliente(id){const c=getClients().find(x=>String(x.id)===String(id));if(!c)return alert('No se encontró el cliente.');document.getElementById('editClientId').value=c.id;document.getElementById('editClientName').value=c.name||'';document.getElementById('editClientRut').value=c.rut||'';document.getElementById('editClientContact').value=c.contact||'';document.getElementById('editClientAddress').value=c.address||'';document.getElementById('editClientCity').value=c.city||'';document.getElementById('editClientZone').value=c.zone||'norte';document.getElementById('editClientType').value=c.type||'mayorista';document.getElementById('editClientChannel').value=c.channel||'mayorista';document.getElementById('editClientNotes').value=c.notes||'';const role=document.body.dataset.role||'admin',protectedIds=['editClientName','editClientRut','editClientType','editClientChannel'];protectedIds.forEach(fid=>{const el=document.getElementById(fid),locked=role!=='admin';el.disabled=locked;el.classList.toggle('client-protected',locked)});document.getElementById('clientEditHelp').textContent=role==='admin'?'Puedes editar todos los datos del cliente.':'Puedes editar contacto, dirección, ciudad, zona y notas. Los datos comerciales protegidos requieren un administrador.';renderClientHistory(c);const modal=document.getElementById('clientEditModal');modal.classList.add('open');modal.setAttribute('aria-hidden','false')}
+function clientChanges(before,after){const labels={name:'razón social',rut:'RUT',contact:'contacto',address:'dirección',city:'ciudad',zone:'zona',type:'tipo de cliente',channel:'canal/lista',notes:'notas internas'};return Object.keys(labels).filter(k=>String(before[k]||'')!==String(after[k]||'')).map(k=>labels[k])}
+async function guardarFichaCliente(){const id=document.getElementById('editClientId').value,clients=getClients(),idx=clients.findIndex(x=>String(x.id)===String(id));if(idx<0)return alert('No se encontró el cliente.');const before=clients[idx],role=document.body.dataset.role||'admin';const updated={...before,contact:document.getElementById('editClientContact').value.trim(),address:document.getElementById('editClientAddress').value.trim(),city:document.getElementById('editClientCity').value.trim(),zone:document.getElementById('editClientZone').value,notes:document.getElementById('editClientNotes').value.trim(),updatedAt:new Date().toISOString()};if(role==='admin'){updated.name=document.getElementById('editClientName').value.trim();updated.rut=document.getElementById('editClientRut').value.trim();updated.type=document.getElementById('editClientType').value;updated.channel=document.getElementById('editClientChannel').value;if(!updated.name)return alert('La razón social o nombre es obligatoria.')}const changed=clientChanges(before,updated);if(!changed.length)return alert('No hay cambios para guardar.');updated.history=[{date:new Date().toLocaleString('es-CL'),user:clientCurrentUser(),detail:'Modificó: '+changed.join(', ')},...(before.history||[])].slice(0,30);const sb=window.kadduSupabase;if(sb&&/^[0-9a-f-]{36}$/i.test(String(id))){const{data,error}=await sb.from('clientes').update(clientToRow(updated)).eq('id',id).select().single();if(error){console.error(error);return alert('No fue posible actualizar el cliente: '+error.message)}clients[idx]=clientFromRow(data)}else clients[idx]=updated;setClients(clients);renderClients();refreshClientSelect();renderClientHistory(clients[idx]);alert('Cliente actualizado correctamente.');closeClientEditor()}
+function usarClienteDesdeFicha(){const id=document.getElementById('editClientId').value;closeClientEditor();cargarClienteDesdeCRM(id)}
+
 window.addEventListener('kaddu:supabase-ready',cargarClientesSupabase);
 setTimeout(()=>{if(window.kadduSupabase)cargarClientesSupabase()},1200);
 function cargarClienteDesdeCRM(id){cargarCliente(id);document.querySelector('[data-panel="cotizacion"]').click()}
@@ -822,7 +915,7 @@ function quoteExpiry(q){const d=new Date((q.date||new Date().toISOString().slice
 function updateQuoteField(number,field,value){const qs=getQuotes(),q=qs.find(x=>x.number===number);if(!q)return;q[field]=field==='probability'?Math.min(100,Math.max(0,Number(value)||0)):value;if(field==='status'&&value==='rechazada'&&!q.rejectionReason)q.rejectionReason=prompt('Motivo de rechazo (opcional):','')||'';q.updatedAt=new Date().toISOString();setQuotes(qs)}
 function convertirVenta(number){const qs=getQuotes(),q=qs.find(x=>x.number===number);if(!q)return;const invoice=prompt('Número de factura, pedido u OC:','')||'';const payment=prompt('Estado de pago (Pendiente / Pagado / Parcial):','Pendiente')||'Pendiente';q.status='vendida';q.probability=100;q.sale={reference:invoice,date:new Date().toISOString().slice(0,10),payment,deliveryStatus:'Pendiente',net:quoteTotal(q).net};setQuotes(qs);alert('Cotización convertida en venta.')}
 function renovarCotizacion(number){const q=getQuotes().find(x=>x.number===number);if(!q)return;let n=Number(localStorage.getItem('kddQuoteSeq')||1)+1;localStorage.setItem('kddQuoteSeq',n);const copy={...q,number:'Kaddu-'+String(n).padStart(6,'0'),date:new Date().toISOString().slice(0,10),status:'borrador',probability:20,nextContact:'',followUp:'',sale:null,savedAt:new Date().toISOString()};const qs=getQuotes();qs.unshift(copy);setQuotes(qs);cargarCotizacion(copy.number);document.querySelector('[data-panel="cotizacion"]').click()}
-function renderCRM(){const tb=document.getElementById('crmQuoteRows');if(!tb)return;const term=(document.getElementById('crmSearch')?.value||'').toLowerCase(),qs=getQuotes(),filtered=qs.filter(q=>!term||[q.number,q.clientName,q.clientCity,q.seller].join(' ').toLowerCase().includes(term));tb.innerHTML=filtered.length?filtered.map(q=>{const exp=quoteExpiry(q),status=q.status||'borrador',expiryClass=exp.diff<0?'expiry-late':exp.diff<=3?'expiry-soon':'expiry-ok',sale=q.sale?`<div class="sale-record">Venta: ${q.sale.reference||'sin referencia'} · ${q.sale.payment||'Pendiente'}</div>`:'';return `<tr><td><strong>${q.number}</strong><br><small>${q.date||'-'} · ${fmt(quoteTotal(q).net)} neto</small>${sale}</td><td>${q.clientName||'Sin cliente'}<br><small>${q.clientCity||zoneLabel(q.clientZone)}</small></td><td><select onchange="updateQuoteField('${q.number}','status',this.value)">${Object.entries(statusLabels).map(([k,v])=>`<option value="${k}" ${status===k?'selected':''}>${v}</option>`).join('')}</select></td><td><input type="number" min="0" max="100" value="${q.probability??20}" onchange="updateQuoteField('${q.number}','probability',this.value)"></td><td><input type="date" value="${q.nextContact||''}" onchange="updateQuoteField('${q.number}','nextContact',this.value)"></td><td><span class="${expiryClass}">${exp.label}<br>${exp.diff<0?'Vencida hace '+Math.abs(exp.diff)+' días':exp.diff===0?'Vence hoy':exp.diff+' días'}</span></td><td><input value="${(q.seller||'').replace(/"/g,'&quot;')}" onchange="updateQuoteField('${q.number}','seller',this.value)"></td><td><textarea onchange="updateQuoteField('${q.number}','followUp',this.value)">${q.followUp||''}</textarea></td><td><div class="compact-actions"><button onclick="cargarCotizacion('${q.number}');document.querySelector('[data-panel=\'cotizacion\']').click()">Abrir</button><button class="secondary" onclick="pdfCotizacionGuardada('${q.number}')">PDF</button><button onclick="convertirVenta('${q.number}')">Venta</button><button class="ghost" onclick="renovarCotizacion('${q.number}')">Renovar</button></div></td></tr>`}).join(''):'<tr><td colspan="9">No hay cotizaciones para mostrar.</td></tr>';
+function renderCRM(){const tb=document.getElementById('crmQuoteRows');if(!tb)return;const term=(document.getElementById('crmSearch')?.value||'').toLowerCase(),role=document.body.dataset.role||'admin',signedName=(document.getElementById('currentUserName')?.textContent||'').trim().toLowerCase(),allQuotes=getQuotes(),qs=role==='seller'?allQuotes.filter(q=>(q.seller||'').trim().toLowerCase()===signedName):allQuotes,filtered=qs.filter(q=>!term||[q.number,q.clientName,q.clientCity,q.seller].join(' ').toLowerCase().includes(term));tb.innerHTML=filtered.length?filtered.map(q=>{const exp=quoteExpiry(q),status=q.status||'borrador',expiryClass=exp.diff<0?'expiry-late':exp.diff<=3?'expiry-soon':'expiry-ok',sale=q.sale?`<div class="sale-record">Venta: ${q.sale.reference||'sin referencia'} · ${q.sale.payment||'Pendiente'}</div>`:'';return `<tr><td><strong>${q.number}</strong><br><small>${q.date||'-'} · ${fmt(quoteTotal(q).net)} neto</small>${sale}</td><td>${q.clientName||'Sin cliente'}<br><small>${q.clientCity||zoneLabel(q.clientZone)}</small></td><td><select onchange="updateQuoteField('${q.number}','status',this.value)">${Object.entries(statusLabels).map(([k,v])=>`<option value="${k}" ${status===k?'selected':''}>${v}</option>`).join('')}</select></td><td><input type="number" min="0" max="100" value="${q.probability??20}" onchange="updateQuoteField('${q.number}','probability',this.value)"></td><td><input type="date" value="${q.nextContact||''}" onchange="updateQuoteField('${q.number}','nextContact',this.value)"></td><td><span class="${expiryClass}">${exp.label}<br>${exp.diff<0?'Vencida hace '+Math.abs(exp.diff)+' días':exp.diff===0?'Vence hoy':exp.diff+' días'}</span></td><td><input value="${(q.seller||'').replace(/"/g,'&quot;')}" ${role==='seller'?'readonly':''} onchange="updateQuoteField('${q.number}','seller',this.value)"></td><td><textarea onchange="updateQuoteField('${q.number}','followUp',this.value)">${q.followUp||''}</textarea></td><td><div class="compact-actions"><button onclick="cargarCotizacion('${q.number}');document.querySelector('[data-panel=\'cotizacion\']').click()">Abrir</button><button class="secondary" onclick="pdfCotizacionGuardada('${q.number}')">PDF</button><button onclick="convertirVenta('${q.number}')">Venta</button><button class="ghost" onclick="renovarCotizacion('${q.number}')">Renovar</button></div></td></tr>`}).join(''):'<tr><td colspan="9">No hay cotizaciones para mostrar.</td></tr>';
 const open=qs.filter(q=>['borrador','enviada','negociacion'].includes(q.status||'borrador')),closed=qs.filter(q=>['vendida','rechazada'].includes(q.status)),sales=qs.filter(q=>q.status==='vendida'),weighted=open.reduce((a,q)=>a+quoteTotal(q).net*(Number(q.probability??20)/100),0),expiring=qs.filter(q=>{const d=quoteExpiry(q).diff;return d<=3&&!['vendida','rechazada'].includes(q.status)}).length,salesNet=sales.reduce((a,q)=>a+(q.sale?.net||quoteTotal(q).net),0);document.getElementById('crmOpen').textContent=open.length;document.getElementById('crmWeighted').textContent=fmt(weighted);document.getElementById('crmConversion').textContent=(closed.length?sales.length/closed.length*100:0).toLocaleString('es-CL',{maximumFractionDigits:1})+'%';document.getElementById('crmExpiring').textContent=expiring;document.getElementById('crmSales').textContent=fmt(salesNet);const order=['borrador','enviada','negociacion','aprobada','vendida','rechazada'];document.getElementById('crmFunnel').innerHTML=order.map(k=>`<div class="funnel-step"><strong>${qs.filter(q=>(q.status||'borrador')===k).length}</strong><span>${statusLabels[k]}</span></div>`).join('');renderClients();refreshClientSelect()}
 function quoteAnalytics(q){const channel=q.channel||'mayorista',zone=q.clientZone||'norte',lines=q.lines||[];let net=0,cost=0,units=0;lines.forEach(l=>{const p=productos.find(x=>x.id===Number(l.productId))||productos[0],d=datosProducto(p),qty=Number(l.qty)||0,disc=(Number(l.discount)||0)/100,price=Number(l.unitPrice)||(d[channel]||d.mayorista);net+=qty*price*(1-disc);cost+=qty*d.base;units+=qty});net+=Number(q.shipping)||0;return{net,cost,profit:net-cost,units,channel,zone}}
 function renderAnalisis(){const box=document.getElementById('anQuotes');if(!box)return;const saved=JSON.parse(localStorage.getItem('kddSavedQuotes')||'[]'),metrics=saved.map(quoteAnalytics),net=metrics.reduce((s,x)=>s+x.net,0),profit=metrics.reduce((s,x)=>s+x.profit,0),units=metrics.reduce((s,x)=>s+x.units,0),margin=net?profit/net*100:0;box.textContent=saved.length.toLocaleString('es-CL');document.getElementById('anQuotesDetail').textContent=units.toLocaleString('es-CL')+' unidades cotizadas';document.getElementById('anNet').textContent=fmt(net);document.getElementById('anProfit').textContent=fmt(profit);document.getElementById('anMargin').textContent='Margen promedio '+margin.toLocaleString('es-CL',{maximumFractionDigits:1})+'%';document.getElementById('anTicket').textContent=fmt(saved.length?net/saved.length:0);const labels={distribuidor:'Distribuidor',mayorista:'Mayorista',horeca:'Horeca',retail:'Retail',directa:'Venta directa'},groups={};metrics.forEach(x=>{groups[x.channel]=(groups[x.channel]||0)+x.net});const entries=Object.entries(groups).sort((a,b)=>b[1]-a[1]),max=Math.max(...entries.map(x=>x[1]),1);document.getElementById('anTopChannel').textContent='Canal principal: '+(entries[0]?labels[entries[0][0]]||entries[0][0]:'-');document.getElementById('anChannelBars').innerHTML=entries.length?entries.map(([k,v])=>`<div class="bar-item"><span>${labels[k]||k}</span><div class="bar-bg"><div class="bar-value" style="width:${v/max*100}%"></div></div><strong>${fmt(v)}</strong></div>`).join(''):'<p class="mini">Guarda cotizaciones para visualizar la distribución por canal.</p>';const zoneOrder=['norte','centro','sur','zofri','otro'],zoneGroups={};metrics.forEach(x=>{zoneGroups[x.zone]=(zoneGroups[x.zone]||0)+x.net});document.getElementById('anRegionCards').innerHTML=zoneOrder.map(z=>`<div class="region-card"><h4>${zoneLabel(z)}</h4><div class="kpi">${fmt(zoneGroups[z]||0)}</div><div class="zone-note">${saved.filter(q=>(q.clientZone||'norte')===z).length} cotización(es)</div></div>`).join('');const productMap={};saved.forEach(q=>(q.lines||[]).forEach(l=>{const p=productos.find(x=>x.id===Number(l.productId))||productos[0],d=datosProducto(p),qty=Number(l.qty)||0,price=Number(l.unitPrice)||(d[q.channel]||d.mayorista),disc=(Number(l.discount)||0)/100,key=p.id;if(!productMap[key])productMap[key]={name:p.nombre,units:0,net:0,profit:0};productMap[key].units+=qty;productMap[key].net+=qty*price*(1-disc);productMap[key].profit+=qty*(price*(1-disc)-d.base)}));const ranked=Object.values(productMap).sort((a,b)=>b.net-a.net).slice(0,8);document.getElementById('anProductRows').innerHTML=ranked.length?ranked.map(x=>`<tr><td>${x.name}</td><td>${x.units.toLocaleString('es-CL')}</td><td>${fmt(x.net)}</td><td class="${x.profit>=0?'positive':'negative'}">${fmt(x.profit)}</td></tr>`).join(''):'<tr><td colspan="4">Aún no hay información suficiente.</td></tr>';const insights=[];if(!saved.length)insights.push('Guarda cotizaciones para construir indicadores comerciales reales.');else{insights.push(`El ticket promedio neto es ${fmt(net/saved.length)}.`);if(entries[0])insights.push(`${labels[entries[0][0]]||entries[0][0]} concentra la mayor venta cotizada.`);insights.push(margin<25?'El margen promedio está bajo 25%; conviene revisar descuentos y mezcla de canales.':'El margen promedio se mantiene en un rango comercial favorable.');if(ranked[0])insights.push(`${ranked[0].name} lidera la venta neta cotizada.`)}document.getElementById('anInsights').innerHTML=insights.map(x=>`<div class="insight">${x}</div>`).join('');renderSimuladores()}
@@ -1066,6 +1159,16 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     try{ renderAnalisis(); }catch(e){ /* modulo opcional */ }
   };
 
+  window.kadduCatalogProductCell=function(p){
+    const name=String(p?.nombre||'Producto');
+    const url=String(p?.imagen_url||'').trim();
+    const esc=v=>String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const visual=url
+      ? `<img class="catalog-product-thumb" src="${esc(url)}" alt="${esc(name)}" onerror="this.outerHTML='<span class=&quot;catalog-product-thumb catalog-product-placeholder&quot;>Sin foto</span>'">`
+      : `<span class="catalog-product-thumb catalog-product-placeholder">Sin foto</span>`;
+    return `<div class="catalog-product-cell">${visual}<strong>${esc(name)}</strong></div>`;
+  };
+
   window.renderCosteo=function(){
     const m=modelo();
     const view=document.getElementById('costView')?.value||'resumen';
@@ -1085,16 +1188,16 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
       let cells=[];
       if(view==='resumen'){
         const price=d.mayorista, iva=price*m.ivaVenta;
-        cells=[p.nombre,`${p.peso.toLocaleString('es-CL',{maximumFractionDigits:2})} kg`,p.cantidad.toLocaleString('es-CL'),fmt(d.importado),fmt(d.logistica),`<strong>${fmt(d.base)}</strong>`,`${effectiveMargin(p,'mayorista').toLocaleString('es-CL',{maximumFractionDigits:1})}%`,fmt(price),fmt(iva),`<strong>${fmt(price+iva)}</strong>`];
+        cells=[window.kadduCatalogProductCell(p),`${p.peso.toLocaleString('es-CL',{maximumFractionDigits:2})} kg`,p.cantidad.toLocaleString('es-CL'),fmt(d.importado),fmt(d.logistica),`<strong>${fmt(d.base)}</strong>`,`${effectiveMargin(p,'mayorista').toLocaleString('es-CL',{maximumFractionDigits:1})}%`,fmt(price),fmt(iva),`<strong>${fmt(price+iva)}</strong>`];
       }else if(view==='todos'){
-        cells=[p.nombre,...CHANNELS.map(ch=>{
+        cells=[window.kadduCatalogProductCell(p),...CHANNELS.map(ch=>{
           const margin=effectiveMargin(p,ch), own=hasOverride(p,ch);
           return `<div style="display:flex;flex-direction:column;gap:5px;min-width:130px"><div style="display:flex;gap:5px;align-items:center"><input type="number" min="0" max="85" step="0.5" value="${margin}" title="Este porcentaje reemplaza el margen general de ${LABELS[ch]} solo para este producto" onchange="saveMarginOverride(${p.id},'${ch}',this.value)">${own?`<button type="button" class="ghost" style="padding:4px 6px;font-size:10px" onclick="saveMarginOverride(${p.id},'${ch}','')">Usar canal</button>`:''}</div><strong>${fmt(d[ch])}</strong></div>`;
         })];
       }else{
         const margin=effectiveMargin(p,channel), own=hasOverride(p,channel), price=d[channel], iva=price*m.ivaVenta;
         const control=`<div style="display:flex;gap:6px;align-items:center"><input type="number" min="0" max="85" step="0.5" value="${margin}" title="Reemplaza el margen del canal solo para este producto" onchange="saveMarginOverride(${p.id},'${channel}',this.value)">${own?`<button type="button" class="ghost" style="padding:5px 8px;font-size:11px" onclick="saveMarginOverride(${p.id},'${channel}','')">Usar canal</button>`:''}</div>`;
-        cells=[p.nombre,fmt(d.base),control,fmt(price),fmt(iva),`<strong>${fmt(price+iva)}</strong>`,fmt(price-d.base)];
+        cells=[window.kadduCatalogProductCell(p),fmt(d.base),control,fmt(price),fmt(iva),`<strong>${fmt(price+iva)}</strong>`,fmt(price-d.base)];
       }
       tr.innerHTML=cells.map(c=>`<td>${c}</td>`).join('');
       body.appendChild(tr);
@@ -1248,11 +1351,14 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   'use strict';
   const USERS_KEY='kadduUsersV1';
   const SESSION_KEY='kadduSessionV1';
-  const PERMISSIONS={admin:['config','costeo','productosAdmin','cotizacion','listaPrecios','dealers','proyeccion','usuarios'],seller:['cotizacion','listaPrecios']};
+  const PERMISSIONS={admin:['config','costeo','productosAdmin','cotizacion','crm','listaPrecios','dealers','proyeccion','usuarios'],supervisor:['cotizacion','crm','listaPrecios','dealers'],seller:['cotizacion','crm','listaPrecios']};
   let currentUser=null;
   const byId=id=>document.getElementById(id);
   const clean=v=>String(v||'').trim();
   const userKey=v=>clean(v).toLowerCase();
+  const validEmail=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userKey(v));
+  const roleLabel=r=>r==='admin'?'Administrador':r==='supervisor'?'Supervisor':'Vendedor';
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   async function hashPassword(password){
     const bytes=new TextEncoder().encode(String(password));
     const digest=await crypto.subtle.digest('SHA-256',bytes);
@@ -1262,10 +1368,11 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   function saveUsers(users){localStorage.setItem(USERS_KEY,JSON.stringify(users))}
   function allowed(panel){return Boolean(currentUser&&(PERMISSIONS[currentUser.role]||[]).includes(panel))}
   function activate(panel){
-    if(!allowed(panel)) panel=currentUser?.role==='seller'?'cotizacion':'config';
+    if(!allowed(panel)) panel=currentUser?.role==='admin'?'config':'cotizacion';
     document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('active',el.dataset.panel===panel));
     document.querySelectorAll('.panel').forEach(el=>el.classList.toggle('active',el.id===panel));
     if(panel==='usuarios') renderUsers();
+    if(panel==='crm'&&typeof window.renderCRM==='function') window.renderCRM();
   }
   function showMessage(id,text,good=false){const el=byId(id);if(!el)return;el.textContent=text;el.className='auth-message show '+(good?'good':'bad')}
   function hideMessage(id){const el=byId(id);if(el)el.classList.remove('show')}
@@ -1281,11 +1388,11 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('permission-hidden',!allowed(el.dataset.panel)));
     document.querySelectorAll('.panel').forEach(el=>el.classList.toggle('permission-hidden',!allowed(el.id)));
     byId('currentUserName').textContent=currentUser.name;
-    byId('currentRole').textContent=currentUser.role==='admin'?'Administrador':'Vendedor';
+    byId('currentRole').textContent=roleLabel(currentUser.role);
     byId('userAvatar').textContent=currentUser.name.split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase();
     byId('userToolbar').classList.add('visible');
     const seller=byId('quoteSeller');
-    if(currentUser.role==='seller'){
+    if(currentUser.role!=='admin'){
       if(seller){seller.value=currentUser.name;seller.readOnly=true}
       ['btnExportQuotes','btnImportQuotes'].forEach(id=>byId(id)?.classList.add('permission-hidden'));
       activate('cotizacion');
@@ -1306,30 +1413,46 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   async function setupAdmin(event){
     event.preventDefault();hideMessage('setupMessage');
     const name=clean(byId('setupName').value), username=userKey(byId('setupUser').value), p1=byId('setupPassword').value, p2=byId('setupPassword2').value;
-    if(!name||!username){showMessage('setupMessage','Completa el nombre y el usuario.');return}
+    if(!name||!username){showMessage('setupMessage','Completa el nombre y el correo.');return}
+    if(!validEmail(username)){showMessage('setupMessage','Ingresa un correo electrónico válido.');return}
     if(p1.length<8){showMessage('setupMessage','La contraseña debe tener al menos 8 caracteres.');return}
     if(p1!==p2){showMessage('setupMessage','Las contraseñas no coinciden.');return}
-    const users={};users[username]={name,role:'admin',active:true,passwordHash:await hashPassword(p1),createdAt:new Date().toISOString()};saveUsers(users);
+    const existing=getUsers();
+    if(Object.keys(existing).length&& !confirm('Ya existen usuarios guardados en este navegador. ¿Deseas reemplazarlos y crear un nuevo administrador inicial?'))return;
+    const users={};users[username]={name,email:username,role:'admin',active:true,passwordHash:await hashPassword(p1),createdAt:new Date().toISOString()};saveUsers(users);
     await login(username,p1);
   }
   async function createUser(){
     hideMessage('userAdminMessage');
     const name=clean(byId('newUserName').value), username=userKey(byId('newUsername').value), password=byId('newUserPassword').value, role=byId('newUserRole').value;
+    const zone=clean(byId('newUserZone').value),phone=clean(byId('newUserPhone').value),commission=Math.max(0,Number(byId('newUserCommission').value)||0),active=byId('newUserActive').value==='true';
     const users=getUsers();
-    if(!name||!username||!password){showMessage('userAdminMessage','Completa todos los campos.');return}
+    if(!name||!username||!password){showMessage('userAdminMessage','Completa nombre, correo y contraseña.');return}
+    if(!validEmail(username)){showMessage('userAdminMessage','Ingresa un correo electrónico válido.');return}
     if(password.length<8){showMessage('userAdminMessage','La contraseña debe tener al menos 8 caracteres.');return}
-    if(users[username]){showMessage('userAdminMessage','Ese usuario ya existe.');return}
-    users[username]={name,role,active:true,passwordHash:await hashPassword(password),createdAt:new Date().toISOString()};saveUsers(users);
-    byId('newUserName').value='';byId('newUsername').value='';byId('newUserPassword').value='';
+    if(users[username]){showMessage('userAdminMessage','Ese correo ya está registrado.');return}
+    users[username]={name,email:username,role,active,zone,phone,commission,passwordHash:await hashPassword(password),createdAt:new Date().toISOString()};saveUsers(users);
+    ['newUserName','newUsername','newUserPassword','newUserZone','newUserPhone'].forEach(id=>byId(id).value='');byId('newUserCommission').value='0';byId('newUserActive').value='true';
     showMessage('userAdminMessage','Usuario creado correctamente.',true);renderUsers();
+  }
+  function commercialCounts(u){
+    let clients=0,quotes=0;const name=clean(u.name).toLowerCase();
+    try{if(typeof window.getClients==='function')clients=window.getClients().filter(c=>clean(c.seller||c.vendedor||c.responsible).toLowerCase()===name).length}catch(e){}
+    try{if(typeof window.getQuotes==='function')quotes=window.getQuotes().filter(q=>clean(q.seller).toLowerCase()===name).length;else quotes=JSON.parse(localStorage.getItem('kddSavedQuotes')||'[]').filter(q=>clean(q.seller).toLowerCase()===name).length}catch(e){}
+    return {clients,quotes};
   }
   function renderUsers(){
     const body=byId('usersTableBody');if(!body)return;
     const users=getUsers();
-    body.innerHTML=Object.entries(users).map(([username,u])=>`<tr><td>${u.name}</td><td>${username}</td><td>${u.role==='admin'?'Administrador':'Vendedor'}</td><td><span class="user-status ${u.active===false?'inactive':'active'}">${u.active===false?'Inactivo':'Activo'}</span></td><td><div class="account-actions"><button type="button" class="ghost" data-reset="${username}">Cambiar clave</button><button type="button" class="${u.active===false?'':'danger'}" data-toggle="${username}" ${username===currentUser?.username?'disabled':''}>${u.active===false?'Activar':'Desactivar'}</button></div></td></tr>`).join('');
+    body.innerHTML=Object.entries(users).map(([username,u])=>{const c=commercialCounts(u);return `<tr><td><strong>${esc(u.name)}</strong><br><small>${esc(u.phone||'')}</small></td><td>${esc(u.email||username)}</td><td>${roleLabel(u.role)}</td><td><span class="user-status ${u.active===false?'inactive':'active'}">${u.active===false?'Inactivo':'Activo'}</span></td><td>${esc(u.zone||'-')}</td><td>${c.clients}</td><td>${c.quotes}</td><td><div class="account-actions"><button type="button" data-edit="${esc(username)}">Editar</button><button type="button" class="ghost" data-reset="${esc(username)}">Cambiar clave</button><button type="button" class="${u.active===false?'':'danger'}" data-toggle="${esc(username)}" ${username===currentUser?.username?'disabled':''}>${u.active===false?'Activar':'Desactivar'}</button></div></td></tr>`}).join('');
+    body.querySelectorAll('[data-edit]').forEach(btn=>btn.addEventListener('click',()=>openUserEditor(btn.dataset.edit)));
     body.querySelectorAll('[data-toggle]').forEach(btn=>btn.addEventListener('click',()=>toggleUser(btn.dataset.toggle)));
     body.querySelectorAll('[data-reset]').forEach(btn=>btn.addEventListener('click',()=>resetPassword(btn.dataset.reset)));
   }
+  function openUserEditor(username){const u=getUsers()[username];if(!u)return;byId('editUserOriginal').value=username;byId('editUserName').value=u.name||'';byId('editUserEmail').value=u.email||username;byId('editUserRole').value=u.role||'seller';byId('editUserActive').value=String(u.active!==false);byId('editUserZone').value=u.zone||'';byId('editUserPhone').value=u.phone||'';byId('editUserCommission').value=Number(u.commission)||0;hideMessage('userEditMessage');byId('userEditModal').classList.add('open');byId('userEditModal').setAttribute('aria-hidden','false')}
+  function closeUserEditor(){byId('userEditModal')?.classList.remove('open');byId('userEditModal')?.setAttribute('aria-hidden','true')}
+  function saveUserEdit(){hideMessage('userEditMessage');const original=byId('editUserOriginal').value,email=userKey(byId('editUserEmail').value),users=getUsers(),u=users[original];if(!u)return;if(!clean(byId('editUserName').value)||!validEmail(email)){showMessage('userEditMessage','Completa el nombre y usa un correo válido.');return}if(email!==original&&users[email]){showMessage('userEditMessage','Ese correo ya pertenece a otro usuario.');return}const updated={...u,name:clean(byId('editUserName').value),email,role:byId('editUserRole').value,active:byId('editUserActive').value==='true',zone:clean(byId('editUserZone').value),phone:clean(byId('editUserPhone').value),commission:Math.max(0,Number(byId('editUserCommission').value)||0),updatedAt:new Date().toISOString()};delete users[original];users[email]=updated;saveUsers(users);if(currentUser?.username===original){currentUser={username:email,...updated};sessionStorage.setItem(SESSION_KEY,JSON.stringify({username:email}));applyPermissions()}closeUserEditor();renderUsers()}
+
   function toggleUser(username){const users=getUsers();if(!users[username]||username===currentUser.username)return;users[username].active=users[username].active===false;saveUsers(users);renderUsers()}
   async function resetPassword(username){
     const password=prompt('Ingresa la nueva contraseña para '+username+' (mínimo 8 caracteres):');
@@ -1348,22 +1471,26 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     const labels={distribuidor:'Distribuidor',mayorista:'Mayorista',horeca:'HORECA',retail:'Retail',directa:'Venta directa',todos:'Todos los canales'};
     const headers=channel==='todos'?['Producto','Distribuidor c/IVA','Mayorista c/IVA','HORECA c/IVA','Retail c/IVA','Venta directa c/IVA']:['Producto','Precio neto','IVA','Precio con IVA'];
     byId('sellerPriceHead').innerHTML='<tr>'+headers.map(x=>`<th>${x}</th>`).join('')+'</tr>';
-    const rows=productos.filter(p=>!term||p.nombre.toLowerCase().includes(term)).map(p=>{const d=datosProducto(p);let cells;if(channel==='todos')cells=[p.nombre,fmt(d.distribuidor*(1+m.ivaVenta)),fmt(d.mayorista*(1+m.ivaVenta)),fmt(d.horeca*(1+m.ivaVenta)),fmt(d.retail*(1+m.ivaVenta)),fmt(d.directa*(1+m.ivaVenta))];else{const net=d[channel],iva=net*m.ivaVenta;cells=[p.nombre,fmt(net),fmt(iva),`<strong>${fmt(net+iva)}</strong>`]}return '<tr>'+cells.map(x=>`<td>${x}</td>`).join('')+'</tr>'}).join('');
+    const rows=productos.filter(p=>!term||p.nombre.toLowerCase().includes(term)).map(p=>{const d=datosProducto(p);let cells;if(channel==='todos')cells=[window.kadduCatalogProductCell(p),fmt(d.distribuidor*(1+m.ivaVenta)),fmt(d.mayorista*(1+m.ivaVenta)),fmt(d.horeca*(1+m.ivaVenta)),fmt(d.retail*(1+m.ivaVenta)),fmt(d.directa*(1+m.ivaVenta))];else{const net=d[channel],iva=net*m.ivaVenta;cells=[window.kadduCatalogProductCell(p),fmt(net),fmt(iva),`<strong>${fmt(net+iva)}</strong>`]}return '<tr>'+cells.map(x=>`<td>${x}</td>`).join('')+'</tr>'}).join('');
     byId('sellerPriceBody').innerHTML=rows||`<tr><td colspan="${headers.length}">No hay productos que coincidan con la búsqueda.</td></tr>`;byId('sellerPriceSummary').textContent='Precios autorizados: '+labels[channel]+'.';
   }
   function printSellerPriceList(){
     const channel=byId('sellerPriceChannel')?.value||'mayorista',term=(byId('sellerPriceSearch')?.value||'').toLowerCase().trim(),m=modelo();
     const labels={distribuidor:'Distribuidor',mayorista:'Mayorista',horeca:'HORECA',retail:'Retail',directa:'Venta directa',todos:'Todos los canales'};
     const headers=channel==='todos'?['Producto','Distribuidor c/IVA','Mayorista c/IVA','HORECA c/IVA','Retail c/IVA','Venta directa c/IVA']:['Producto','Precio neto','IVA','Precio con IVA'];
-    const rows=productos.filter(p=>!term||p.nombre.toLowerCase().includes(term)).map(p=>{const d=datosProducto(p);let cells;if(channel==='todos')cells=[p.nombre,fmt(d.distribuidor*(1+m.ivaVenta)),fmt(d.mayorista*(1+m.ivaVenta)),fmt(d.horeca*(1+m.ivaVenta)),fmt(d.retail*(1+m.ivaVenta)),fmt(d.directa*(1+m.ivaVenta))];else{const net=d[channel],iva=net*m.ivaVenta;cells=[p.nombre,fmt(net),fmt(iva),fmt(net+iva)]}return '<tr>'+cells.map(x=>`<td>${x}</td>`).join('')+'</tr>'}).join('');
+    const rows=productos.filter(p=>!term||p.nombre.toLowerCase().includes(term)).map(p=>{const d=datosProducto(p),productName=String(p.nombre||'Producto').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');let cells;if(channel==='todos')cells=[`<strong>${productName}</strong>`,fmt(d.distribuidor*(1+m.ivaVenta)),fmt(d.mayorista*(1+m.ivaVenta)),fmt(d.horeca*(1+m.ivaVenta)),fmt(d.retail*(1+m.ivaVenta)),fmt(d.directa*(1+m.ivaVenta))];else{const net=d[channel],iva=net*m.ivaVenta;cells=[`<strong>${productName}</strong>`,fmt(net),fmt(iva),fmt(net+iva)]}return '<tr>'+cells.map(x=>`<td>${x}</td>`).join('')+'</tr>'}).join('');
     const fecha=new Date().toLocaleDateString('es-CL');
-    const html=`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Lista de precios Kaddu</title><style>@page{size:A4;margin:14mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#17202a;margin:0}header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #102a43;padding-bottom:12px;margin-bottom:18px}h1{font-size:24px;margin:0;color:#102a43}.brand{font-size:18px;font-weight:800;color:#102a43}.meta{font-size:11px;text-align:right;color:#475467}.notice{font-size:11px;color:#667085;margin:0 0 12px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#102a43;color:#fff;text-align:right;padding:8px 7px}td{padding:7px;border-bottom:1px solid #d8dee9;text-align:right}th:first-child,td:first-child{text-align:left}tbody tr:nth-child(even){background:#f8fafc}footer{margin-top:18px;padding-top:9px;border-top:1px solid #d8dee9;font-size:10px;color:#667085}.actions{margin-bottom:14px;text-align:right}.actions button{border:0;border-radius:8px;padding:9px 13px;background:#2367d1;color:#fff;font-weight:700;cursor:pointer}@media print{.actions{display:none}}</style></head><body><div class="actions"><button onclick="window.print()">Imprimir / Guardar PDF</button></div><header><div><div class="brand">Kaddu</div><h1>Lista de precios – ${labels[channel]}</h1></div><div class="meta">Fecha: ${fecha}<br>Valores expresados en pesos chilenos</div></header><p class="notice">Documento comercial. Precios sujetos a vigencia y condiciones comerciales.</p><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${headers.length}">No hay productos.</td></tr>`}</tbody></table><footer>Kaddu · Documento comercial</footer></body></html>`;
+    const html=`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Lista de precios Kaddu</title><style>@page{size:A4;margin:14mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#17202a;margin:0}header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #102a43;padding-bottom:12px;margin-bottom:18px}h1{font-size:24px;margin:0;color:#102a43}.brand{font-size:18px;font-weight:800;color:#102a43}.meta{font-size:11px;text-align:right;color:#475467}.notice{font-size:11px;color:#667085;margin:0 0 12px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#102a43;color:#fff;text-align:right;padding:8px 7px}td{padding:7px;border-bottom:1px solid #d8dee9;text-align:right}th:first-child,td:first-child{text-align:left}tbody tr:nth-child(even){background:#f8fafc}footer{margin-top:18px;padding-top:9px;border-top:1px solid #d8dee9;font-size:10px;color:#667085}.actions{margin-bottom:14px;text-align:right}.actions button{border:0;border-radius:8px;padding:9px 13px;background:#2367d1;color:#fff;font-weight:700;cursor:pointer}@media print{.actions{display:none}}</style>
+
+</head><body><div class="actions"><button onclick="window.print()">Imprimir / Guardar PDF</button></div><header><div><div class="brand">Kaddu</div><h1>Lista de precios – ${labels[channel]}</h1></div><div class="meta">Fecha: ${fecha}<br>Valores expresados en pesos chilenos</div></header><p class="notice">Documento comercial. Precios sujetos a vigencia y condiciones comerciales.</p><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${headers.length}">No hay productos.</td></tr>`}</tbody></table><footer>Kaddu · Documento comercial</footer></body></html>`;
     const w=window.open('','_blank');if(!w){alert('El navegador bloqueó la ventana de impresión. Autoriza las ventanas emergentes para continuar.');return}w.document.open();w.document.write(html);w.document.close();w.focus();
   }
   async function init(){
-    document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',event=>{if(currentUser&&!allowed(tab.dataset.panel)){event.preventDefault();event.stopImmediatePropagation();activate(currentUser.role==='seller'?'cotizacion':'config')}},true));
+    document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',event=>{if(currentUser&&!allowed(tab.dataset.panel)){event.preventDefault();event.stopImmediatePropagation();activate(currentUser.role==='admin'?'config':'cotizacion')}},true));
     byId('loginForm')?.addEventListener('submit',async event=>{event.preventDefault();hideMessage('loginError');if(!await login(byId('loginUser').value,byId('loginPassword').value))showMessage('loginError','Usuario o contraseña incorrectos.')});
-    byId('setupForm')?.addEventListener('submit',setupAdmin);byId('btnCreateUser')?.addEventListener('click',createUser);byId('btnMyPassword')?.addEventListener('click',changeMyPassword);
+    byId('btnShowSetup')?.addEventListener('click',()=>{hideMessage('loginError');byId('loginForm').classList.add('permission-hidden');byId('setupForm').classList.remove('permission-hidden');byId('authTitle').textContent='Configuración inicial';byId('authSubtitle').textContent='Crea la cuenta administradora';byId('btnBackToLogin')?.classList.remove('permission-hidden');byId('setupName')?.focus()});
+    byId('btnBackToLogin')?.addEventListener('click',()=>{hideMessage('setupMessage');byId('setupForm').classList.add('permission-hidden');byId('loginForm').classList.remove('permission-hidden');byId('authTitle').textContent='Gestor Comercial';byId('authSubtitle').textContent='Acceso de usuarios autorizados';byId('loginUser')?.focus()});
+    byId('setupForm')?.addEventListener('submit',setupAdmin);byId('btnCreateUser')?.addEventListener('click',createUser);byId('btnMyPassword')?.addEventListener('click',changeMyPassword);byId('btnSaveUserEdit')?.addEventListener('click',saveUserEdit);byId('btnCloseUserEdit')?.addEventListener('click',closeUserEditor);byId('btnCancelUserEdit')?.addEventListener('click',closeUserEditor);byId('userEditModal')?.addEventListener('click',e=>{if(e.target===byId('userEditModal'))closeUserEditor()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeUserEditor()});
     byId('sellerPriceChannel')?.addEventListener('change',renderSellerPriceList);byId('sellerPriceSearch')?.addEventListener('input',renderSellerPriceList);byId('btnSellerPrintPriceList')?.addEventListener('click',printSellerPriceList);renderSellerPriceList();
     byId('btnLogout')?.addEventListener('click',()=>{sessionStorage.removeItem(SESSION_KEY);location.reload()});
     showInitialScreen();
@@ -1371,4 +1498,76 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
-</script></body></html>
+</script>
+<div id="imageViewer" class="image-viewer no-print" role="dialog" aria-modal="true" aria-labelledby="imageViewerTitle" hidden>
+  <div class="image-viewer-card" role="document">
+    <button type="button" id="imageViewerClose" class="image-viewer-close" aria-label="Cerrar imagen">×</button>
+    <div id="imageViewerStage" class="image-viewer-stage">
+      <img id="imageViewerImage" class="image-viewer-image" alt="">
+    </div>
+    <div id="imageViewerTitle" class="image-viewer-title"></div>
+    <div class="image-viewer-help">Rueda o doble clic para ampliar · Esc para cerrar</div>
+  </div>
+</div>
+<script id="product-image-viewer-script">
+(() => {
+  const viewer=document.getElementById('imageViewer');
+  const viewerImage=document.getElementById('imageViewerImage');
+  const viewerTitle=document.getElementById('imageViewerTitle');
+  const stage=document.getElementById('imageViewerStage');
+  const closeButton=document.getElementById('imageViewerClose');
+  if(!viewer||!viewerImage||!viewerTitle||!stage||!closeButton)return;
+
+  let scale=1;
+  let lastFocused=null;
+  const applyScale=()=>{
+    viewerImage.style.transform=`scale(${scale})`;
+    stage.classList.toggle('zoomed',scale>1);
+  };
+  const resetZoom=()=>{scale=1;applyScale();};
+  const closeViewer=()=>{
+    if(viewer.hidden)return;
+    viewer.hidden=true;
+    resetZoom();
+    viewerImage.removeAttribute('src');
+    viewerImage.alt='';
+    viewerTitle.textContent='';
+    document.body.style.overflow='';
+    if(lastFocused&&typeof lastFocused.focus==='function')lastFocused.focus();
+    lastFocused=null;
+  };
+  const openViewer=(img)=>{
+    const source=img.currentSrc||img.src;
+    if(!source)return;
+    lastFocused=img;
+    resetZoom();
+    viewerImage.src=source;
+    const title=img.alt||img.closest('tr')?.querySelector('strong')?.textContent||'Producto';
+    viewerImage.alt=title;
+    viewerTitle.textContent=title;
+    viewer.hidden=false;
+    document.body.style.overflow='hidden';
+    closeButton.focus();
+  };
+
+  document.addEventListener('click',event=>{
+    const img=event.target.closest('img.product-thumb,img.quote-product-thumb,img.catalog-product-thumb');
+    if(!img)return;
+    event.preventDefault();
+    openViewer(img);
+  });
+  closeButton.addEventListener('click',closeViewer);
+  viewer.addEventListener('click',event=>{if(event.target===viewer)closeViewer();});
+  stage.addEventListener('dblclick',()=>{scale=scale>1?1:2;applyScale();});
+  stage.addEventListener('wheel',event=>{
+    if(viewer.hidden)return;
+    event.preventDefault();
+    scale=Math.min(4,Math.max(1,scale+(event.deltaY<0?0.25:-0.25)));
+    applyScale();
+  },{passive:false});
+  document.addEventListener('keydown',event=>{
+    if(event.key==='Escape'&&!viewer.hidden)closeViewer();
+  });
+})();
+</script>
+</body></html>
