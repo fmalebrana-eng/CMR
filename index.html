@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es-CL">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="kaddu-build" content="productos-admin-v3-responsive"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gestor Comercial Kaddu</title>
 <style>
 :root{--bg:#f4f7fb;--card:#fff;--text:#17202a;--muted:#667085;--line:#d8dee9;--accent:#2367d1;--navy:#102a43;--good:#18794e;--bad:#b42318;--soft:#eef4ff}
@@ -205,6 +205,49 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
 #supabaseConnectionStatus.error .dot{background:#b42318}
 @media print{#supabaseConnectionStatus{display:none!important}}
 </style>
+
+<style id="product-admin-responsive-fix">
+/* Ajustes de layout para Administración de productos */
+#productosAdmin{max-width:100%;overflow:hidden}
+#productosAdmin .panel-head{margin-bottom:14px}
+#productosAdmin .product-admin-grid{
+  display:grid;
+  grid-template-columns:minmax(320px,380px) minmax(0,1fr);
+  gap:18px;
+  align-items:start;
+  width:100%;
+  max-width:1500px;
+  margin:0 auto;
+}
+#productosAdmin .card{min-width:0;overflow:hidden;padding:18px}
+#productosAdmin .grid.two{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:0;
+}
+#productosAdmin input,#productosAdmin select{min-width:0;max-width:100%;width:100%}
+#productosAdmin .actions{margin-bottom:0}
+#productosAdmin .cost-toolbar{margin-bottom:12px}
+#productosAdmin .cost-toolbar .control{width:min(100%,360px);min-width:0}
+#productosAdmin .table-wrap{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+#productosAdmin .product-admin-table{width:100%;min-width:820px;table-layout:auto}
+#productosAdmin .product-admin-table th,#productosAdmin .product-admin-table td{padding:10px 9px}
+#productosAdmin .product-admin-table th:first-child,#productosAdmin .product-admin-table td:first-child{min-width:240px;max-width:320px}
+#productosAdmin .product-admin-table th:nth-child(2),#productosAdmin .product-admin-table td:nth-child(2){min-width:95px}
+#productosAdmin .product-admin-table th:nth-child(3),#productosAdmin .product-admin-table td:nth-child(3){min-width:110px}
+#productosAdmin .product-admin-table th:nth-child(4),#productosAdmin .product-admin-table td:nth-child(4){min-width:90px}
+#productosAdmin .product-admin-table th:nth-child(5),#productosAdmin .product-admin-table td:nth-child(5){min-width:95px}
+#productosAdmin .product-admin-table th:last-child,#productosAdmin .product-admin-table td:last-child{min-width:160px}
+@media(max-width:1180px){
+  #productosAdmin .product-admin-grid{grid-template-columns:1fr}
+  #productosAdmin .product-admin-grid>.card:first-child{max-width:680px}
+}
+@media(max-width:680px){
+  #productosAdmin .card{padding:14px}
+  #productosAdmin .grid.two{grid-template-columns:1fr}
+  #productosAdmin .product-admin-table{min-width:760px}
+}
+</style>
 </head>
 <body>
 <div id="supabaseConnectionStatus" title="Estado de conexión con Supabase"><span class="dot"></span><span class="label">Conectando a Supabase…</span></div>
@@ -268,6 +311,7 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
 <div class="actions"><button onclick="guardarDatos()">Guardar configuración</button><button class="ghost" onclick="restaurarDatos()">Restaurar</button></div>
 </section>
 <section id="costeo" class="panel">
+<div class="callout no-print" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><span><strong>Catálogo de productos:</strong> agrega, edita, activa o desactiva productos desde el administrador.</span><button type="button" id="btnOpenProductAdmin">Administrar productos</button></div>
 <div class="cost-toolbar">
   <div class="control"><label>Vista de costeo</label><select id="costView"><option value="resumen">Resumen de costos</option><option value="distribuidor">Canal Distribuidor</option><option value="mayorista">Canal Mayorista</option><option value="horeca">Canal Horeca</option><option value="retail">Canal Retail</option><option value="directa">Venta directa</option><option value="todos">Todos los canales</option></select></div>
   <div class="control"><label>Buscar producto</label><input id="costSearch" placeholder="Ej.: lavalozas, 5L, multiuso"></div>
@@ -490,21 +534,18 @@ body.pdf-preview-mode .print-commercial strong{color:#102a43}.pdf-preview-mode #
         }
       );
 
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/`, {
-        method: 'GET',
-        headers: {
-          apikey: SUPABASE_PUBLISHABLE_KEY,
-          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`Supabase respondió ${response.status}`);
-      }
-
       window.dispatchEvent(new CustomEvent('kaddu:supabase-ready', {
         detail: { client: window.kadduSupabase }
       }));
+
+      const verification = await window.kadduSupabase
+        .from('productos')
+        .select('id', { count: 'exact', head: true });
+
+      if (verification.error) {
+        throw verification.error;
+      }
+
       setConnectionStatus('connected', 'Supabase conectado');
       console.info('[Kaddu] Conexión con Supabase lista.');
     } catch (error) {
@@ -1197,7 +1238,13 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   }
   window.addEventListener('kaddu:supabase-ready',event=>load(event.detail.client));
   document.addEventListener('DOMContentLoaded',()=>{
-    $('btnSaveProduct')?.addEventListener('click',save);$('btnCancelProductEdit')?.addEventListener('click',clear);$('productAdminSearch')?.addEventListener('input',render);
+    $('btnSaveProduct')?.addEventListener('click',save);
+    $('btnCancelProductEdit')?.addEventListener('click',clear);
+    $('productAdminSearch')?.addEventListener('input',render);
+    $('btnOpenProductAdmin')?.addEventListener('click',()=>{
+      const tab=document.querySelector('.tab[data-panel="productosAdmin"]');
+      if(tab){tab.click();window.scrollTo({top:0,behavior:'smooth'});}
+    });
     const existing=window.kadduSupabase;if(existing)load(existing);
   });
 })();
