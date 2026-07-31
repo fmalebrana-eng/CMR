@@ -2038,7 +2038,8 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   $('scApprove').addEventListener('click',()=>{if(state.evaluation.status!=='approval')return message('scApprovalMessage','Primero envía la evaluación a aprobación.',false);const s=evalSeller(),p=plan(),key=state.evaluation.period+'-'+s.id;state.evaluation.approved=true;state.evaluation.status='approved';state.history=state.history.filter(h=>h.key!==key);state.history.push({key,period:state.evaluation.period,seller:s.name,plan:p.name,score:state.evaluation.score,incentive:state.evaluation.incentive,approvedBy:s.manager});save();renderEvaluation();renderIncentive();renderHistory();message('scApprovalMessage','Incentivo aprobado y período cerrado.')});
   $('scReject').addEventListener('click',()=>{state.evaluation.status='calculated';state.evaluation.approved=false;save();renderEvaluation();renderIncentive();message('scApprovalMessage','Evaluación devuelta.',false)});
   $('scExportHistory').addEventListener('click',()=>{const rows=[['Periodo','Vendedor','Plan','Cumplimiento','Incentivo','Aprobado por'],...state.history.map(h=>[h.period,h.seller,h.plan,h.score,h.incentive,h.approvedBy])];const blob=new Blob([rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(';')).join('\n')],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='historial_gestor_comercial.csv';a.click();URL.revokeObjectURL(a.href)});
-  async function bootstrap(){
+  async function startGestorComercial(){
+    if(ready)return;
     try{
       await loadState();
       bindMoney($('scBaseSalary'));bindMoney($('scTargetVariable'));
@@ -2048,6 +2049,22 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     }catch(e){
       console.error(e);
       alert('No fue posible cargar el Gestor Comercial desde Supabase: '+(e.message||e));
+    }
+  }
+  async function bootstrap(){
+    try{
+      const client=await sb();
+      const {data,error}=await client.auth.getSession();
+      if(error)throw error;
+      if(data?.session?.user){
+        await startGestorComercial();
+        return;
+      }
+      client.auth.onAuthStateChange((event,session)=>{
+        if(session?.user&&!ready)startGestorComercial();
+      });
+    }catch(e){
+      console.error('Inicio del Gestor Comercial:',e);
     }
   }
   bootstrap();
