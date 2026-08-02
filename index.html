@@ -2,7 +2,7 @@
 
 <html lang="es-CL">
 <head>
-<meta charset="utf-8"/><meta content="crm-v4.1.1-estable" name="kaddu-build"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta charset="utf-8"/><meta content="crm-v4.1.5-permisos-estrictos" name="kaddu-build"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>Gestor Comercial Kaddu</title>
 <style>
 :root{--bg:#f4f7fb;--card:#fff;--text:#17202a;--muted:#667085;--line:#d8dee9;--accent:#2367d1;--navy:#102a43;--good:#18794e;--bad:#b42318;--soft:#eef4ff}
@@ -730,6 +730,10 @@ body.pdf-preview-mode .quote-total .grand{background:var(--brand-charcoal)!impor
   #cotizacion .quote-company .kdd-logo{background:transparent!important;border:0!important;padding:0!important}
   .quote-items th,.quote-total .grand{background:#333!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+</style>
+
+<style id="kaddu-v415-strict-permissions">
+[data-permission-denied="true"],.permission-hidden{display:none!important;visibility:hidden!important;pointer-events:none!important}
 </style>
 </head>
 <body>
@@ -2023,11 +2027,27 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
       phone:clean(row?.telefono),
       commission:Number(row?.comision)||0,
       sellerType:clean(row?.tipo_vendedor||localStorage.getItem('kddUserSellerType:'+String(row?.id||user?.id||''))),
-      permissions:Array.isArray(row?.permisos)?row.permisos.filter(x=>MODULES.some(m=>m[0]===x)):[...(PERMISSIONS[row?.rol||'seller']||[])],
+      permissions:normalizePermissions(row?.permisos,row?.rol||'seller'),
       createdAt:row?.created_at||''
     };
   }
   function rolePermissions(role){return [...(PERMISSIONS[role]||[])]}
+  function normalizePermissions(raw,role){
+    const valid=new Set(MODULES.map(([key])=>key));
+    if(raw===null||raw===undefined||raw==='') return rolePermissions(role);
+    let value=raw;
+    if(typeof value==='string'){
+      const text=value.trim();
+      if(!text) return [];
+      try{value=JSON.parse(text)}catch(_){value=text.split(/[;,|]/).map(x=>x.trim()).filter(Boolean)}
+    }
+    if(value&&typeof value==='object'&&!Array.isArray(value)){
+      value=Object.entries(value).filter(([,enabled])=>enabled===true||enabled===1||enabled==='true'||enabled==='1').map(([key])=>key);
+    }
+    if(!Array.isArray(value)) return [];
+    const aliases=new Map(MODULES.flatMap(([key,label])=>[[key.toLowerCase(),key],[label.toLowerCase(),key]]));
+    return [...new Set(value.map(item=>aliases.get(String(item||'').trim().toLowerCase())||String(item||'').trim()).filter(key=>valid.has(key)))];
+  }
   function effectivePermissions(user){return Array.isArray(user?.permissions)?user.permissions:rolePermissions(user?.role)}
   function allowed(panel){return Boolean(currentUser&&effectivePermissions(currentUser).includes(panel))}
   function renderPermissionPicker(containerId,selected){
@@ -2037,10 +2057,40 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   function selectedPermissions(containerId){return [...(byId(containerId)?.querySelectorAll('input[type=checkbox]:checked')||[])].map(x=>x.value)}
   function setRoleDefaults(containerId,role){renderPermissionPicker(containerId,rolePermissions(role))}
   function selectAllPermissions(containerId){renderPermissionPicker(containerId,MODULES.map(x=>x[0]))}
+  function firstAllowedPanel(){
+    const preferred=['cotizacion','crm','listaPrecios','config','costeo','productosAdmin','dealers','analisis','proyeccion','usuarios','configuracion'];
+    return preferred.find(allowed)||MODULES.map(x=>x[0]).find(allowed)||null;
+  }
+  function setPermissionVisibility(el,visible){
+    if(!el)return;
+    el.classList.toggle('permission-hidden',!visible);
+    el.hidden=!visible;
+    el.setAttribute('aria-hidden',String(!visible));
+    if(!visible){
+      el.dataset.permissionDenied='true';
+      el.style.setProperty('display','none','important');
+      el.setAttribute('inert','');
+      el.classList.remove('active');
+    }else{
+      delete el.dataset.permissionDenied;
+      el.style.removeProperty('display');
+      el.removeAttribute('inert');
+    }
+  }
+  function updateNavigationVisibility(){
+    if(!currentUser)return;
+    document.querySelectorAll('.tab[data-panel]').forEach(el=>setPermissionVisibility(el,allowed(el.dataset.panel)));
+    document.querySelectorAll('.panel[id]').forEach(el=>setPermissionVisibility(el,allowed(el.id)));
+    document.querySelectorAll('.app-sidebar .nav-group').forEach(group=>{
+      const hasVisibleModule=[...group.querySelectorAll('.tab[data-panel]')].some(tab=>allowed(tab.dataset.panel));
+      setPermissionVisibility(group,hasVisibleModule);
+    });
+  }
   function activate(panel){
-    if(!allowed(panel)) panel=currentUser?.role==='admin'?'config':'cotizacion';
-    document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('active',el.dataset.panel===panel));
-    document.querySelectorAll('.panel').forEach(el=>el.classList.toggle('active',el.id===panel));
+    if(!allowed(panel)) panel=firstAllowedPanel();
+    if(!panel)return;
+    document.querySelectorAll('.tab[data-panel]').forEach(el=>el.classList.toggle('active',!el.hidden&&el.dataset.panel===panel));
+    document.querySelectorAll('.panel[id]').forEach(el=>el.classList.toggle('active',!el.hidden&&el.id===panel));
     if(panel==='usuarios') renderUsers();
     if(panel==='configuracion'&&window.kadduRenderCatalogs)window.kadduRenderCatalogs();
     if(panel==='crm'&&typeof window.renderCRM==='function') window.renderCRM();
@@ -2060,8 +2110,7 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   function applyPermissions(){
     document.body.dataset.role=currentUser.role;
     window.kadduCurrentUser={...currentUser};
-    document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('permission-hidden',!allowed(el.dataset.panel)));
-    document.querySelectorAll('.panel').forEach(el=>el.classList.toggle('permission-hidden',!allowed(el.id)));
+    updateNavigationVisibility();
     byId('currentUserName').textContent=currentUser.name;
     byId('currentRole').textContent=roleLabel(currentUser.role)+(JSON.stringify(effectivePermissions(currentUser))!==JSON.stringify(rolePermissions(currentUser.role))?' · personalizado':'');
     byId('userAvatar').textContent=currentUser.name.split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase();
@@ -2072,15 +2121,22 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
       const sellerEmail=byId('quoteSellerEmail');if(sellerEmail){sellerEmail.value=currentUser.email||'';sellerEmail.readOnly=true}
       const sellerPhone=byId('quoteSellerPhone');if(sellerPhone){sellerPhone.value=currentUser.phone||'';sellerPhone.readOnly=true}
       ['btnExportQuotes','btnImportQuotes'].forEach(id=>byId(id)?.classList.add('permission-hidden'));
-      activate('cotizacion');
+      activate(firstAllowedPanel());
     }else{
       if(seller)seller.readOnly=false;
       if(byId('quoteSellerEmail'))byId('quoteSellerEmail').readOnly=false;
       if(byId('quoteSellerPhone'))byId('quoteSellerPhone').readOnly=false;
-      activate('config');
+      activate(firstAllowedPanel());
       renderUsers().catch(error=>console.error('No fue posible cargar usuarios:',error));
     }
   }
+  let permissionRefreshQueued=false;
+  const permissionObserver=new MutationObserver(()=>{
+    if(!currentUser||permissionRefreshQueued)return;
+    permissionRefreshQueued=true;
+    requestAnimationFrame(()=>{permissionRefreshQueued=false;updateNavigationVisibility()});
+  });
+  document.addEventListener('DOMContentLoaded',()=>permissionObserver.observe(document.body,{childList:true,subtree:true}));
   async function loadCurrentProfile(user){
     const sb=supabaseClient();if(!sb||!user)return null;
     const {data,error}=await sb.from(USERS_TABLE).select('*').eq('id',user.id).maybeSingle();
