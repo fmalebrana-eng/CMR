@@ -733,6 +733,18 @@ body.pdf-preview-mode .quote-total .grand{background:var(--brand-charcoal)!impor
 </style>
 </head>
 <body>
+<script>
+(function(){
+  function resetKadduView(){
+    document.body.classList.remove('pdf-preview-mode','menu-open');
+    document.body.removeAttribute('data-pdf-preview-active');
+    document.querySelector('.app-sidebar')?.classList.remove('open');
+  }
+  resetKadduView();
+  window.addEventListener('pageshow', resetKadduView);
+  window.addEventListener('load', resetKadduView);
+})();
+</script>
 <div id="supabaseConnectionStatus" title="Estado de conexión con Supabase"><span class="dot"></span><span class="label">Conectando a Supabase…</span></div>
 <div class="auth-overlay" id="authOverlay">
 <div class="auth-card">
@@ -1456,7 +1468,7 @@ function construirDocumentoPDF(){
   const estilos=Array.from(document.querySelectorAll('style')).map(x=>x.outerHTML).join('\n');
   return `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${(document.getElementById('quoteNumber')?.value||'Cotización Kaddu').replace(/[<>]/g,'')}</title>${estilos}<style>
   html,body{margin:0!important;background:#e9eef3!important}body.pdf-preview-mode{min-height:100vh!important}.pdf-window-toolbar{position:sticky;top:0;z-index:9999;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 20px;background:#fff;border-bottom:1px solid #d8dee9;box-shadow:0 4px 14px rgba(16,42,67,.10);font-family:Arial,sans-serif}.pdf-window-toolbar strong{display:block;color:#333}.pdf-window-toolbar small{color:#667085}.pdf-window-toolbar .pdf-actions{display:flex;gap:10px}.pdf-window-toolbar button{border:1px solid #cfd8e3;border-radius:8px;padding:10px 15px;background:#fff;color:#333;font-weight:700;cursor:pointer}.pdf-window-toolbar button.primary{background:#2c729e;color:#fff;border-color:#2c729e}.pdf-window-main{padding:24px 12px 50px}.pdf-window-main .quote-shell{width:210mm;min-height:297mm;margin:0 auto;background:#fff!important;border:0!important;border-radius:0!important;padding:12mm 13mm!important;box-shadow:0 10px 35px rgba(15,23,42,.20)!important}@media(max-width:900px){.pdf-window-toolbar{align-items:flex-start;flex-direction:column}.pdf-window-main{padding:10px 0}.pdf-window-main .quote-shell{width:100%;min-height:auto;padding:18px!important}.pdf-window-toolbar .pdf-actions{width:100%}.pdf-window-toolbar button{flex:1}}@media print{html,body{background:#fff!important}.pdf-window-toolbar{display:none!important}.pdf-window-main{padding:0!important}.pdf-window-main .quote-shell{width:auto!important;min-height:0!important;margin:0!important;padding:0!important;box-shadow:none!important}}
-  </style></head><body class="pdf-preview-mode"><div class="pdf-window-toolbar"><div><strong>Vista previa de la cotización</strong><small>Usa “Imprimir / Guardar PDF” y selecciona “Guardar como PDF”.</small></div><div class="pdf-actions"><button type="button" onclick="window.close()">Cerrar</button><button class="primary" type="button" onclick="window.print()">Imprimir / Guardar PDF</button></div></div><main class="pdf-window-main">${clone.outerHTML}</main></body></html>`;
+  </style></head><body class="pdf-preview-mode pdf-window-document"><div class="pdf-window-toolbar"><div><strong>Vista previa de la cotización</strong><small>Usa “Imprimir / Guardar PDF” y selecciona “Guardar como PDF”.</small></div><div class="pdf-actions"><button type="button" onclick="window.close()">Cerrar</button><button class="primary" type="button" onclick="window.print()">Imprimir / Guardar PDF</button></div></div><main class="pdf-window-main">${clone.outerHTML}</main></body></html>`;
 }
 function mostrarVistaPDF(){
   try{
@@ -2054,6 +2066,9 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   function showMessage(id,text,good=false){const el=byId(id);if(!el)return;el.textContent=text;el.className='auth-message show '+(good?'good':'bad')}
   function hideMessage(id){const el=byId(id);if(el)el.classList.remove('show')}
   function showLoginScreen(){
+    document.body.classList.remove('pdf-preview-mode','menu-open');
+    document.body.removeAttribute('data-pdf-preview-active');
+    document.querySelector('.app-sidebar')?.classList.remove('open');
     byId('loginForm')?.classList.remove('permission-hidden');
     byId('setupForm')?.classList.add('permission-hidden');
     byId('authTitle').textContent='Gestor Comercial';
@@ -2094,6 +2109,9 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     return profile;
   }
   async function enterApp(user){
+    document.body.classList.remove('pdf-preview-mode','menu-open');
+    document.body.removeAttribute('data-pdf-preview-active');
+    document.querySelector('.app-sidebar')?.classList.remove('open');
     const sb=supabaseClient();
     if(!sb)throw new Error('Supabase todavía no está disponible.');
     const profileName=clean(user.user_metadata?.name||user.email||'Usuario');
@@ -2264,6 +2282,9 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
   window.renderSellerPriceList=renderSellerPriceList;
   window.printSellerPriceList=printSellerPriceList;
   async function init(){
+    document.body.classList.remove('pdf-preview-mode','menu-open');
+    document.body.removeAttribute('data-pdf-preview-active');
+    document.querySelector('.app-sidebar')?.classList.remove('open');
     document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',event=>{
       if(!currentUser)return;
       event.preventDefault();
