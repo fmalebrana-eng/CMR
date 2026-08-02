@@ -2,7 +2,7 @@
 
 <html lang="es-CL">
 <head>
-<meta charset="utf-8"/><meta content="crm-v4.1-final-auditado" name="kaddu-build"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta charset="utf-8"/><meta content="crm-v4.1.1-estable" name="kaddu-build"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>Gestor Comercial Kaddu</title>
 <style>
 :root{--bg:#f4f7fb;--card:#fff;--text:#17202a;--muted:#667085;--line:#d8dee9;--accent:#2367d1;--navy:#102a43;--good:#18794e;--bad:#b42318;--soft:#eef4ff}
@@ -1250,7 +1250,7 @@ body.pdf-preview-mode .quote-total .grand{background:var(--brand-charcoal)!impor
 <script>
 let productos=[["Lava Ropas Multiacción 5L",500,26],["Lava Ropas Lavanda 5L",500,24],["Lava Ropas Coco 5L",444,29],["Lava Ropa 5L",252,22],["Lava Ropas Especial 5L",120,23.5],["Lava Ropas con Glicerina 5L",120,23],["Lavalozas Limón 5L",316,22],["Lavalozas Neutro 5L",280,19.5],["Multiuso Bicarbonato + Alcohol Refil 3L",744,14.5],["Multiuso Bicarbonato + Alcohol 500 ml",600,7.2],["Suavizante de Ropa 5L",168,15.5],["Limpiador Concentrado Lavanda 140 ml",504,7],["Limpiador Concentrado Hierba Limón 140 ml",504,7],["Aromatizante Floral 2L",144,7.75],["Aromatizante Lavanda 2L",120,8.99],["Lava Ropas Multiacción 3L",702,15.39],["Lava Ropas Lavanda 3L",504,17.59],["Lava Ropas Coco 3L",450,17],["Lavalozas Limón 2L",498,9.59],["Lavalozas Neutro 2L",384,9.59]].map((p,i)=>{const n=p[0].toLowerCase(),peso=n.includes('5l')?5:n.includes('3l')?3:n.includes('2l')?2:n.includes('500 ml')?.5:n.includes('140 ml')?.14:1;return{id:i,nombre:p[0],cantidad:p[1],brl:p[2],peso}});
 const ids=['tc','flete','agencia','ivaImport','ivaVenta','kilosMes','almacenajeKg','distribucionAntofagasta','distribucionCalama','mixAntofagasta','mixCalama','comisionPago','marketing','merma','margenDistribuidor','margenMayorista','margenRetail','margenHoreca','margenDirecta','nombreVendedor','sueldoVendedor','cargasVendedor','movilizacion','periodoComision','metodoComision','tipoEscala','comisionVendedor','condicionCobranza','bonoCliente','clientesNuevos','metaVenta','ventaReal','porcentajeCobrado','margenMeta','devolucionesComision','margenMinimo','topeComision','bonoMargen','umbralBonoMargen','tasa80','tasa100','tasa110','tasa120','cantidadVendedores'];
-const fmt=n=>new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(Number.isFinite(n)?n:0),parseNumber=v=>Number(String(v).replace(/\./g,'').replace(',','.').replace(/[^0-9.-]/g,''))||0,num=id=>parseNumber(document.getElementById(id).value);const moneyIds=['flete','agencia','ivaImport','sueldoVendedor','movilizacion','bonoCliente','metaVenta','topeComision','quoteShipping'];function formatMoneyInput(el){if(!el)return;el.value=new Intl.NumberFormat('es-CL',{maximumFractionDigits:0}).format(parseNumber(el.value));el.classList.add('money-input')}function unformatMoneyInput(el){if(!el)return;el.value=String(parseNumber(el.value)||'')}moneyIds.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.type='text';el.inputMode='numeric';formatMoneyInput(el);el.addEventListener('focus',()=>unformatMoneyInput(el));el.addEventListener('blur',()=>{formatMoneyInput(el);recalcular()})});
+const fmt=n=>new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(Number.isFinite(n)?n:0),parseNumber=v=>Number(String(v).replace(/\./g,'').replace(',','.').replace(/[^0-9.-]/g,''))||0,num=id=>parseNumber(document.getElementById(id)?.value??0);const moneyIds=['flete','agencia','ivaImport','sueldoVendedor','movilizacion','bonoCliente','metaVenta','topeComision','quoteShipping'];function formatMoneyInput(el){if(!el)return;el.value=new Intl.NumberFormat('es-CL',{maximumFractionDigits:0}).format(parseNumber(el.value));el.classList.add('money-input')}function unformatMoneyInput(el){if(!el)return;el.value=String(parseNumber(el.value)||'')}moneyIds.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.type='text';el.inputMode='numeric';formatMoneyInput(el);el.addEventListener('focus',()=>unformatMoneyInput(el));el.addEventListener('blur',()=>{formatMoneyInput(el);recalcular()})});
 function modelo(){const tc=num('tc'),flete=num('flete'),agencia=num('agencia'),ivaVenta=num('ivaVenta')/100,totalBRL=productos.reduce((s,p)=>s+p.cantidad*p.brl,0),facturaCLP=totalBRL*tc,unidades=productos.reduce((s,p)=>s+p.cantidad,0),kilosMes=Math.max(num('kilosMes'),1),almacenajeKg=Math.max(num('almacenajeKg'),0),mixA=Math.max(num('mixAntofagasta'),0),mixC=Math.max(num('mixCalama'),0),mixTotal=Math.max(mixA+mixC,1),distribucionKg=(num('distribucionAntofagasta')*mixA+num('distribucionCalama')*mixC)/mixTotal,logisticaKg=almacenajeKg+distribucionKg,almacenajeMes=kilosMes*almacenajeKg,distribucionMes=kilosMes*distribucionKg,operacionMes=kilosMes*logisticaKg,costosPct=(num('comisionPago')+num('marketing')+num('merma'))/100;return{tc,flete,agencia,ivaVenta,totalBRL,facturaCLP,unidades,kilosMes,almacenajeKg,distribucionKg,logisticaKg,almacenajeMes,distribucionMes,operacionMes,costosPct}}
 function datosProducto(p){const m=modelo(),item=p.cantidad*p.brl,part=item/m.totalBRL,compra=p.brl*m.tc,importado=(item*m.tc+m.flete*part+m.agencia*part)/p.cantidad,almacenaje=p.peso*m.almacenajeKg,distribucion=p.peso*m.distribucionKg,logistica=almacenaje+distribucion,base=importado+logistica;function precio(mg){return base/Math.max(1-mg/100-m.costosPct,.01)}return{compra,importado,almacenaje,distribucion,logistica,base,distribuidor:precio(num('margenDistribuidor')),mayorista:precio(num('margenMayorista')),horeca:precio(num('margenHoreca')),retail:precio(num('margenRetail')),directa:precio(num('margenDirecta'))}}
 function renderCosteo(){
@@ -1297,6 +1297,13 @@ function imprimirListaPrecios(){
 
 
 
+
+<style id="kaddu-v411-mobile-stability">
+@media(max-width:1050px){body.menu-open .app-sidebar{pointer-events:auto!important}.app-content,.user-toolbar{position:relative}button,.tab,.commercial-subtab,.sales-cycle-tab,.product-upload-label{touch-action:manipulation;-webkit-tap-highlight-color:transparent}}
+</style>
+<script id="kaddu-v411-runtime-guard">
+(function(){'use strict';window.pct=window.pct||function(v){return Number(v||0).toLocaleString('es-CL',{minimumFractionDigits:0,maximumFractionDigits:1})+'%'};window.addEventListener('error',function(event){console.error('[Kaddu runtime]',event.error||event.message)});document.addEventListener('click',function(event){const sidebar=document.querySelector('.app-sidebar');if(sidebar?.classList.contains('open')&&event.target.closest('.app-sidebar .tab')){sidebar.classList.remove('open');document.body.classList.remove('menu-open')}})})();
+</script>
 
 </body></html>`;
  const w=window.open('','_blank');
@@ -1385,39 +1392,20 @@ async function guardarCotizacionSupabase(q){
   const sb=window.kadduSupabase;
   if(!sb) throw new Error('Supabase todavía no está disponible');
   const totals=quoteTotal(q);
-  const header={
-    numero:q.number,
-    fecha:q.date||null,
-    cliente_nombre:q.clientName||null,
-    cliente_rut:q.clientRut||null,
-    canal:q.channel||null,
-    estado:q.status||'borrador',
-    vendedor:q.seller||null,
-    propietario_id:q.ownerId||window.kadduCurrentUser?.id||null,
-    neto:Number(totals.net)||0,
-    total:Number(totals.total)||0,
-    datos:q,
-    updated_at:new Date().toISOString()
-  };
-  const {data,error}=await sb.from('cotizaciones').upsert(header,{onConflict:'numero'}).select('id').single();
-  if(error) throw error;
-  const quoteId=data.id;
-  const {error:deleteError}=await sb.from('cotizacion_detalles').delete().eq('cotizacion_id',quoteId);
-  if(deleteError) throw deleteError;
-  const details=(q.lines||[]).map((line,index)=>({
-    cotizacion_id:quoteId,
-    posicion:index+1,
-    producto_id:String(line.productId??''),
-    producto_nombre:line.productName||'',
-    cantidad:Number(line.qty)||0,
-    precio_unitario:Number(line.unitPrice)||0,
-    descuento:Number(line.discount)||0,
-    datos:line
-  }));
-  if(details.length){
-    const {error:detailError}=await sb.from('cotizacion_detalles').insert(details);
-    if(detailError) throw detailError;
+  const header={numero:q.number,fecha:q.date||null,cliente_nombre:q.clientName||null,cliente_rut:q.clientRut||null,canal:q.channel||null,estado:q.status||'borrador',vendedor:q.seller||null,propietario_id:q.ownerId||window.kadduCurrentUser?.id||null,neto:Number(totals.net)||0,total:Number(totals.total)||0,datos:q,updated_at:new Date().toISOString()};
+  let result=await sb.from('cotizaciones').upsert(header,{onConflict:'numero'}).select('id').single();
+  if(result.error && /propietario_id|column .* does not exist|schema cache/i.test(result.error.message||'')){
+    const compatible={...header};delete compatible.propietario_id;
+    result=await sb.from('cotizaciones').upsert(compatible,{onConflict:'numero'}).select('id').single();
   }
+  if(result.error) throw result.error;
+  const quoteId=result.data.id;
+  const details=(q.lines||[]).map((line,index)=>({cotizacion_id:quoteId,posicion:index+1,producto_id:String(line.productId??''),producto_nombre:line.productName||'',cantidad:Number(line.qty)||0,precio_unitario:Number(line.unitPrice)||0,descuento:Number(line.discount)||0,datos:line}));
+  try{
+    const {error:deleteError}=await sb.from('cotizacion_detalles').delete().eq('cotizacion_id',quoteId);
+    if(deleteError)throw deleteError;
+    if(details.length){const {error:detailError}=await sb.from('cotizacion_detalles').insert(details);if(detailError)throw detailError;}
+  }catch(detailError){console.warn('[Kaddu] Cotización principal guardada; no se sincronizó cotizacion_detalles:',detailError);}
   return quoteId;
 }
 async function eliminarCotizacionSupabase(number){
@@ -1432,7 +1420,8 @@ window.cargarCotizacionesSupabase=async function cargarCotizacionesSupabase(){
   const access=window.kadduCurrentUser||{};
   let query=sb.from('cotizaciones').select('datos').order('updated_at',{ascending:false});
   if(access.role==='seller'&&access.id)query=query.eq('propietario_id',access.id);
-  const {data,error}=await query;
+  let {data,error}=await query;
+  if(error && /propietario_id|column .* does not exist|schema cache/i.test(error.message||'')){({data,error}=await sb.from('cotizaciones').select('datos').order('updated_at',{ascending:false}));}
   if(error) throw error;
   const remote=(data||[]).map(row=>row.datos).filter(Boolean);
   localStorage.setItem('kddSavedQuotes',JSON.stringify(remote.slice(0,500)));
@@ -1447,7 +1436,7 @@ setTimeout(()=>{
   }
 },1200);
 
-async function guardarCotizacion(){if(!document.getElementById('clientName').value.trim())return alert('Ingresa la razón social o nombre del cliente.');if(!lineas.length)return alert('Agrega al menos un producto.');const q=quoteSnapshot();const saved=JSON.parse(localStorage.getItem('kddSavedQuotes')||'[]');const idx=saved.findIndex(x=>x.number===q.number);if(idx>=0){q.status=saved[idx].status||q.status;q.probability=saved[idx].probability??q.probability;q.nextContact=saved[idx].nextContact||'';q.followUp=saved[idx].followUp||'';q.rejectionReason=saved[idx].rejectionReason||'';q.sale=saved[idx].sale||null;saved[idx]=q}else saved.unshift(q);try{localStorage.setItem('kddSavedQuotes',JSON.stringify(saved.slice(0,250)))}catch(e){alert('No fue posible guardar en este navegador. Exporta un respaldo o libera espacio.');return null}renderSavedQuotes();renderAnalisis();renderCRM();refreshClientSelect();mostrarVistaGuardada(q);try{await guardarCotizacionSupabase(q);alert('Cotización guardada en Supabase correctamente.')}catch(error){console.error('[Kaddu] Error guardando cotización:',error);alert('La cotización quedó guardada localmente, pero no pudo enviarse a Supabase. Revisa que las tablas estén creadas.')}return q}
+async function guardarCotizacion(){if(!document.getElementById('clientName').value.trim())return alert('Ingresa la razón social o nombre del cliente.');if(!lineas.length)return alert('Agrega al menos un producto.');const q=quoteSnapshot();const saved=JSON.parse(localStorage.getItem('kddSavedQuotes')||'[]');const idx=saved.findIndex(x=>x.number===q.number);if(idx>=0){q.status=saved[idx].status||q.status;q.probability=saved[idx].probability??q.probability;q.nextContact=saved[idx].nextContact||'';q.followUp=saved[idx].followUp||'';q.rejectionReason=saved[idx].rejectionReason||'';q.sale=saved[idx].sale||null;saved[idx]=q}else saved.unshift(q);try{localStorage.setItem('kddSavedQuotes',JSON.stringify(saved.slice(0,250)))}catch(e){alert('No fue posible guardar en este navegador. Exporta un respaldo o libera espacio.');return null}try{renderSavedQuotes()}catch(e){console.error(e)}try{renderAnalisis()}catch(e){console.error(e)}try{renderCRM()}catch(e){console.error(e)}try{refreshClientSelect()}catch(e){console.error(e)}mostrarVistaGuardada(q);try{await guardarCotizacionSupabase(q);alert('Cotización guardada correctamente.')}catch(error){console.error('[Kaddu] Error guardando cotización:',error);alert('La cotización quedó guardada en este navegador, pero Supabase respondió: '+(error?.message||'error desconocido'));}return q}
 function cargarCotizacion(number){const q=getQuotes().find(x=>x.number===number);if(!q)return alert('No tienes acceso a esta cotización o no existe.');document.getElementById('quoteNumber').value=q.number;document.getElementById('quoteDate').value=q.date;document.getElementById('quoteValidity').value=q.validity;document.getElementById('quoteChannel').value=q.channel;document.getElementById('clientType').value=q.clientType;document.getElementById('clientRut').value=q.clientRut;document.getElementById('clientName').value=q.clientName;document.getElementById('clientAddress').value=q.clientAddress||'';document.getElementById('clientZone').value=q.clientZone||'norte';document.getElementById('clientCity').value=q.clientCity||'';document.getElementById('clientContact').value=q.clientContact||'';document.getElementById('quoteSeller').value=q.seller||'';document.getElementById('quoteSellerPhone').value=q.sellerPhone||'';document.getElementById('quoteSellerEmail').value=q.sellerEmail||'';document.getElementById('quoteDelivery').value=q.delivery||'';document.getElementById('quoteShippingMethod').value=q.shippingMethod||'Despacho coordinado';document.getElementById('quoteShipping').value=q.shipping;formatMoneyInput(document.getElementById('quoteShipping'));activeQuoteIvaRate=Number.isFinite(Number(q.ivaRate))?Number(q.ivaRate):null;document.getElementById('quotePayment').value=q.payment;document.getElementById('quoteNotes').value=q.notes;lineas=(q.lines||[]).map(x=>({...x}));renderLineas();recalcularCotizacion();document.getElementById('saveStatus').classList.remove('show');window.scrollTo({top:0,behavior:'smooth'});return q}
 async function eliminarCotizacion(number){const target=getQuotes().find(x=>x.number===number);if(!target)return alert('No tienes permiso para eliminar esta cotización.');if(!confirm('¿Eliminar la cotización '+number+'?'))return;let saved=getAllQuotes();saved=saved.filter(x=>x.number!==number);localStorage.setItem('kddSavedQuotes',JSON.stringify(saved));renderSavedQuotes();renderAnalisis();renderCRM();try{await eliminarCotizacionSupabase(number)}catch(error){console.error('[Kaddu] Error eliminando cotización en Supabase:',error);alert('Se eliminó localmente, pero no fue posible eliminarla de Supabase.')}}
 function pdfCotizacionGuardada(number){const q=cargarCotizacion(number);if(!q)return;mostrarVistaPDF()}
@@ -1518,7 +1507,7 @@ document.getElementById('clientType').addEventListener('change',()=>{document.ge
 document.getElementById('clientEditClose')?.addEventListener('click',closeClientEditor);document.getElementById('clientEditCancel')?.addEventListener('click',closeClientEditor);document.getElementById('clientEditSave')?.addEventListener('click',guardarFichaCliente);document.getElementById('clientEditUse')?.addEventListener('click',usarClienteDesdeFicha);document.getElementById('clientEditModal')?.addEventListener('click',e=>{if(e.target.id==='clientEditModal')closeClientEditor()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('clientEditModal')?.classList.contains('open'))closeClientEditor()});
 document.getElementById('btnAgregarProducto').addEventListener('click',agregarLinea);
 document.getElementById('btnSaveClient').addEventListener('click',guardarClienteActual);document.getElementById('btnLoadClient').addEventListener('click',()=>cargarCliente(document.getElementById('savedClientSelect').value));document.getElementById('savedClientSelect').addEventListener('change',e=>{if(e.target.value)cargarCliente(e.target.value)});document.getElementById('crmSearch')?.addEventListener('input',renderCRM);
-document.getElementById('btnGuardarCotizacion').addEventListener('click',guardarCotizacion);document.getElementById('btnPDF').addEventListener('click',descargarPDF);
+document.getElementById('btnGuardarCotizacion')?.addEventListener('click',guardarCotizacion);document.getElementById('btnPDF')?.addEventListener('click',descargarPDF);
 document.getElementById('btnNuevaCotizacion').addEventListener('click',nuevaCotizacion);document.getElementById('btnCerrarVistaPDF').addEventListener('click',cerrarVistaPDF);document.getElementById('btnImprimirPDF').addEventListener('click',imprimirVistaPDF);window.addEventListener('afterprint',()=>{});document.getElementById('btnHidePreview').addEventListener('click',()=>document.getElementById('saveStatus').classList.remove('show'));document.getElementById('btnExportQuotes').addEventListener('click',exportarCotizaciones);document.getElementById('btnImportQuotes').addEventListener('click',()=>document.getElementById('quoteBackupFile').click());document.getElementById('quoteBackupFile').addEventListener('change',e=>{importarCotizaciones(e.target.files[0]);e.target.value=''})
 document.getElementById('quoteBody').addEventListener('change',e=>{const action=e.target.dataset.action,index=Number(e.target.dataset.index);if(!Number.isInteger(index)||!lineas[index])return;if(action==='product'){lineas[index].productId=Number(e.target.value);delete lineas[index].unitPrice;}if(action==='qty')lineas[index].qty=Math.max(Number(e.target.value)||1,1);if(action==='discount')lineas[index].discount=Math.min(Math.max(Number(e.target.value)||0,0),100);renderLineas();});
 document.getElementById('quoteBody').addEventListener('click',e=>{if(e.target.dataset.action==='remove')quitarLinea(Number(e.target.dataset.index));});
@@ -1618,6 +1607,7 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
 <script>
 // Correcciones finales: formato chileno, márgenes heredados y modelo flexible de comisiones.
 (function(){
+  const pct = window.pct || (v=>Number(v||0).toLocaleString('es-CL',{minimumFractionDigits:0,maximumFractionDigits:1})+'%');
   const clInteger = new Intl.NumberFormat('es-CL',{maximumFractionDigits:0});
   const parseCL = v => Number(String(v ?? '').replace(/\./g,'').replace(',','.').replace(/[^0-9.-]/g,'')) || 0;
   const formatIntegerInput = el => { if(el) el.value = clInteger.format(parseCL(el.value)); };
@@ -1964,7 +1954,7 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     productos=allProducts.filter(p=>p.activo!==false).map(p=>({...p}));
     try{loadProductMargins()}catch(e){console.warn(e)}
     if(Array.isArray(lineas)){const valid=new Set(productos.map(p=>Number(p.id)));lineas=lineas.filter(l=>valid.has(Number(l.productId)));if(!lineas.length&&productos.length)lineas=[{productId:productos[0].id,qty:1,discount:0}]}
-    try{renderCosteo()}catch(e){console.error(e)}try{renderLineas()}catch(e){console.error(e)}try{renderProjection()}catch(e){console.error(e)}try{renderSellerPriceList()}catch(e){console.error(e)}try{renderSimuladores()}catch(e){console.error(e)}try{recalcularCotizacion()}catch(e){console.error(e)}
+    try{renderCosteo()}catch(e){console.error(e)}try{renderLineas()}catch(e){console.error(e)}try{renderProjection()}catch(e){console.error(e)}try{if(typeof window.renderSellerPriceList==='function')window.renderSellerPriceList()}catch(e){console.error(e)}try{renderSimuladores()}catch(e){console.error(e)}try{recalcularCotizacion()}catch(e){console.error(e)}
   }
   function filteredProducts(){
     const term=clean($('productAdminSearch')?.value).toLowerCase();
@@ -2108,7 +2098,7 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
     if(!sb)throw new Error('Supabase todavía no está disponible.');
     const profileName=clean(user.user_metadata?.name||user.email||'Usuario');
     const {error:profileError}=await sb.rpc('ensure_user_profile',{p_name:profileName});
-    if(profileError)throw new Error('No fue posible sincronizar el perfil del usuario: '+profileError.message);
+    if(profileError)console.warn('[Kaddu] No se pudo ejecutar ensure_user_profile; se usará el perfil existente:',profileError.message);
     currentUser=await loadCurrentProfile(user);
     if(!currentUser)throw new Error('No fue posible cargar el perfil autorizado.');
     byId('authOverlay').classList.add('hidden');
@@ -2271,6 +2261,8 @@ document.getElementById('quoteNumber').value=correlativoActual();document.getEle
 </body></html>`;
     const w=window.open('','_blank');if(!w){alert('El navegador bloqueó la ventana de impresión. Autoriza las ventanas emergentes para continuar.');return}w.document.open();w.document.write(html);w.document.close();w.focus();
   }
+  window.renderSellerPriceList=renderSellerPriceList;
+  window.printSellerPriceList=printSellerPriceList;
   async function init(){
     document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',event=>{
       if(!currentUser)return;
